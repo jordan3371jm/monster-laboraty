@@ -3,8 +3,9 @@ import {$} from '../core/dom.js';
 import {R,S} from '../core/state.js';
 import {hueOf} from '../core/util.js';
 import {E,MAXT,N} from '../data/config.js';
-import {trv} from '../data/text.js';
+import {tr,trv} from '../data/text.js';
 import {freeCell,mergePairs,slots,spCost,spT} from '../game/economy.js';
+import {onMerge} from '../game/timers.js';
 import {save} from '../save.js';
 import {disc} from './collection.js';
 import {burst,toast} from './common.js';
@@ -23,7 +24,7 @@ function tap(i){const g=S.g;
  if(R.sel<0){if(g[i]){R.sel=i;sfx('tap')}}
  else if(R.sel===i)R.sel=-1;
  else if(!g[i]){g[i]=g[R.sel];g[R.sel]=0;R.sel=-1;sfx('move')}
- else if(g[i]===g[R.sel]&&g[i]<MAXT){g[i]++;g[R.sel]=0;R.sel=-1;sfx('merge',g[i]);merged(i,1);save()}
+ else if(g[i]===g[R.sel]&&g[i]<MAXT){g[i]++;g[R.sel]=0;R.sel=-1;sfx('merge',g[i]);merged(i,1);if(onMerge())toast('📜 '+trv('ordRdy'),1);save()}
  else{R.sel=i;sfx('tap')}
  draw()}
 function mergeAll(){const m=mergePairs(S.g),n=m.length;m.forEach((x,k)=>{disc(x.t);pop(x.i,k>=m.length-3?6:0)});

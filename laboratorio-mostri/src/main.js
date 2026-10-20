@@ -7,6 +7,8 @@ import {startFight} from './ui/battle.js';
 import {applyLang,ui} from './ui/hud.js';
 import {draw} from './ui/lab.js';
 import {dailyInfo,dayCheck,openDaily} from './ui/missions.js';
+import {drawTimers,openIntro} from './ui/timers.js';
+import {ordersExpire} from './game/timers.js';
 import {tutDraw} from './ui/tutorial.js';
 import {initAnalytics} from './analytics.js';
 
@@ -14,7 +16,7 @@ import './style.css';
 
 // Salvataggio periodico e sincronizzazione audio
 setInterval(()=>save(),5000);
-addEventListener('visibilitychange',()=>{if(document.hidden)save(true);aSync()});
+addEventListener('visibilitychange',()=>{if(document.hidden){ordersExpire();save(true)}else drawTimers();aSync()});
 addEventListener('pointerdown',()=>{actx();aSync()});
 
 // Il Bridge è caricato async: lo aspetto al massimo 2,5s (subito se il caricamento fallisce, es. offline).
@@ -35,7 +37,8 @@ async function boot(){
  if(!R.inited)R.lang=String(navigator.language||'en').slice(0,2)==='it'?'it':'en';
  try{await load();R.loaded=true;R.lastT=Math.min(S.ls,Date.now());initAnalytics();
   if(S.lp==='it'||S.lp==='en')R.lang=S.lp; // lingua scelta nelle impostazioni
-  dayCheck();startFight();applyLang();tutDraw();aSync();draw();ui();setInterval(tick,250);
+  dayCheck();startFight();applyLang();tutDraw();aSync();draw();drawTimers();ui();setInterval(tick,250);
+  if(S.tut>=3&&!S.introSeen)setTimeout(()=>{S.introSeen=1;openIntro()},900); // una sola volta: spiega i timer da riscuotere
  }catch(e){console.error(e);if(window.__fatal)window.__fatal(e);return} // mai pagina bianca: messaggio con pulsante di reset
  window.__ready=1;const bt=document.getElementById('boot');if(bt)bt.remove();
  if(S.tut>=3&&dailyInfo().can)setTimeout(()=>{if(!R.dlgShown){R.dlgShown=true;openDaily()}},1200);

@@ -3,6 +3,7 @@ import {earn,inc,offRate} from './game/economy.js';
 import {offBattle} from './game/combat.js';
 import {fight} from './ui/battle.js';
 import {evTick} from './ui/events.js';
+import {timersTick} from './game/timers.js';
 import {ui} from './ui/hud.js';
 import {mergeAll} from './ui/lab.js';
 import {dayCheck} from './ui/missions.js';
@@ -17,7 +18,7 @@ function tick(){const n=Date.now();if(R.PZ){R.lastT=n;return}
  if(rest>0){off=i*rest*offRate();g+=off}
  earn(g);if(rest>30&&off>0){R.pO+=off;R.pS+=dt;const b=offBattle(rest);R.pB+=b.n;R.pC+=b.coins} // anche la battaglia avanza mentre si è via // accreditato subito: il pulsante «Raddoppia» aggiunge altrettanto
  if(R.pO>0&&!document.hidden){showOff(R.pO,R.pS,R.pB,R.pC);R.pO=0;R.pS=0;R.pB=0;R.pC=0} // una sola finestra al ritorno, anche se la scheda era in background
- if(!document.hidden){S.pt=(S.pt||0)+full;S.an.ls=n}dayCheck();fight(full);evTick(full);chk();
+ if(!document.hidden){S.pt=(S.pt||0)+full;S.an.ls=n}dayCheck();timersTick();fight(full);evTick(full);chk();
  if(S.up.a>=2){R.autoT+=full;if(R.autoT>=Math.max(5,30-5*(S.up.a-1))){R.autoT=0;mergeAll()}}else R.autoT=0;
  ui()}
 export {tick};

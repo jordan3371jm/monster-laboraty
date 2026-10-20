@@ -21,6 +21,14 @@ pr_x:'Alchimia',pr_xd:'+4% guadagni per livello',pr_t:'Furia',pr_td:'+2% attacco
 treeR:'Radici',treeI:'♾️ Rami infiniti',treeIn:'Livelli senza fine: ogni livello costa un po\' di più, così le Essenze servono sempre',buyMax:'Max',
 shieldOn:'🛡️ Scudo pronto: se salti un giorno la serie si salva',shieldOff:'🛡️ Scudo in ricarica: torna al 7° giorno di serie',shieldUse:'🛡️ Hai saltato un giorno: lo scudo salva la tua serie!',
 g_daily:'Riscuoti il bonus giornaliero',g_mis:'Riscuoti una missione completata',g_col:'Riscuoti una riga della collezione',g_tree:'Hai 🔮 da spendere nell\'albero',g_prA:'Evocazione oscura pronta: ottieni 🔮 {n}',g_pr1:'Primo traguardo: Evocazione oscura',g_mon:'Scopri {e}: unisci due mostri di livello {l}',g_boss:'Batti il boss del livello {n}',
+pr_w:'Cesta dei timer',pr_wd:'−2% tempi di spedizioni e uova per livello (fino a −40%)',
+expT:'🧭 Spedizioni',expGo:'Manda in spedizione',expBack:'Torna tra',expRdy:'Pronta da riscuotere!',expPow:'Forza squadra',expRew:'Premio stimato',
+nidT:'🥚 Nidi d'uovo',nidBuy:'Incuba',nidRdy:'Uovo pronto!',nidFree:'Libero',nidLocked:'Si apre schiudendo {n} uova',nidCost:'Costo',nidGain:'Premio',nidTime:'Tempo',
+ordT:'📜 Ordini di unione',ordAt:'Unisci un mostro di livello {n}',ordEx:'Crea un mostro di livello ESATTAMENTE {n}',ordRdy:'Ordine completato: riscuoti!',ordDone:'Riscosso',ordLost:'Scaduto',ordLeft:'Scade tra',ordTier:'Grado ordini',
+evT:'🎪 Evento della settimana',evName:'Settimana {e}',evDesc:'Bonus {e}: +20% guadagni se metà del laboratorio è di quell\'elemento.',evProg:'💠 Valuta evento',evCamp:'Campione in laboratorio',evLeft:'Finisce tra',evShop:'Negozio dell\'evento',evGo:'Apri l\'evento',evNew:'È iniziata la {n}!',evEggGot:'🥚 Uovo dell\'evento nel nido: è già pronto da riscuotere!',evX:'Sconto negozio evento',
+stkT:'🔥 Serie giornaliera lunga',stk7:'7 giorni',stk14:'14 giorni',stk28:'28 giorni',stkMon:'🐲 Drago del Tempo: +2% guadagni permanenti',stkHp:'Insegna della serie: +1% guadagni permanente',stkGot:'Traguardo {d} giorni: 🪙 +{c}{x}',
+g_exp:'Spedizione pronta da riscuotere',g_nid:'Uovo pronto nel nido',g_ord:'Ordine di unione da riscuotere',g_ev:'💠 da spendere nel negozio dell\'evento',soon:'Prossimo appuntamento',
+introT:'⏰ Motivi per tornare',introD1:'🧭 Manda i mostri in spedizione: 1h, 4h o 8h. Al ritorno trovi le monete.',introD2:'🥚 Incuba le uova nei nidi: più costano, più rendono.',introD3:'📜 Il laboratorio riceve ordini di unione: completa li in 5 minuti.',introD4:'🎪 Ogni settimana cambia evento: un elemento in festa e 💠 da spendere.',introOk:'Ho capito!'
 st_ss:'📅 Sessioni',st_dp:'🗓️ Giorni di gioco',st_fp:'🔮 Primo prestigio dopo',
 pk_s:'Uova antiche',pk_sd:'Uova evocate e iniziali di livello +1 per livello (costo uova x2)',pk_a:'Abilità rapide',pk_ad:'Abilità speciali: -8% di ricarica per livello',pk_o:'Sonno lungo',pk_od:'+4% guadagni offline per livello',pk_g:'Avidità',pk_gd:'+20% guadagni per livello',pk_b:'Bottino dei boss',pk_bd:'+25% premio dai boss per livello',
 wbT:'Bentornato!',wbAway:'Sei stato via',wbDbl:'▶ Raddoppia',wbOk:'Continua',
@@ -48,6 +56,14 @@ pr_x:'Alchemy',pr_xd:'+4% income per level',pr_t:'Fury',pr_td:'+2% team attack p
 treeR:'Roots',treeI:'♾️ Endless branches',treeIn:'Endless levels: each one costs a bit more, so Essences always have a use',buyMax:'Max',
 shieldOn:'🛡️ Shield ready: if you miss a day your streak is saved',shieldOff:'🛡️ Shield recharging: it returns on streak day 7',shieldUse:'🛡️ You missed a day: the shield saves your streak!',
 g_daily:'Claim your daily bonus',g_mis:'Claim a completed mission',g_col:'Claim a collection row',g_tree:'You have 🔮 to spend in the tree',g_prA:'Dark summoning ready: get 🔮 {n}',g_pr1:'First milestone: Dark summoning',g_mon:'Discover {e}: merge two level {l} monsters',g_boss:'Beat the boss of stage {n}',
+pr_w:'Timer basket',pr_wd:'−2% expedition and egg times per level (up to −40%)',
+expT:'🧭 Expeditions',expGo:'Send on expedition',expBack:'Back in',expRdy:'Ready to collect!',expPow:'Squad power',expRew:'Estimated reward',
+nidT:'🥚 Egg nests',nidBuy:'Hatch',nidRdy:'Egg ready!',nidFree:'Free',nidLocked:'Opens after {n} eggs hatched',nidCost:'Cost',nidGain:'Reward',nidTime:'Time',
+ordT:'📜 Merge orders',ordAt:'Make a level {n} monster',ordEx:'Make a monster of EXACTLY level {n}',ordRdy:'Order complete: collect it!',ordDone:'Claimed',ordLost:'Expired',ordLeft:'Expires in',ordTier:'Order tier',
+evT:'🎪 Weekly event',evName:'Week of {e}',evDesc:'{e} bonus: +20% income if half your lab is that element.',evProg:'💠 Event currency',evCamp:'Champion kept in the lab',evLeft:'Ends in',evShop:'Event shop',evGo:'Open the event',evNew:'{n} has started!',evEggGot:'🥚 An event egg is in the nest: ready to collect!',evX:'Event shop discount',
+stkT:'🔥 Long daily streak',stk7:'7 days',stk14:'14 days',stk28:'28 days',stkMon:'🐲 Time Dragon: +2% permanent income',stkHp:'Streak badge: +1% permanent income',
+g_exp:'Expedition ready to collect',g_nid:'Egg ready in the nest',g_ord:'Merge order to collect',g_ev:'💠 to spend in the event shop',soon:'Next appointment',
+introT:'⏰ Reasons to come back',introD1:'🧭 Send monsters on expeditions: 1h, 4h or 8h. Coins are waiting when you return.',introD2:'🥚 Hatch eggs in the nests: the pricier the egg, the bigger the payout.',introD3:'📜 The lab gets merge orders: finish them within 5 minutes.',introD4:'🎪 Every week a new event: one element in party mood and 💠 to spend.',introOk:'Got it!'
 st_ss:'📅 Sessions',st_dp:'🗓️ Days played',st_fp:'🔮 First prestige after',
 pk_s:'Ancient eggs',pk_sd:'Summoned and starting eggs are +1 level per level (egg cost x2)',pk_a:'Quick abilities',pk_ad:'Special abilities: -8% cooldown per level',pk_o:'Long sleep',pk_od:'+4% offline income per level',pk_g:'Greed',pk_gd:'+20% income per level',pk_b:'Boss loot',pk_bd:'+25% boss reward per level',
 wbT:'Welcome back!',wbAway:'You were away for',wbDbl:'▶ Double it',wbOk:'Continue',
@@ -62,12 +78,14 @@ const VAR={it:{
  win:['Vittoria! ','Boom! ','Facile! ','Il nemico chiede il rimborso. ','Che spettacolo! '],
  full:['Laboratorio pieno! Unisci i mostri','Non c\'è più posto nemmeno per un uovo: unisci!','Troppo affollato! Fai qualche unione','Il laboratorio scoppia. Unisci qualcosa!'],
  nomerge:['Nessuna coppia da unire','Niente coppie: i mostri sono tutti single','Servono due mostri uguali'],
+ ordRdy:['Ordine pronto da riscuotere!','Il committente aspetta: c'è un ordine da consegnare!','Unioni fatte, premio pronto!'],
  noad:['Nessuna pubblicità disponibile ora, riprova più tardi','Gli sponsor dormono: riprova tra poco','Nessun video per ora, ripassa più tardi']},
 en:{
  lose:['Defeated, retrying the stage','The monsters want a coffee break… retrying','Ouch! Pick up the pieces and try again','The enemy won the round, not the war'],
  win:['Victory! ','Boom! ','Easy! ','The enemy wants a refund. ','What a show! '],
  full:['Lab is full! Merge your monsters','No room left, not even for an egg: merge!','Too crowded! Do some merges','The lab is bursting. Merge something!'],
  nomerge:['No pairs to merge','No pairs: all your monsters are single','You need two identical monsters'],
+ ordRdy:['An order is ready to collect!','The client is waiting: deliver that order!','Merges done, reward ready!'],
  noad:['No ad available right now, try again later','The sponsors are asleep: try again soon','No video for now, come back later']}};
 const trv=k=>{const a=VAR[R.lang][k];return a[Math.random()*a.length|0]};
 export {TX,tr,trv};

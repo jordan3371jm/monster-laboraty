@@ -43,7 +43,7 @@ fresh({st:20,bs:20});S.g[0]=S.g[1]=S.g[2]=S.g[3]=13;const tb=fightTime(20);ok(is
 fresh();S.g[0]=S.g[1]=S.g[2]=S.g[3]=12;const h0=tHp(),a0=tAtk(1);S.essT=1000;ok(tHp()/h0>5&&tAtk(1)/a0>tHp()/h0,'con 1000 Essenze: vita ×'+(tHp()/h0).toFixed(1)+', attacco ×'+(tAtk(1)/a0).toFixed(1));
 // Rami infiniti dell'albero: costo crescente, effetti applicati, i vecchi salvataggi (senza i nuovi livelli) non cambiano
 {let up=true;for(let l=0;l<80;l++)if(pkrCost(l+1)<=pkrCost(l))up=false;ok(up&&pkrCost(0)===3,'rami infiniti: il costo cresce sempre (liv. 0 → '+pkrCost(0)+', liv. 30 → '+pkrCost(30)+')');
- ok(PKR.length===5&&PKR.every(p=>p.max>=15),'5 rami infiniti');
+ ok(PKR.length===6&&PKR.every(p=>p.max>=15),'6 rami infiniti');
  fresh();const m0=mult(),c0=spCost();S.pk.x=10;ok(Math.abs(mult()/m0-1.4)<1e-9,'Alchimia ×10 livelli: +40% guadagni');S.pk.x=0;S.pk.e=10;ok(spCost()<c0&&spCost()>=Math.floor(c0*.8),'Mercato nero: uova più economiche ('+c0+' → '+spCost()+')');
  fresh();S.g[0]=S.g[1]=S.g[2]=S.g[3]=10;const ta=tAtk(1),th=tHp();S.pk.t=10;S.pk.h=10;ok(Math.abs(tAtk(1)/ta-1.2)<1e-9&&Math.abs(tHp()/th-1.2)<1e-9,'Furia e Armatura: +20% attacco e vita con 10 livelli');
  fresh();const base0=mult();delete S.pk.x;ok(mult()===base0,'senza i nuovi livelli nel salvataggio nulla cambia (nessun NaN)');
