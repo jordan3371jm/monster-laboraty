@@ -1,0 +1,44 @@
+import {W} from '../data/config.js';
+import {S} from '../core/state.js';
+import {earn,essMult} from './economy.js';
+
+const atkT=t=>2*Math.pow(1.9,t-1),hpT=t=>12*Math.pow(2,t-1);
+// Squadra: fino a 4 mostri del laboratorio (auto = i più forti), con bonus formazione.
+// Elementi: (livello-1)%3 → 0 🔥, 1 💧, 2 🌿. 🔥>🌿>💧>🔥
+// Elemento di ogni mostro (0 🔥, 1 💧, 2 🌿): ora è una proprietà del mostro, non del suo livello. Le prime abilità (liv. 4, 5, 6) coprono i tre elementi.
+const ELM=[2,1,2,0,1,2,0,2,1,1,2,0,0, 1,2,0,1,0,2,1,0,1,1,2,0,2];
+const SQN=4,SQB=1.3,EL=['🔥','💧','🌿'],elOf=t=>ELM[t-1]??(t-1)%3,eEl=s=>isBoss(s)?(s/5)%3:(s-1)%3;
+const advM=(a,d)=>(a-d+3)%3===1?1.5:(d-a+3)%3===1?.7:1;
+function squad(){const pool=S.g.filter(Boolean).sort((x,y)=>y-x),out=[];
+ if(S.sq.length){for(const t of S.sq){const i=pool.indexOf(t);if(i>=0&&out.length<SQN){out.push(t);pool.splice(i,1)}}}
+ if(!out.length)return pool.slice(0,SQN);
+ return out}
+const tAtk=(st=S.st)=>squad().reduce((s,t)=>s+atkT(t)*advM(elOf(t),eEl(st)),0)*SQB*essMult(S.essT)*(1+.02*(S.pk.t||0))*(Date.now()<S.boost?2:1);
+// La vita sale con la radice del bonus Essenze: l'attacco da solo non basterebbe contro nemici che colpiscono sempre più forte
+const tHp=()=>squad().reduce((s,t)=>s+hpT(t),0)*SQB*Math.sqrt(essMult(S.essT))*(1+.02*(S.pk.h||0));
+const isBoss=s=>s%5===0;
+const TR=['fast','armor','n','heal','armor','fast','heal','n'];
+const trait=s=>isBoss(s)?'boss':s<3?'n':TR[(s-3)%8];
+const eHp=s=>Math.floor(30*Math.pow(1.45,s-1)*(isBoss(s)?4:1)*({fast:.75,heal:1.1}[trait(s)]||1));
+const eAtk=s=>2*Math.pow(1.4,s-1)*(isBoss(s)?1.5:1)*(trait(s)==='fast'?1.5:1);
+const eEmo=s=>{const w=W[S.wd>1?1:0];return isBoss(s)?w.bm[(s/5-1)%w.bm.length]:w.en[trait(s)][s%3]};
+// Abilità attive: una per elemento, sbloccata da un mostro di quell'elemento (liv. 4+) in squadra
+const SK=[{cd:10,ic:'🔥'},{cd:16,ic:'💧'},{cd:14,ic:'🌿'}],SKMIN=4,AUTO_T=6;
+const skOn=i=>squad().some(t=>elOf(t)===i&&t>=SKMIN);
+// Colpo a terra del boss: ogni SLAM_T secondi toglie SLAM_D della vita della squadra, a meno che il giocatore lo schivi toccando l'arena
+const SLAM_T=5,SLAM_W=1.6,SLAM_D=.1,RETREAT=3;
+// Quanti secondi servono alla squadra per battere il livello s (Infinity se perde prima). Le abilità attive non contano: stima prudente.
+// È la stessa formula usata dalla simulazione e dal combattimento offline.
+function fightTime(s){const a=tAtk(s),hp=tHp(),tt=trait(s),mx=eHp(s),dps=a*(tt==='armor'?.7:1)-(tt==='heal'?mx*.025:0);
+ if(a<=0||dps<=0)return Infinity;
+ const T=mx/dps,boss=isBoss(s),dmg=eAtk(s)*(boss?1.15:1)*T+(boss?hp*SLAM_D*(T/SLAM_T):0);
+ return dmg<hp?T:Infinity}
+// Combattimento mentre si è via: al 50% della velocità e con 3s di attesa tra un livello e l'altro, senza forzieri. Ritorna i livelli vinti e le monete.
+const OFF_SLOW=2,OFF_WAIT=3;
+function offBattle(secs){let n=0,coins=0,left=secs;
+ while(n<400){const s=S.st,T=fightTime(s);if(!isFinite(T))break;const c=(T+OFF_WAIT)*OFF_SLOW;if(c>left)break;left-=c;
+  const rw=stageReward(s);earn(rw);coins+=rw;n++;S.ach.wn++;if(!S.fm){S.st++;if(S.st>S.bs)S.bs=S.st}}
+ return {n,coins}}
+// Premio in monete per aver battuto il livello s
+const stageReward=s=>Math.floor(40*Math.pow(1.5,s-1)*(isBoss(s)?5*(1+.25*S.pk.b):1));
+export {SLAM_T,SLAM_W,SLAM_D,RETREAT,fightTime,offBattle,ELM,atkT,hpT,SQN,SQB,EL,elOf,eEl,advM,squad,tAtk,tHp,isBoss,TR,trait,eHp,eAtk,eEmo,SK,SKMIN,AUTO_T,skOn,stageReward};

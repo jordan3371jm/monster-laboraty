@@ -1,0 +1,53 @@
+// Test delle regole di gioco (senza interfaccia): soft cap delle Essenze, tasso offline, elementi, combattimento offline.
+//   npm test   (insieme al controllo dell'economia)
+import {S,setS,def} from '../src/core/state.js';
+import {essBonus,essMult,offRate,slots,freeCell,UP} from '../src/game/economy.js';
+import {ELM,elOf,fightTime,offBattle,tAtk,tHp,advM,eEl,squad} from '../src/game/combat.js';
+import {BN,N} from '../src/data/config.js';
+import {PKR,pkrCost,mult,spCost} from '../src/game/economy.js';
+let fails=0;const ok=(c,m)=>{console.log((c?'✓ ':'✗ ')+m);if(!c)fails++};
+const fresh=(o={})=>{setS({...def(),...o});S.tut=3};
+
+// Essenze: lineari fino a 50, poi crescita più lenta ma sempre crescente e senza salti
+ok(essBonus(10)===1&&essBonus(50)===5,'fino a 50 Essenze: +10% ciascuna');
+ok(Math.abs(essBonus(50.0001)-essBonus(50))<1e-3,'nessun salto al passaggio del soft cap');
+let mono=true;for(let e=0;e<2e6;e=e*1.3+1)if(essBonus(e+1)<=essBonus(e))mono=false;ok(mono,'il bonus continua a crescere con le Essenze');
+ok(essMult(64000)<500&&essMult(7.7e6)<2e4,'senza esplosione: 64.000 Essenze → ×'+Math.round(essMult(64000))+', 7,7 milioni → ×'+Math.round(essMult(7.7e6))+' (prima ×6.400 e ×770.000)');
+
+// Offline: mai oltre il gioco attivo
+fresh();S.up.o=7;S.pk.o=5;ok(offRate()<1&&offRate()>.9,'tasso offline al massimo: '+offRate().toFixed(2)+' (< 1)');
+
+// Elementi propri di ogni mostro
+ok(ELM.length>=26&&ELM.every(e=>e===0||e===1||e===2),'26 mostri, ognuno con un elemento valido');
+ok(new Set([4,5,6].map(elOf)).size===3,'i livelli 4, 5 e 6 coprono i tre elementi (le abilità si sbloccano presto)');
+ok([0,1,2].every(e=>ELM.filter(x=>x===e).length>=8),'elementi ben distribuiti: '+[0,1,2].map(e=>ELM.filter(x=>x===e).length).join('/'));
+ok(elOf(1)!==elOf(2)||elOf(2)!==elOf(3),'l\'elemento non è più ciclico sul livello');
+
+// Celle
+fresh();ok(slots()===BN&&N>BN,'celle iniziali '+BN+', massimo '+N);S.up.c=UP.find(u=>u.k==='c').max;ok(slots()===N,'con il potenziamento massimo tutte le '+N+' celle');
+fresh();for(let i=0;i<BN;i++)S.g[i]=1;ok(freeCell()<0,'celle piene → nessuna cella libera tra quelle sbloccate (le altre restano chiuse)');S.up.c=1;ok(freeCell()===BN,'una cella in più → si apre la numero '+(BN+1));
+
+// Combattimento offline
+fresh({st:1,bs:1});S.g[0]=S.g[1]=S.g[2]=S.g[3]=10;
+const c0=S.c,b=offBattle(3600);ok(b.n>0&&S.bs===S.st&&S.st===1+b.n&&S.c>c0,'1h offline con squadra forte: '+b.n+' livelli vinti, monete +'+Math.round(S.c-c0));
+fresh({st:30,bs:30});S.g[0]=1;ok(offBattle(8*3600).n===0&&S.st===30,'squadra debole contro un livello alto: nessun progresso offline');
+fresh({st:1,bs:1,fm:1});S.g[0]=S.g[1]=S.g[2]=S.g[3]=10;const bf=offBattle(600);ok(bf.n>0&&S.st===1&&S.bs===1,'in modalità farm resta sullo stesso livello ('+bf.n+' vittorie)');
+fresh({st:1,bs:1});S.g[0]=S.g[1]=S.g[2]=S.g[3]=10;const slow=offBattle(60).n;fresh({st:1,bs:1});S.g[0]=S.g[1]=S.g[2]=S.g[3]=10;
+let on=0;{const st0=S.st;let t=0;while(t<60&&on<1e3){const T=fightTime(S.st);if(!isFinite(T))break;t+=T+1;on++;S.st++}}
+ok(slow<=on,'offline più lento che online ('+slow+' vs '+on+' livelli in 60s)');
+
+// Il boss con il colpo a terra è più duro dello stesso livello senza (stessa squadra)
+fresh({st:20,bs:20});S.g[0]=S.g[1]=S.g[2]=S.g[3]=13;const tb=fightTime(20);ok(isFinite(tb)&&tb>3,'boss al livello 20: la squadra tier 13 vince in '+tb.toFixed(1)+'s');
+
+// La vita cresce con le Essenze, ma meno dell'attacco
+fresh();S.g[0]=S.g[1]=S.g[2]=S.g[3]=12;const h0=tHp(),a0=tAtk(1);S.essT=1000;ok(tHp()/h0>5&&tAtk(1)/a0>tHp()/h0,'con 1000 Essenze: vita ×'+(tHp()/h0).toFixed(1)+', attacco ×'+(tAtk(1)/a0).toFixed(1));
+// Rami infiniti dell'albero: costo crescente, effetti applicati, i vecchi salvataggi (senza i nuovi livelli) non cambiano
+{let up=true;for(let l=0;l<80;l++)if(pkrCost(l+1)<=pkrCost(l))up=false;ok(up&&pkrCost(0)===3,'rami infiniti: il costo cresce sempre (liv. 0 → '+pkrCost(0)+', liv. 30 → '+pkrCost(30)+')');
+ ok(PKR.length===5&&PKR.every(p=>p.max>=15),'5 rami infiniti');
+ fresh();const m0=mult(),c0=spCost();S.pk.x=10;ok(Math.abs(mult()/m0-1.4)<1e-9,'Alchimia ×10 livelli: +40% guadagni');S.pk.x=0;S.pk.e=10;ok(spCost()<c0&&spCost()>=Math.floor(c0*.8),'Mercato nero: uova più economiche ('+c0+' → '+spCost()+')');
+ fresh();S.g[0]=S.g[1]=S.g[2]=S.g[3]=10;const ta=tAtk(1),th=tHp();S.pk.t=10;S.pk.h=10;ok(Math.abs(tAtk(1)/ta-1.2)<1e-9&&Math.abs(tHp()/th-1.2)<1e-9,'Furia e Armatura: +20% attacco e vita con 10 livelli');
+ fresh();const base0=mult();delete S.pk.x;ok(mult()===base0,'senza i nuovi livelli nel salvataggio nulla cambia (nessun NaN)');
+ // con le Essenze accumulate in 48 ore (85.000) i rami le assorbono: livelli raggiunti dividendole in parti uguali
+ let e=85000,lv=Array(5).fill(0);while(true){const k=lv.indexOf(Math.min(...lv)),c=pkrCost(lv[k]);if(e<c)break;e-=c;lv[k]++}
+ ok(Math.min(...lv)>=20,'85.000 Essenze finiscono nei rami: livelli '+lv.join('/')+' (prima restavano inutilizzate)')}
+process.exit(fails?1:0);
