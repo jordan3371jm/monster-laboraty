@@ -186,7 +186,8 @@ Controllato sulla documentazione ufficiale (wiki.playgama.com: requisiti, checkl
 - **Bordi dello schermo** (notch): gestiti in CSS con `env(safe-area-inset-*)`.
 
 ## Scheda per Playgama (`store/`)
-- `cover-1x1.png` (1200×1200), `cover-9x16.png` (1080×1920), `cover-16x9.png` (1920×1080): copertine fatte con i mostri disegnati del gioco.
+- `cover-1x1.png` (800×800), `cover-9x16.png` (1080×1920), `cover-16x9.png` (1920×1080): copertine fatte con i mostri disegnati del gioco.
+- `in-app-products.json` / `in-app-products.csv`: catalogo dei 10 prodotti da importare nel pannello sviluppatore (campi `productId`, `title`, `description`, `type` = `consumable`/`non_consumable`, `priceUsd`, come nella wiki). Gli id sono gli stessi di `PROD` in `src/platform.js` e di `payments` nel config. Prezzi: pacchetto iniziale 4,99 · 10/60/150 biglietti 0,99/4,99/9,99 · 10/60/150 Essenze 0,50/2,50/4,99 · monete 12h 0,50 · 24h 1,00 · Guadagni ×2 19,99 USD.
 - `descrizioni.md`: titolo, descrizione breve e lunga, caratteristiche e «come si gioca» in inglese e italiano, tag suggeriti.
 - `cover.html`: la pagina da cui sono generate (`cover.html?r=sq|v|h`, fotografata con Playwright alla misura giusta). La cartella non finisce in `dist`.
 

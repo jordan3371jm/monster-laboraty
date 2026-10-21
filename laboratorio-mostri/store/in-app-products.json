@@ -1,0 +1,75 @@
+{
+  "hasInGamePurchases": true,
+  "products": [
+    {
+      "productId": "starter_pack",
+      "title": "Starter pack",
+      "description": "30 tickets + 30 Essences + 4 hours of income. Only once.",
+      "type": "non_consumable",
+      "priceUsd": 4.99
+    },
+    {
+      "productId": "tickets_10",
+      "title": "10 tickets",
+      "description": "+10 tickets for the Champion Portal.",
+      "type": "consumable",
+      "priceUsd": 0.99
+    },
+    {
+      "productId": "tickets_60",
+      "title": "60 tickets",
+      "description": "+60 tickets for the Champion Portal.",
+      "type": "consumable",
+      "priceUsd": 4.99
+    },
+    {
+      "productId": "tickets_150",
+      "title": "150 tickets",
+      "description": "+150 tickets for the Champion Portal. Best value.",
+      "type": "consumable",
+      "priceUsd": 9.99
+    },
+    {
+      "productId": "ess_10",
+      "title": "10 Essences",
+      "description": "+10 Essences: more income forever and perks in the Essence tree.",
+      "type": "consumable",
+      "priceUsd": 0.5
+    },
+    {
+      "productId": "ess_60",
+      "title": "60 Essences",
+      "description": "+60 Essences: a big boost to income forever.",
+      "type": "consumable",
+      "priceUsd": 2.5
+    },
+    {
+      "productId": "ess_150",
+      "title": "150 Essences",
+      "description": "+150 Essences. Best value.",
+      "type": "consumable",
+      "priceUsd": 4.99
+    },
+    {
+      "productId": "coins_12h",
+      "title": "Bag of coins",
+      "description": "12 hours of income right away.",
+      "type": "consumable",
+      "priceUsd": 0.5
+    },
+    {
+      "productId": "coins_24h",
+      "title": "Chest of coins",
+      "description": "24 hours of income right away.",
+      "type": "consumable",
+      "priceUsd": 1.0
+    },
+    {
+      "productId": "income_x2",
+      "title": "Income x2",
+      "description": "Doubles all income forever.",
+      "type": "non_consumable",
+      "priceUsd": 19.99
+    }
+  ]
+}
