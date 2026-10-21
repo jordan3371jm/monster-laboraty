@@ -26,6 +26,7 @@ const chTxt=r=>'🪙 +'+fmt(r.c)+(r.e?' · 🔮 +'+r.e:'')+(r.b?' · ⚡x2 '+r.b
 function chApply(r){give(r.c,r.e);if(r.b)S.boost=Math.max(Date.now(),S.boost)+r.b*1000}
 function chest(){const q=Math.random(),pe=.08+.04*S.pk.b,k=q<pe?2:q<pe+.3?1:0,d=CHR[k];
  R.chR={k,c:Math.floor(rBase()*d.c),e:d.e(),b:d.b()};chApply(R.chR);S.ach.ch++;track('first_boss');sfx('new');save();
- if($('wb').classList.contains('on')||document.hidden)toast(CHI[k]+' '+tr('ch'+k)+' · '+chTxt(R.chR),1);
+ // finestra solo se si sta guardando la battaglia: nel laboratorio un popup a ogni boss interrompeva le unioni (il premio è già accreditato)
+ if($('wb').classList.contains('on')||document.hidden||!$('batV').classList.contains('on'))toast(CHI[k]+' '+tr('ch'+k)+' · '+chTxt(R.chR),1);
  else openWB('<div class="wbi">'+CHI[k]+'</div><div class="wbh">'+tr('ch'+k)+'</div><div class="wbc">'+chTxt(R.chR).replace(/ · /g,'<br>')+'</div><button class="b o" data-a="cd">'+tr('chDbl')+'</button><button class="b g" data-a="wc">'+tr('chOk')+'</button>')}
 export {openWB,showOff,CHR,CHI,chTxt,chApply,chest};

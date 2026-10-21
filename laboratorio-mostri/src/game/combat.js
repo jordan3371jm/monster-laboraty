@@ -35,10 +35,10 @@ function fightTime(s){const a=tAtk(s),hp=tHp(),tt=trait(s),mx=eHp(s),dps=a*(tt==
  return dmg<hp?T:Infinity}
 // Combattimento mentre si è via: al 50% della velocità e con 3s di attesa tra un livello e l'altro, senza forzieri. Ritorna i livelli vinti e le monete.
 const OFF_SLOW=2,OFF_WAIT=3;
-function offBattle(secs){let n=0,coins=0,left=secs;
+function offBattle(secs){let n=0,coins=0,left=secs;const b0=S.boost;S.boost=0; // senza boost: i pochi secondi di x2 rimasti non valgono per ore di battaglia
  while(n<400){const s=S.st,T=fightTime(s);if(!isFinite(T))break;const c=(T+OFF_WAIT)*OFF_SLOW;if(c>left)break;left-=c;
   const rw=stageReward(s);earn(rw);coins+=rw;n++;S.ach.wn++;if(!S.fm){S.st++;if(S.st>S.bs)S.bs=S.st}}
- return {n,coins}}
+ S.boost=b0;return {n,coins}}
 // Premio in monete per aver battuto il livello s
 const stageReward=s=>Math.floor(40*Math.pow(1.5,s-1)*(isBoss(s)?5*(1+.25*S.pk.b):1));
 export {SLAM_T,SLAM_W,SLAM_D,RETREAT,fightTime,offBattle,ELM,atkT,hpT,SQN,SQB,EL,elOf,eEl,advM,squad,tAtk,tHp,isBoss,TR,trait,eHp,eAtk,eEmo,SK,SKMIN,AUTO_T,skOn,stageReward};

@@ -20,7 +20,7 @@ function renderSet(){const on=k=>S[k]?' g':'';
  +(R.rs?'<div class="dc">'+tr('rsAsk')+'</div><div class="row"><button class="b r" data-a="rsOk">'+tr('rsYes')+'</button><button class="b" data-a="rsNo">'+tr('rsNo')+'</button></div>':'<button class="b" data-a="rs">'+tr('rsBtn')+'</button>'))}
 // Azzeramento: riparte da zero ma tiene lingua e audio scelti; il tutorial ricomincia.
 function resetSave(){const x=def();['lp','sfxOn','musOn'].forEach(k=>x[k]=S[k]);setS(x);
- Object.assign(R,{sel:-1,trC:0,mallT:0,autoT:0,evK:null,offA:0,pO:0,pS:0,pB:0,pC:0,chR:null,rs:0,colSel:0,wbInter:''});$('ev').style.display='none';$('wb').classList.remove('on');
+ Object.assign(R,{sel:-1,trC:0,mallT:0,autoT:0,eggT:0,evK:null,offA:0,pO:0,pS:0,pB:0,pC:0,chR:null,rs:0,colSel:0,wbInter:''});$('ev').style.display='none';$('wb').classList.remove('on');
  initAnalytics();dayCheck();startFight();tutDraw();draw();save(true);ui();toast(tr('rsDone'))}
 const closeSet=()=>{R.rs=0;$('set').classList.remove('on')};
 $('tSet').onclick=()=>{R.rs=0;renderSet();$('set').classList.add('on')};$('setClose').onclick=closeSet;

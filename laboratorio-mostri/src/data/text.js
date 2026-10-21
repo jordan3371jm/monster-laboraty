@@ -3,7 +3,7 @@ import {R} from '../core/state.js';
 const TX={
 it:{n0:'🧪 Laboratorio',n1:'⚔️ Battaglia',n2:'⚙️ Potenziamenti',stage:'Livello',boss:'BOSS',atk:'ATT',win:'Vittoria! ',lose:'Sconfitti, riprovo il livello',stb:'guadagni',noteam:'Evoca dei mostri per combattere!',sec:'/s',spawn:'Evoca uovo',a1:'▶ x2 per 60s',a2:'▶ +5 min di guadagni',ups:'Potenziamenti',close:'Chiudi',lvl:'Liv',max:'MAX',
 u0:'Laboratorio',u0d:'+25% guadagni',u1:'Sconto uova',u1d:'-8% costo uova',u2:'Sonno profondo',u2d:'Più guadagni offline',
-u3:'Unione automatica',u3d:'Sblocca «Unisci tutto», poi i mostri si fondono da soli',u4:'Laboratorio ampliato',u4d:'+1 cella nel laboratorio',
+u3:'Unione automatica',u3d:'Sblocca «Unisci tutto», poi i mostri si fondono da soli',u4:'Laboratorio ampliato',u4d:'+1 cella nel laboratorio',combo:'Combo',lucky:'✨ Fusione perfetta! Un livello in più',luckyS:'Perfetta!',u5:'Incubatrice automatica',u5d:'Un uovo gratis ogni pochi secondi nelle celle libere',
 fmOn:'🔁 Farm: sì',fmOff:'🔁 Farm: no',retreat:'Troppo forte! Torno al livello prima',slamW:'Colpo in arrivo! Tocca per schivare',dodge:'Schivato!',wbBat:'Livelli vinti mentre eri via',
 pr:'Evocazione oscura',prd:'Ricomincia e ottieni Essenze 🔮: +10% guadagni ciascuna (le prime 50, poi sempre meno), da spendere nell\'albero',get:'Ottieni',need:'Guadagna ancora',
 noad:'Nessuna pubblicità disponibile ora, riprova più tardi',full:'Laboratorio pieno! Unisci i mostri',
@@ -39,7 +39,7 @@ statT:'📊 Statistiche',st_pt:'⏱️ Tempo giocato',st_mg:'🔗 Unioni totali'
 m_winEl:'Vinci {n} livelli contro nemici {e}',m_ability:'Lancia {n} abilità in battaglia',m_event:'Cattura {n} eventi 👻💎',weekly:'📅 Missione settimanale',wkLeft:'giorni rimasti',monLv:'Livello'},
 en:{n0:'🧪 Laboratory',n1:'⚔️ Battle',n2:'⚙️ Upgrades',stage:'Stage',boss:'BOSS',atk:'ATK',win:'Victory! ',lose:'Defeated, retrying the stage',stb:'income',noteam:'Summon monsters to fight!',sec:'/s',spawn:'Summon egg',a1:'▶ x2 for 60s',a2:'▶ +5 min of income',ups:'Upgrades',close:'Close',lvl:'Lv',max:'MAX',
 u0:'Laboratory',u0d:'+25% income',u1:'Egg discount',u1d:'-8% egg cost',u2:'Deep sleep',u2d:'More offline income',
-u3:'Auto-merge',u3d:'Unlocks "Merge all", then monsters merge on their own',u4:'Bigger laboratory',u4d:'+1 lab cell',
+u3:'Auto-merge',u3d:'Unlocks "Merge all", then monsters merge on their own',u4:'Bigger laboratory',u4d:'+1 lab cell',combo:'Combo',lucky:'✨ Perfect merge! One extra level',luckyS:'Perfect!',u5:'Auto-incubator',u5d:'A free egg every few seconds in empty cells',
 fmOn:'🔁 Farm: on',fmOff:'🔁 Farm: off',retreat:'Too strong! Going back one stage',slamW:'Slam incoming! Tap to dodge',dodge:'Dodged!',wbBat:'Stages won while away',
 pr:'Dark summoning',prd:'Restart and gain Essences 🔮: +10% income each (first 50, then less and less), to spend in the tree',get:'Gain',need:'Keep earning',
 noad:'No ad available right now, try again later',full:'Lab is full! Merge your monsters',

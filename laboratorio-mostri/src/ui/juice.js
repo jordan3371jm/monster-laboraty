@@ -44,6 +44,10 @@ function shock(el,t,big){if(calm())return;const c=ctr(el);const s=tmp('shock',''
  if(t>1)tmp('lvup','LV '+t,c.x,c.y-c.w*.3,900);
  if(big){app.classList.remove('quake');void app.offsetWidth;app.classList.add('quake');setTimeout(()=>app.classList.remove('quake'),420)}}
 
+// Scritta che sale da una cella (combo, fusione perfetta)
+function label(el,txt,cls){if(calm())return;const c=ctr(el),m=Math.min(110,app.clientWidth/2); // resta dentro lo schermo anche sulle celle di bordo
+ tmp('lvup '+cls,txt,Math.max(m,Math.min(app.clientWidth-m,c.x)),c.y+c.w*(cls==='cmb'?.15:-.75),1100)}
+
 // Battaglia: un membro della squadra salta e lancia un globo del suo elemento verso il nemico
 const ORB=['#ff7a2a','#3fb8ff','#6cdc3a'];
 function attack(){if(calm())return;const sq=squad(),sp=$('team').querySelectorAll('span');if(!sq.length||!sp.length)return;
@@ -58,4 +62,4 @@ function coinFly(el,n){const c=$('coins');if(!c||!el)return;const bump=()=>{c.cl
  for(let i=0;i<k;i++){const x=a.x+(Math.random()*80-40),y=a.y+(Math.random()*50-25),f=tmp('cfly','🪙',x,y,900);
   f.style.setProperty('--dx',(b.x-b.w*.35-x)+'px');f.style.setProperty('--dy',(b.y-y)+'px');f.style.animationDelay=(i*45)+'ms'}
  setTimeout(bump,700)}
-export {mergeFly,shock,attack,coinFly};
+export {mergeFly,shock,label,attack,coinFly};

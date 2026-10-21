@@ -1,6 +1,6 @@
 import {MAXT,E,EXCL_EMO} from '../data/config.js';
 import {R,S} from '../core/state.js';
-import {dayNum,freeCell,inc,pgain,rBase,setEvMul} from './economy.js';
+import {dayNum,freeCell,incBase,pgain,rBase,setEvMul} from './economy.js';
 import {elOf,squad} from './combat.js';
 
 // ---- Iniezione di dipendenza (lato timers) ----
@@ -31,7 +31,6 @@ const EXPN=1;                             // una sola spedizione alla volta: sce
 const wMul=()=>Math.max(.4,1-.02*(S.pk.w||0));
 const expDur=q=>Math.round(EXP[q].dur*wMul());
 const expPow=()=>{const q=squad();return q.length?q.reduce((s,t)=>s+t,0)/q.length:0};   // media dei mostri in squadra
-const incBase=()=>inc()/(Date.now()<S.boost?2:1);   // senza il boost x2: non si gonfia il premio lanciando la spedizione a boost attivo
 const expVal=(q,pw)=>{const full=incBase()*(expDur(q)/SEC);return Math.floor(Math.min(full*.05*(1+.3*pw)*EXP[q].mul,full*.4))};   // tetto: mai oltre il 40% del guadagno pieno del periodo (la forza della squadra è già dentro inc())   // inc() è per SECONDO: la durata va in secondi (in ms il premio era 1000 volte troppo alto)
 const expLeft=e=>Math.max(0,e.et-Date.now());
 const expReady=()=>S.exp.run.filter(e=>expLeft(e)<=0);

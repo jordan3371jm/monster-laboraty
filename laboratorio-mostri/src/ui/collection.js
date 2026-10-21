@@ -14,7 +14,7 @@ import {openWB} from './rewards.js';
 import {celebrate} from './cele.js';
 import {track} from '../analytics.js';
 
-function disc(t){if(!S.disc[t-1]){S.disc[t-1]=1;if(t>1){toast(tr('newm')+' '+E[t-1],1);sfx('new');if(t>=3)celebrate(t)}if(t===WS+1&&S.wd<2)newWorld()}}
+function disc(t){if(!S.disc[t-1]){S.disc[t-1]=1;if(t>1){toast(tr('newm')+' '+E[t-1],1);sfx('new');if(t>=3)celebrate(t)}}if(t>WS&&S.wd<2)newWorld()} // t>WS e non ===: una fusione perfetta può saltare il primo mostro del mondo 2
 function newWorld(){S.wd=2;R.wbInter='world';track('world2');give(rBase()*10,3);sfx('win');
  openWB('<div class="wbi">🌌</div><div class="wbh">'+tr('wNew')+'</div><div class="dc">'+tr('w1n')+'</div><div class="dc">'+tr('wDesc')+'</div><div class="dc">'+tr('wRew')+'</div><button class="b g" data-a="wc">'+tr('wbOk')+'</button>')}
 const CR=[{c:1,e:0},{c:2,e:1},{c:4,e:2},{c:10,e:5},{c:25,e:3},{c:50,e:5},{c:100,e:8},{c:250,e:15}],colCoins=r=>Math.floor(rBase()*2*CR[r].c);

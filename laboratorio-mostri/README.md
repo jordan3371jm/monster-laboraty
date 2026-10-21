@@ -62,6 +62,19 @@ Comprimi il **contenuto** di `dist` in uno zip, con `index.html` nella radice de
 
 I salvataggi esistenti restano compatibili (stessa chiave `ml_save_v1`): i campi nuovi vengono aggiunti con valori di default, le Essenze già possedute diventano spendibili e restano valide per il +10%, e chi ha già giocato salta il tutorial.
 
+## Bilanciamento e nuove meccaniche (ottobre 2026)
+Giocando e simulando, dopo ~3 ore (giocatore ottimale) la progressione si fermava: il prezzo delle uova cresce del 7% a uovo e ogni livello richiede il doppio delle uova, quindi in una partita non si andava oltre il mostro 15. Il Mondo 2 (mostri 14-26) era quasi irraggiungibile e dopo il livello 40 non si avanzava più per giorni.
+- **Incubatrice automatica** (potenziamento `f`, 8 livelli, `eggInt` in `economy.js`): un uovo gratis ogni 30s → 5s in una cella libera. Le uova gratis non alzano il prezzo di quelle comprate e non contano per missioni e statistiche. Riempie il laboratorio anche quando le uova costano molto e toglie il muro della progressione.
+- **Uova antiche** nell'albero: 12 livelli invece di 6 (costi 128…4096 🔮), uova fino al livello 13. Con le Essenze dei prestigi avanzati serve per arrivare in fondo al Mondo 2.
+- **Combo**: unioni fatte a mano a meno di 2,5s l'una dall'altra danno monete crescenti (½ secondo di guadagni × combo, fino a x10).
+- **Fusione perfetta**: 6% di probabilità che un'unione fatta a mano salti un livello (non durante il tutorial). Il mostro intermedio viene segnato come scoperto.
+- **Forzieri dei boss**: la finestra si apre solo se si sta guardando la battaglia; nel laboratorio basta un messaggio (il premio è già accreditato). Prima a ogni boss un popup interrompeva le unioni.
+- Simulazione (48h): mostro 20 a ~3,2h, livello 50 a ~3,4h, alla fine livello ~65 e mostro 24 (prima: livello 40 a 23,7h, mostro 15 come tetto).
+
+### Correzioni
+- **Guadagni offline col boost**: il guadagno offline usava il reddito con il boost x2 per tutte le ore di assenza, anche se al boost restavano pochi secondi. Ora usa `incBase()` (senza boost); lo stesso vale per la battaglia offline.
+- **Premi «N minuti di guadagni» col boost**: forzieri, missioni, collezione, fantasmi 👻, bonus pubblicitario e costo dei nidi raddoppiavano se il boost era attivo al momento della riscossione. Ora `rBase()` usa `incBase()`.
+
 ## Avvio robusto (correzioni «pagina bianca»)
 - **Doppio clic**: aprire l'`index.html` della radice (sorgente) reindirizza a `dist/index.html`. Il blocco `<!--DEV-ONLY-->` viene tolto dal build da `vite.config.js`, quindi non finisce nello zip per Playgama.
 - **Schermata di caricamento** (`#boot`) e **schermata d'errore** con «Azzera il salvataggio e riprova» (`window.__fatal`, in `index.html`): la pagina non resta mai bianca.
