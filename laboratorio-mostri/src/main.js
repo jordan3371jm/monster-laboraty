@@ -18,6 +18,11 @@ import {lbScore,syncPlay} from './platform.js';
 import {initShop} from './ui/shop.js';
 
 import './style.css';
+import {initCoins} from './ui/coin.js';
+import {bootProgress,preload} from './preload.js';
+
+// Le immagini iniziano a caricarsi subito, in parallelo all'avvio del Bridge e al caricamento del salvataggio
+const pre=preload(bootProgress);initCoins();
 
 // Salvataggio periodico e sincronizzazione audio
 setInterval(()=>save(),5000);
@@ -57,7 +62,8 @@ async function boot(){
   redraw();setInterval(tick,250);
   if(S.tut>=3&&!S.introSeen&&has('exp'))setTimeout(()=>{S.introSeen=1;openIntro()},900); // una sola volta: spiega i timer da riscuotere
  }catch(e){console.error(e);if(window.__fatal)window.__fatal(e);return} // mai pagina bianca: messaggio con pulsante di reset
- window.__ready=1;const bt=document.getElementById('boot');if(bt)bt.remove();
+ await pre; // schermata di caricamento: aspetta che tutte le immagini dei mostri siano pronte (al massimo 25s)
+ window.__ready=1;const bt=document.getElementById('boot');if(bt){bootProgress(1,1);bt.classList.add('out');setTimeout(()=>bt.remove(),500)}
  if(S.tut>=3&&has('day')&&dailyInfo().can)setTimeout(()=>{if(!R.dlgShown){R.dlgShown=true;openDaily()}},1200);
  if(R.inited)ready();else{syncPlay();lateBridge()}}
 // Bridge arrivato tardi: lo collego e, se il salvataggio della piattaforma ha più tempo di gioco di quello partito in locale

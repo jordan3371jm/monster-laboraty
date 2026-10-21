@@ -494,3 +494,7 @@ img{-webkit-user-drag:none;user-select:none}
 @media (max-width:400px){#coins{font-size:20px}#inc{font-size:11px}#stg{font-size:11px;padding:3px 7px}.ib{flex-basis:34px;height:34px;font-size:16px;border-radius:10px}#ess{font-size:14px;padding:3px 7px}.tr8{gap:4px}#top{gap:4px}}
 @media (max-width:350px){#stg{display:none}}
 #shopB>.b.sh.off{opacity:.55}#shopB>.b.sh.off strong{background:#ffffff1a;box-shadow:none}
+/* Moneta disegnata (vedi ui/coin.js) */
+.ico-coin{display:inline-block;width:1.08em;height:1.08em;vertical-align:-.2em;margin:0 .04em;font-style:normal;background:url('./assets/coin.svg') center/contain no-repeat;filter:drop-shadow(0 1px 1px #0006)}
+#coins .ico-coin{width:1.1em;height:1.1em;vertical-align:-.16em;filter:drop-shadow(0 0 6px #ffb02e88)}
+.pt .ico-coin,.cfly .ico-coin{width:1em;height:1em}

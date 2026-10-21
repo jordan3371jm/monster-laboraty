@@ -189,3 +189,7 @@ Controllato sulla documentazione ufficiale (wiki.playgama.com: requisiti, checkl
 - `cover-1x1.png` (1200×1200), `cover-9x16.png` (1080×1920), `cover-16x9.png` (1920×1080): copertine fatte con i mostri disegnati del gioco.
 - `descrizioni.md`: titolo, descrizione breve e lunga, caratteristiche e «come si gioca» in inglese e italiano, tag suggeriti.
 - `cover.html`: la pagina da cui sono generate (`cover.html?r=sq|v|h`, fotografata con Playwright alla misura giusta). La cartella non finisce in `dist`.
+
+## Schermata di caricamento e moneta
+- **Caricamento** (`#boot` in `index.html`, `src/preload.js`): nome del gioco nella lingua del dispositivo, la zucca che saltella e una barra «Caricamento dei mostri… 45%». Mentre l'SDK si avvia e il salvataggio si carica, si scaricano e decodificano tutte le 99 immagini dei mostri (`public/m`, ~3,3 MB, elenco preso da `CH` e `W`); solo alla fine la schermata sfuma e parte `game_ready` (la wiki vuole `game_ready` quando il gioco è davvero giocabile). Tetto di 25s con una rete lentissima. Il logo di Playgama compare prima e sparisce da solo dopo l'avvio dell'SDK.
+- **Moneta disegnata** (`src/assets/coin.svg`, inclusa nel bundle): al posto dell'emoji 🪙, brutta o mancante su molti dispositivi. `src/ui/coin.js` sostituisce ogni 🪙 che entra nella pagina con `<i class="ico-coin">`, quindi testi e traduzioni restano uguali.
