@@ -44,7 +44,7 @@ Comprimi il **contenuto** di `dist` in uno zip, con `index.html` nella radice de
 - **Abilità attive**: 🔥 Fiammata (danno 5x l'attacco), 💧 Onda curativa (+35% vita), 🌿 Spore stordenti (3,5s). Si sbloccano con un mostro di quell'elemento di livello 4+ in squadra. Si lanciano toccando (100%); se non le tocchi partono da sole dopo 6s al 60% (la cura solo se la squadra è ferita). «Abilità rapide» riduce le ricariche.
 - **Forzieri dei boss**: ogni boss sconfitto dà un forziere comune/raro/epico (monete, 🔮, boost x2). «Bottino dei boss» alza la rarità. «▶ Raddoppia il premio» usa la pubblicità `chest`.
 - **Collezione** (📖): 26 mostri in 2 mondi, premio per ogni riga completata.
-- **Tutorial**: 3 passaggi guidati (evoca, unisci, battaglia), con salto.
+- **Tutorial**: 2 passaggi guidati (evoca, unisci), con salto. La Battaglia arriva dopo, come primo grande sblocco.
 
 - **Trofei** (🏆): 30 obiettivi (unioni, uova, livelli, monete, mostri scoperti, eventi, evocazioni, serie giornaliera). Ognuno dà +1% guadagni permanente, anche dopo l'Evocazione oscura.
 - **Albero delle Essenze** (🔮, toccando l'icona in alto o da «Potenziamenti»): le Essenze si spendono in 5 perk permanenti (uova antiche: uova di livello più alto ma 2x di costo per livello, abilità rapide, sonno lungo, avidità, bottino dei boss). Ogni Essenza ottenuta resta +10% guadagni (e attacco) anche se spesa, fino a 50: oltre cresce a potenza 0,6 (`essBonus` in `economy.js`), così i numeri non esplodono. La vita della squadra sale con la radice dello stesso bonus.
@@ -96,7 +96,7 @@ Tutto in `S.ch` (in `KEEP`: resta dopo l'Evocazione oscura). Il laboratorio rest
 - **Album di figurine** (dentro 📖 Collezione): 2 album da 9 (Laboratorio +5% guadagni, Spazio +5% attacco), l'ultima carta è rara. 3 doppioni si scambiano con una carta mancante; album completo = 25 🎫 e il bonus.
 - **Varianti dorate**: ogni uovo ha il 3% di uscire dorato e ogni unione a mano il 4% (×3 guadagni). Unendo due dorati il risultato resta dorato (`S.gv`, parallelo a `S.g`).
 - **Prima Evocazione oscura**: la prima Essenza arriva a 50.000 monete (`PG1`) invece di 200.000; dalle successive la soglia torna `PG`. Nella simulazione la prima arriva a ~13 minuti (prima ~30). Il pulsante mostra l'anteprima: «Ripartirai con guadagni ×A (ora ×B)».
-- **Sistemi sbloccati a tappe**: dopo il tutorial si vedono solo Missioni e Impostazioni; Collezione (3 mostri), Trofei (primo trofeo), Portale (livello 8), Spedizioni (7 mostri), Pass (livello 12), Torre (livello 16), con un avviso «🔓 Nuovo». Chi ha già fatto un'Evocazione oscura o è oltre il livello 15 trova tutto aperto.
+- **Sistemi sbloccati a tappe**: sostituiti dagli «Sblocchi a obiettivi» (vedi sotto).
 - Bilanciamento: `npm run sim:meta` simula 28 giorni di un giocatore occasionale e di uno attivo (biglietti, campioni, stelle, Pass, Torre). Con i valori attuali dopo 28 giorni l'attivo ha ~17/18 campioni a ★4 di media (leggendari ancora da far crescere) e chiude il Pass verso il giorno 20; l'occasionale ha ~★3,4 di media e chiude il Pass a fine stagione. La prima versione regalava troppo (quasi tutto a ★5 in due settimane) e aveva il bug delle evocazioni infinite.
 - Test: `scripts/meta.mjs` (in `npm test`): garanzie del Portale su 500 evocazioni, stelle, capi, bonus elemento, equipaggiamento, Torre, Pass, Invasione con data simulata, album, varianti dorate, salvataggi rovinati.
 
@@ -119,5 +119,41 @@ Tutto è calcolato da `Date.now()`, senza server: i timer proseguono a gioco chi
 
 ## Controlli automatici
 - `npm test`: economia, regole (incl. `fmt`), logica dei timer (`scripts/timers.mjs`), coerenza testi it/en (`check-text.mjs`).
-- `npm run smoke`: flussi dell'interfaccia in jsdom (99 controlli).
+- `npm run smoke`: flussi dell'interfaccia in jsdom (114 controlli, incl. gli sblocchi).
 - `npm run fuzz [passi] [semi] [primo-seme]`: clic casuali su tutta l'interfaccia, salti di tempo di ore e salvataggi di partenza diversi; controlla errori JS, testi anomali (`NaN`, `undefined`) e valori impossibili nel salvataggio.
+
+## Sblocchi a obiettivi e grafica 3.0 (`src/game/unlocks.js`)
+Prima il gioco mostrava quasi tutto dall'inizio e non sembrava di fare progressi. Come nei merge/idle più giocati (AdVenture Capitalist, Egg, Inc., AFK Arena, Merge Dragons, Travel Town…) ora si parte con il **solo laboratorio** e ogni sistema si apre raggiungendo un traguardo:
+
+| Sblocco | Requisito |
+|---|---|
+| ⚙️ Potenziamenti | mostro di livello 3 |
+| ⚡ Boost con video | mostro di livello 4 |
+| 🎁 Bonus giornaliero e missioni | mostro di livello 5 |
+| 📖 Collezione | mostro di livello 7 |
+| 🧭 Spedizioni, nidi, ordini, evento | mostro di livello 7 |
+| 🔮 Evocazione oscura | 25.000 monete nella partita |
+| ⚔️ Battaglia | prima Evocazione oscura (prima la battaglia è ferma, anche offline) |
+| 🌀 Portale dei Campioni | prima Evocazione oscura |
+| 🏆 Trofei | livello di battaglia 8 |
+| 🔁 Scelta del livello / farm | livello 12 |
+| 🎟️ Pass | livello 20 |
+| 🗼 Torre | livello 25 |
+| 🔥 Invasione dei boss | livello 30 |
+
+Senza battaglia la prima Evocazione oscura arriva comunque presto: nella simulazione (giocatore ottimale) a ~6 minuti invece di ~4.
+
+Anche i potenziamenti arrivano man mano: Sonno profondo (mostro 5), Unione automatica (6), Laboratorio ampliato (7), Incubatrice (livello 10); il pannello mostra il prossimo con il suo requisito.
+- Ogni sblocco apre la finestra **«Nuova funzione sbloccata!»** con icona, descrizione e «Andiamo!» che porta subito lì (una alla volta).
+- La **barra obiettivo**, quando non c'è nulla da riscuotere, mostra il prossimo sblocco con la barra di avanzamento (🔒 Battaglia · Fai la tua prima Evocazione oscura, con l'avanzamento verso la prima Evocazione).
+- Le schede chiuse (Battaglia, Potenziamenti) restano visibili con il lucchetto: toccandole si legge cosa serve.
+- Lo sbloccato resta in `S.ul` (anche dopo l'Evocazione oscura). I salvataggi precedenti (senza il segno `v2`) con un'Evocazione oscura o oltre il livello 15 trovano tutto aperto; gli altri ottengono subito ciò che hanno già raggiunto.
+- Per cambiare ordine o requisiti basta modificare `UL` e `UPL` in `unlocks.js` (+ i testi `ul_*`, `uld_*`).
+
+**Grafica 3.0** (in fondo a `style.css`): HUD con monete a sinistra e Essenze/impostazioni a destra; icone in alto con etichetta corta, che compaiono solo quando sbloccate; barra di navigazione con icona sopra ed etichetta sotto; vasche con meno bagliori; potenziamenti come schede «icona · nome e descrizione · prezzo»; nei pannelli il titolo e «Chiudi» restano sempre visibili; in battaglia si vedono solo le abilità sbloccate (niente più riga di lucchetti).
+
+### Cellulare, tablet e PC (in fondo a `style.css`)
+- **Cellulare in verticale**: colonna unica (la base).
+- **Tablet in verticale** (≥600px di larghezza): colonna fino a 720px, testi, icone e pulsanti più grandi.
+- **Orizzontale** (PC, tablet e cellulari girati, almeno 700px e più largo che alto): barra laterale a sinistra con monete, icone, obiettivo e navigazione; a destra il laboratorio (griglia centrata con vasche quasi quadrate) o la battaglia. I pannelli diventano finestre centrate con lo sfondo scurito.
+- **Cellulare girato** (altezza ≤520px): barra laterale compatta (solo icone) e laboratorio su 5 colonne.

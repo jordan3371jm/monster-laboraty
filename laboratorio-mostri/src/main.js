@@ -12,6 +12,7 @@ import {ordersExpire} from './game/timers.js';
 import {tutDraw} from './ui/tutorial.js';
 import {initAnalytics} from './analytics.js';
 import {LANGS,pickLang} from './data/text.js';
+import {has} from './game/unlocks.js';
 
 import './style.css';
 
@@ -39,9 +40,9 @@ async function boot(){
  try{await load();R.loaded=true;R.lastT=Math.min(S.ls,Date.now());initAnalytics();
   if(LANGS.includes(S.lp))R.lang=S.lp; // lingua scelta nelle impostazioni
   dayCheck();startFight();applyLang();tutDraw();aSync();draw();drawTimers();ui();setInterval(tick,250);
-  if(S.tut>=3&&!S.introSeen)setTimeout(()=>{S.introSeen=1;openIntro()},900); // una sola volta: spiega i timer da riscuotere
+  if(S.tut>=3&&!S.introSeen&&has('exp'))setTimeout(()=>{S.introSeen=1;openIntro()},900); // una sola volta: spiega i timer da riscuotere
  }catch(e){console.error(e);if(window.__fatal)window.__fatal(e);return} // mai pagina bianca: messaggio con pulsante di reset
  window.__ready=1;const bt=document.getElementById('boot');if(bt)bt.remove();
- if(S.tut>=3&&dailyInfo().can)setTimeout(()=>{if(!R.dlgShown){R.dlgShown=true;openDaily()}},1200);
+ if(S.tut>=3&&has('day')&&dailyInfo().can)setTimeout(()=>{if(!R.dlgShown){R.dlgShown=true;openDaily()}},1200);
  try{if(R.inited)window.bridge.platform.sendMessage('game_ready')}catch(e){}}
 boot().catch(e=>{console.error(e);if(window.__fatal)window.__fatal(e)});
