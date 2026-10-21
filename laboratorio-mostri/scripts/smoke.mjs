@@ -13,14 +13,15 @@ async function boot(save,{bridge=false,lang='it',bx=null}={}){
  w.setInterval=(f,ms)=>{timers.push({id,f,ms,t:clock+ms,rep:1});return id++};w.setTimeout=(f,ms)=>{timers.push({id,f,ms,t:clock+(ms||0),rep:0});return id++};
  w.clearTimeout=w.clearInterval=i=>{const k=timers.findIndex(x=>x.id===i);if(k>=0)timers.splice(k,1)};
  const errs=[];w.addEventListener('error',e=>errs.push(String(e.message)));
- if(bridge)w.bridge={initialize:async()=>{},platform:{language:lang,on(){},sendMessage(){},isAudioEnabled:true},advertisement:{on(){},showInterstitial:p=>{calls.push(p);return Promise.resolve()},showRewarded:()=>Promise.resolve()},storage:{get:async()=>null,set:async()=>{}},EVENT_NAME:{}};
+ if(bridge)w.bridge={initialize:async()=>{},platform:{language:lang,on(){},sendMessage(){},isAudioEnabled:true},advertisement:{on(){},showInterstitial:p=>{calls.push(p);return Promise.resolve()},showRewarded:()=>Promise.resolve()},storage:{get:async k=>w.localStorage.getItem(k),set:async(k,v)=>{w.localStorage.setItem(k,v)}},EVENT_NAME:{}}; // Storage simulato: come l'SDK senza cloud (memoria locale, stessa chiave)
  if(bridge&&bx){const b=w.bridge;b.platform.sendMessage=(m,o)=>{calls.push('msg:'+m+(o&&o.level?':'+o.level:'')+(o&&o.achievement?':'+o.achievement:''));return Promise.resolve()};Object.assign(b,bx(calls))}
  if(save)w.localStorage.setItem('ml_save_v1',JSON.stringify({ls:clock-1000,...save}));
  w.eval(js);const flush=()=>new Promise(r=>setImmediate(r));
  const adv=async ms=>{const end=clock+ms;for(;;){let n=null;for(const t of timers)if(t.t<=end&&(!n||t.t<n.t))n=t;if(!n)break;clock=Math.max(clock,n.t);if(n.rep)n.t+=n.ms;else timers.splice(timers.indexOf(n),1);try{n.f()}catch(e){errs.push('T:'+e.stack)}await flush()}clock=end};
  await flush();await flush();await adv(500);
  const $=i=>w.document.getElementById(i);const click=el=>{if(!el)throw new Error('no el');el.dispatchEvent(new w.MouseEvent('click',{bubbles:true}))};
- const S=()=>JSON.parse(w.localStorage.getItem('ml_save_v1'));
+ // con il Bridge si salva sulla piattaforma al massimo ogni 10s: per leggere lo stato attuale si forza un salvataggio (come alla chiusura della pagina)
+ const S=()=>{w.dispatchEvent(new w.Event('pagehide'));return JSON.parse(w.localStorage.getItem('ml_save_v1'))};
  return {jump:ms=>{clock+=ms;timers.forEach(x=>x.t+=ms)},w,$,click,adv,errs,calls,S,flush,q:(s)=>w.document.querySelector(s),qa:s=>[...w.document.querySelectorAll(s)]};
 }
 const base={c:5e5,g:[3,3,4,2,2,1,0,5,0,6,1,1,0,0,2,4,0,0,0,0],sp:30,up:{l:3,d:2,o:1,a:2},ess:4,run:3e6,boost:0,st:8,disc:[1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],tut:3,dl:{d:-1,m:[],last:-1,st:2,dbl:1,lr:null},essT:4,lt:2e7,wd:1,pk:{s:1,a:1,o:0,g:1,b:1},ach:{mg:60,sp:120,ev:3,pr:1,wn:3,ch:2},sq:[]};
@@ -62,6 +63,7 @@ const base={c:5e5,g:[3,3,4,2,2,1,0,5,0,6,1,1,0,0,2,4,0,0,0,0],sp:30,up:{l:3,d:2,
   // rimetti tutti a livello 1 tramite nuovi mostri non possibile: ripeti unioni di livello 2
  }
  for(let r=0;r<80&&t.S().ach.mg-60<55;r++){t.click(t.$('spawn'));for(let i=0;i<20;i++)for(let j=i+1;j<20;j++){t.click(cells[i]);t.click(cells[j])}}
+ ok(!t.calls.includes('merge'),'l\'interstitial non parte mentre si sta toccando');await t.adv(2000);ok(/📺/.test(t.$('toast').textContent)&&!t.calls.includes('merge'),'prima della pubblicità il conto alla rovescia: '+t.$('toast').textContent);await t.adv(4000);
  const merges=t.S().ach.mg-60;ok(merges>=50&&t.calls.filter(c=>c==='merge').length===1,'dopo '+merges+' unioni un interstitial «merge» ('+t.calls+')');
  t.click(t.$('pr'));ok(t.calls[t.calls.length-1]==='prestige','Evocazione oscura → interstitial «prestige» ('+t.calls+')');}
 {const t=await boot({...base,g:[13,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],disc:Array(26).fill(0).map((_,i)=>i<13?1:0)},{bridge:true});
@@ -266,7 +268,7 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
 {const t=await boot({...base,g:[1,1,...z(18)],c:50,pt:10,introSeen:1,dl:dl0({last:dn})},{});await t.adv(1500);
  const cloud={...base,c:12345,pt:5000,st:8,bs:8,introSeen:1,dl:dl0({last:dn}),ls:1.8e12-5000},got=[];
  t.w.bridge={initialize:async()=>{},platform:{language:'en',on(){},sendMessage:m=>{got.push(m);return Promise.resolve()},isAudioEnabled:true},advertisement:{on(){}},
-  storage:{get:async()=>JSON.stringify(cloud),set:async(k,v)=>{got.push('set')}}};
+  storage:{get:async()=>JSON.stringify(cloud),set:async(k,v)=>{got.push('set');t.w.localStorage.setItem(k,v)}}};
  await t.adv(4000);ok(Math.floor(t.S().c)>=12345&&t.S().pt>=5000,'Bridge in ritardo: salvataggio della piattaforma recuperato (monete '+Math.floor(t.S().c)+')');
  ok(got.includes('game_ready')&&got.includes('set'),'Bridge in ritardo: game_ready inviato e salvataggio scritto sulla piattaforma');
  ok(t.errs.length===0,'Bridge in ritardo: nessun errore JS '+t.errs.slice(0,2));}
@@ -278,6 +280,14 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  t.click(t.$('closeUps'));await t.adv(500);ok(t.calls[t.calls.length-1]==='bn:main','banner: di nuovo «main» alla chiusura');
  const t2=await boot({...base,introSeen:1,iap:{x2:0,na:1,st:0,got:[]},dl:dl0({last:dn})},{bridge:true,bx:bn});await t2.adv(800);
  ok(!t2.calls.some(c=>c==='bn:main'||c==='bn:menu'),'banner: nessuno con «Niente pubblicità»');}
+
+// --- regola Playgama: con il Bridge il salvataggio passa solo da bridge.storage (mai localStorage diretto)
+{const mem={};const st=()=>({storage:{get:async k=>mem[k]||null,set:async(k,v)=>{mem[k]=v}}});
+ const t=await boot(null,{bridge:true,bx:st});await t.adv(600);t.click(t.$('spawn'));await t.adv(11000);t.w.dispatchEvent(new t.w.Event('pagehide'));
+ ok(t.w.localStorage.getItem('ml_save_v1')===null&&!!mem.ml_save_v1&&JSON.parse(mem.ml_save_v1).sp===1,'salvataggio solo tramite bridge.storage (nessuna scrittura diretta in localStorage)');
+}
+{const mem={ml_save_v1:JSON.stringify({...base,c:777777,ls:1.8e12-1000})};const st=()=>({storage:{get:async k=>mem[k]||null,set:async(k,v)=>{mem[k]=v}}});
+ const t=await boot(null,{bridge:true,bx:st});await t.adv(600);ok(/7[78]\d\.\dK/.test(t.$('coins').textContent),'caricamento tramite bridge.storage ('+t.$('coins').textContent+')');}
 
 // --- salvataggi rovinati: l'avvio non deve rompersi (prima la pagina restava bianca per sempre)
 for(const [nome,sv] of [['sq null',{sq:null}],['campi null',{c:null,up:null,pk:'x',tr:5,dl:{m:null,w:7}}],['celle sporche',{g:['a',null,99,-3,2,1]}],['numeri NaN',{st:'9',bs:null,essT:'много',tut:77}]]){

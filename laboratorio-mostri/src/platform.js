@@ -48,7 +48,7 @@ const PROD={
  tickets_10:{ic:'🎫',t:10},tickets_60:{ic:'🎫',t:60},ess_10:{ic:'🔮',e:10},coins_4h:{ic:'🪙',h:4},
  starter_pack:{ic:'🎁',t:20,e:5,h:1,perm:'st'},income_x2:{ic:'💰',perm:'x2'},no_ads:{ic:'🚫',perm:'na'}};
 const payOn=()=>safe(b=>!!(b.payments&&b.payments.isSupported),false);
-async function catalog(){if(!payOn())return[];try{const c=await B().payments.getCatalog();return(Array.isArray(c)?c:[]).filter(p=>p&&PROD[p.id])}catch(e){return[]}}
+async function catalog(){if(!payOn())return[];try{const c=await B().payments.getCatalog();return(Array.isArray(c)?c:[]).filter(p=>p&&PROD[p.id]&&p.price!=null&&!/undefined|NaN/.test(String(p.price)))}catch(e){return[]}} // solo i prodotti con un prezzo vero (creati nel pannello)
 const owned=id=>{const p=PROD[id];return!!(p&&p.perm&&S.iap[p.perm])};
 // Consegna: i permanenti una volta sola (flag in S.iap), i consumabili una volta per ordine (S.iap.got evita doppioni)
 function grant(id,pur){const p=PROD[id];if(!p)return null;

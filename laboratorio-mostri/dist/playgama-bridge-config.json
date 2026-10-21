@@ -3,7 +3,7 @@
         "playgama": {}
     },
     "advertisement": {
-        "minimumDelayBetweenInterstitial": 60,
+        "minimumDelayBetweenInterstitial": 120,
         "interstitial": {
             "placements": [
                 {
@@ -81,46 +81,25 @@
     },
     "payments": [
         {
-            "id": "tickets_10",
-            "playgama": {
-                "amount": 20
-            }
+            "id": "tickets_10"
         },
         {
-            "id": "tickets_60",
-            "playgama": {
-                "amount": 100
-            }
+            "id": "tickets_60"
         },
         {
-            "id": "ess_10",
-            "playgama": {
-                "amount": 60
-            }
+            "id": "ess_10"
         },
         {
-            "id": "coins_4h",
-            "playgama": {
-                "amount": 20
-            }
+            "id": "coins_4h"
         },
         {
-            "id": "starter_pack",
-            "playgama": {
-                "amount": 50
-            }
+            "id": "starter_pack"
         },
         {
-            "id": "income_x2",
-            "playgama": {
-                "amount": 250
-            }
+            "id": "income_x2"
         },
         {
-            "id": "no_ads",
-            "playgama": {
-                "amount": 150
-            }
+            "id": "no_ads"
         }
     ],
     "leaderboards": [

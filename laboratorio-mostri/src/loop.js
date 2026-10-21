@@ -1,4 +1,8 @@
 import {R,S} from './core/state.js';
+import {AU} from './audio.js';
+import {inter} from './ui/ads.js';
+import {toast} from './ui/common.js';
+import {tr} from './data/text.js';
 import {MAXT} from './data/config.js';
 import {AMV_INT,amInt,earn,inc,incBase,offRate} from './game/economy.js';
 import {offBattle} from './game/combat.js';
@@ -15,7 +19,11 @@ import {grantMsg} from './ui/meta.js';
 import {has} from './game/unlocks.js';
 
 // ---- Ciclo di gioco ----
-function tick(){const n=Date.now();if(R.PZ){R.lastT=n;return}
+function tick(){const n=Date.now();if(R.PZ||AU.ad){R.lastT=n;return} // pausa della piattaforma o pubblicità a schermo intero: gioco fermo (regola Playgama)
+ // interstitial delle 50 unioni: il gioco non ha pause naturali, quindi (come consiglia Playgama) aspetta 1,5s senza tocchi
+ // e poi avvisa con un conto alla rovescia «Pubblicità tra 3…2…1» prima di mostrarla: mai all'improvviso sotto il dito
+ if(R.adPend&&!R.adCd&&n-R.lastTap>1500&&!document.hidden){R.adPend=0;R.adCd=n+3000}
+ if(R.adCd){const l=Math.ceil((R.adCd-n)/1000);if(l>0){if(l!==R.adCl){R.adCl=l;toast('📺 '+tr('adBreak').replace('{n}',l),1)}}else{R.adCd=0;R.adCl=0;inter('merge')}} // se nel frattempo ha toccato, si aspetta la pausa successiva
  const dt=Math.max(0,(n-R.lastT)/1000);R.lastT=n;
  const full=Math.min(dt,5),rest=Math.min(dt-full,8*3600),i=inc();
  let g=i*full,off=0;

@@ -1,4 +1,4 @@
-import {sfx} from '../audio.js';
+import {aSync,actx,sfx} from '../audio.js';
 import {$} from '../core/dom.js';
 import {R,S,setS} from '../core/state.js';
 import {fmt} from '../core/util.js';
@@ -74,11 +74,12 @@ function ui(){const b=Date.now()<S.boost;
  if($('daily').classList.contains('on'))renderDaily();if($('col').classList.contains('on'))renderCol();
  if($('trop').classList.contains('on'))renderTr();if($('tree').classList.contains('on'))renderTree();
  if($('set').classList.contains('on'))renderSet();if($('stat').classList.contains('on'))renderStats();
+ $('tMute').textContent=S.sfxOn||S.musOn?'🔊':'🔇';
  drawTimers();drawB();renderGoal();gate();metaUi();
  banner(!!document.querySelector('#ups.on,.ov.on:not(#ulp):not(#pull):not(#wb):not(#intro)'));$('app').classList.toggle('bnm',bannerMenu()&&innerHeight>innerWidth)}
 // Testo «🎁 Missioni» → icona sopra ed etichetta sotto (pulsanti in alto e barra di navigazione)
 const lbl=(id,t)=>{$(id).querySelector('span').textContent=String(t).replace(/^\S+\s/,'')};
-function applyLang(){document.documentElement.lang=R.lang;$('a1').textContent=tr('a1');$('a2').textContent=tr('a2');lbl('n0',tr('n0'));lbl('n1',tr('n1'));lbl('n2',tr('n2'));
+function applyLang(){document.documentElement.lang=R.lang;document.title=tr('gameT');$('a1').textContent=tr('a1');$('a2').textContent=tr('a2');lbl('n0',tr('n0'));lbl('n1',tr('n1'));lbl('n2',tr('n2'));
  lbl('tPor',tr('lb_por'));lbl('tShop',tr('lb_shop'));$('shopT').textContent='🛒 '+tr('shopT');$('shopClose').textContent=tr('close');lbl('tPas',tr('lb_pas'));lbl('tExp',tr('lb_exp'));$('upsT').textContent=tr('ups');$('closeUps').textContent=tr('close');
  $('sqT').textContent=tr('sqT');$('sqClose').textContent=tr('close');lbl('tTr',tr('trb'));$('trT').textContent=tr('trT');$('trClose').textContent=tr('close');$('tT').textContent=tr('treeT');$('tClose').textContent=tr('close');$('treeB').textContent=tr('treeB');
  lbl('tDaily',tr('dly'));lbl('tCol',tr('colb'));$('dT').textContent=tr('dT');$('cT').textContent=tr('colT');$('dClose').textContent=tr('close');$('cClose').textContent=tr('close');
@@ -90,6 +91,8 @@ $('pr').onclick=()=>{const p=pgain();if(p<1)return;setS(prestigeState(S,p));trac
 function show(v){['labV','batV'].forEach((id,i)=>{$(id).classList.toggle('on',i===v);$('n'+i).classList.toggle('on',i===v)});if(v===1){tutNext(3);track('first_battle')}ui()}
 // Scheda ancora chiusa: dice cosa serve per aprirla
 const navGo=(i,f)=>()=>{const k=NAVK[i];if(k&&!Ul.has(k)){sfx('err');toast('🔒 '+ulName(k)+' · '+rqTxt(Ul.UL.find(u=>u.k===k)),1);return}f()};
+// Muto rapido (richiesto dalle piattaforme): spegne o riaccende insieme effetti e musica
+$('tMute').onclick=()=>{const on=!(S.sfxOn||S.musOn);S.sfxOn=S.musOn=on?1:0;actx();aSync();save();ui()};
 $('n0').onclick=()=>show(0);$('n1').onclick=navGo(1,()=>show(1));$('n2').onclick=navGo(2,()=>$('ups').classList.add('on'));
 $('closeUps').onclick=()=>$('ups').classList.remove('on');
 export {ui,applyLang,show,rqTxt,ulName};

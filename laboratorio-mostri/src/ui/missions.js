@@ -44,11 +44,11 @@ function renderDaily(){const i=dailyInfo();let h='<div class="dc">🔥 '+tr('str
  h+='<div class="dh">'+tr('mis')+'</div>';
  S.dl.m.forEach((m,k)=>{const ok=m.p>=m.n,c=Math.floor(rBase());
   h+='<div class="ms'+(ok?' ok':'')+'"><div>'+mText(m)+'<small>'+m.p+'/'+m.n+'</small><div class="bar"><i style="width:'+m.p/m.n*100+'%"></i></div></div><div class="mb">'
-  +(m.c?'<b>✓ '+tr('claimed')+'</b>':ok?'<button class="b g" data-a="cm" data-i="'+k+'">'+tr('claim')+' 🪙'+fmt(c)+'</button><button class="b o" data-a="dm" data-i="'+k+'">▶ x2</button>':'<span>🪙 '+fmt(c)+'</span>')+'</div></div>'});
+  +(m.c?'<b>✓ '+tr('claimed')+'</b>':ok?'<button class="b g" data-a="cm" data-i="'+k+'">'+tr('claim')+' 🪙'+fmt(c)+'</button><button class="b o" data-a="dm" data-i="'+k+'">📺 x2</button>':'<span>🪙 '+fmt(c)+'</span>')+'</div></div>'});
 
  const w=S.dl.w;if(w){const ok=w.p>=w.n,c=Math.floor(rBase()*8);
   h+='<div class="dh">'+tr('weekly')+' · '+weekLeft()+' '+tr('wkLeft')+'</div><div class="ms wk'+(ok?' ok':'')+'"><div>'+mText(w)+'<small>'+fmt(w.p)+'/'+fmt(w.n)+'</small><div class="bar"><i style="width:'+w.p/w.n*100+'%"></i></div></div><div class="mb">'
-  +(w.c?'<b>✓ '+tr('claimed')+'</b>':ok?'<button class="b g" data-a="cw">'+tr('claim')+' 🪙'+fmt(c)+' 🔮1</button><button class="b o" data-a="dw">▶ x2</button>':'<span>🪙 '+fmt(c)+' · 🔮 1</span>')+'</div></div>'}
+  +(w.c?'<b>✓ '+tr('claimed')+'</b>':ok?'<button class="b g" data-a="cw">'+tr('claim')+' 🪙'+fmt(c)+' 🔮1</button><button class="b o" data-a="dw">📺 x2</button>':'<span>🪙 '+fmt(c)+' · 🔮 1</span>')+'</div></div>'}
  setT('dBody',h)}
 const openDaily=()=>{renderDaily();$('daily').classList.add('on')};
 $('tDaily').onclick=openDaily;$('dClose').onclick=()=>$('daily').classList.remove('on');

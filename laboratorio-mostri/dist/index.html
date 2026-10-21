@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>Laboratorio di Mostri</title>
+<title>Monster Laboratory</title>
 
 <script>
 // Schermata di caricamento ed errore: la pagina non resta mai bianca. Se qualcosa si rompe all'avvio compare un messaggio con il pulsante per azzerare il salvataggio.
@@ -15,15 +15,15 @@ window.__fatal=function(e){
  document.getElementById('bootRs').onclick=function(){try{localStorage.removeItem('ml_save_v1')}catch(x){}location.reload()}};
 addEventListener('error',function(ev){var t=ev.target;if(t&&t.tagName==='SCRIPT'&&t.src&&t.src.indexOf('playgama')<0)window.__fatal('script: '+t.src.split('/').pop());else if((!t||t===window)&&String(ev.filename||'').indexOf('playgama')<0)window.__fatal(ev.error||ev.message)},true);
 </script>
-<!-- Il Bridge si carica senza bloccare la pagina: se la rete è lenta o assente il gioco parte comunque (main.js attende al massimo 2,5s). -->
-<script async src="https://bridge.playgama.com/v2/stable/playgama-bridge.js" onerror="window.__bridgeFail=1"></script>
-  <script defer src="./assets/index-DikD_yIB.js"></script>
+<!-- Playgama Bridge dal CDN, come indicato nella documentazione (script normale, prima del gioco). Se non si carica (offline) il gioco parte comunque. -->
+<script src="https://bridge.playgama.com/v2/stable/playgama-bridge.js" onerror="window.__bridgeFail=1"></script>
+  <script defer src="./assets/index-B_cRM_TQ.js"></script>
 </head>
 <body>
 <div id="boot" style="position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;background:#0a0614;color:#f2e9ff;font:600 15px system-ui,sans-serif">🧪 …</div>
 <div id="app">
  <canvas id="bgfx" aria-hidden="true"></canvas>
- <div id="top"><div class="cn"><div id="coins"></div><div id="inc"></div></div><div id="stg"></div><div class="tr8"><div id="ess"></div><button class="ib" id="tSet" aria-label="Settings">⚙️</button></div></div>
+ <div id="top"><div class="cn"><div id="coins"></div><div id="inc"></div></div><div id="stg"></div><div class="tr8"><div id="ess"></div><button class="ib" id="tMute" aria-label="Sound">🔊</button><button class="ib" id="tSet" aria-label="Settings">⚙️</button></div></div>
  <div id="tools"><button class="tb" id="tDaily"><b>🎁</b><span></span><i class="dot"></i></button><button class="tb" id="tCol"><b>📖</b><span></span><i class="dot"></i></button><button class="tb" id="tTr"><b>🏆</b><span></span><i class="dot"></i></button><button class="tb" id="tExp"><b>🧭</b><span></span><i class="dot"></i></button><button class="tb" id="tPor"><b>🌀</b><span></span><i class="dot"></i></button><button class="tb" id="tPas"><b>🎟️</b><span></span><i class="dot"></i></button><button class="tb" id="tShop"><b>🛒</b><span></span></button></div>
  <div id="goal"><i></i><span id="goalT"></span></div>
  <div id="tut"><b id="tutT"></b><button id="tutX">✕</button></div>
