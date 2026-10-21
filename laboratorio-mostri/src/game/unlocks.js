@@ -1,18 +1,20 @@
 import {S} from '../core/state.js';
+import {pgN} from './economy.js';
 
 // ---- Sblocchi a obiettivi: all'inizio c'è solo il laboratorio, ogni sistema si apre raggiungendo un traguardo ----
 // Requisito: m = crea un mostro di livello n, s = raggiungi il livello di battaglia n, c = guadagna n monete in questa partita,
 // p = fai n Evocazioni oscure. Ciò che è sbloccato resta in S.ul (anche dopo l'Evocazione oscura), quindi non si richiude mai.
 // L'ordine della lista è quello in cui la barra «prossimo obiettivo» propone gli sblocchi.
 const UL=[
- {k:'ups',m:3,ic:'⚙️'},{k:'bat',m:4,ic:'⚔️'},{k:'day',m:5,ic:'🎁'},{k:'ads',s:4,ic:'⚡'},{k:'col',m:6,ic:'📖'},
- {k:'tr',s:8,ic:'🏆'},{k:'pr',c:25000,ic:'🔮'},{k:'fm',s:12,ic:'🔁'},{k:'exp',m:7,ic:'🧭'},{k:'por',p:1,ic:'🌀'},
+ {k:'ups',m:3,ic:'⚙️'},{k:'ads',m:4,ic:'⚡'},{k:'day',m:5,ic:'🎁'},{k:'col',m:7,ic:'📖'},{k:'exp',m:7,ic:'🧭'},
+ {k:'pr',c:25000,ic:'🔮'},{k:'bat',p:1,ic:'⚔️'},{k:'por',p:1,ic:'🌀'},{k:'tr',s:8,ic:'🏆'},{k:'fm',s:12,ic:'🔁'},
  {k:'pas',s:20,ic:'🎟️'},{k:'tow',s:25,ic:'🗼'},{k:'inv',s:30,ic:'🔥'}];
 // Potenziamenti: i primi due ci sono da subito, gli altri si aggiungono man mano (indice in UP di economy.js)
 const UPL=[null,null,{m:5},{m:6},{m:7},{s:10}];
 const disc=()=>S.disc.filter(Boolean).length;
 // avanzamento verso il requisito, da 0 a 1
-function rqP(r){const [v,n]=r.m?[disc(),r.m]:r.s?[S.bs,r.s]:r.c?[S.run,r.c]:[S.ach.pr,r.p];return Math.max(0,Math.min(1,v/n))}
+function rqP(r){if(r.p)return S.ach.pr>=r.p?1:Math.min(.99,(S.ach.pr+Math.min(1,S.run/pgN()))/r.p); // verso l'Evocazione oscura conta anche quanto manca alla prossima
+ const [v,n]=r.m?[disc(),r.m]:r.s?[S.bs,r.s]:r.c?[S.run,r.c]:[S.ach.pr,r.p];return Math.max(0,Math.min(1,v/n))}
 const has=k=>S.ul.includes(k);
 const upOpen=i=>!UPL[i]||has('u'+i);
 // Sblocca ciò che ha raggiunto il requisito; restituisce le novità (le chiamate successive non le ripetono)

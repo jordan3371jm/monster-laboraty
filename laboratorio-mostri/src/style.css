@@ -419,3 +419,63 @@ nav button.lk::after{content:'🔒';position:absolute;top:3px;right:8px;font-siz
 @media (prefers-reduced-motion:reduce){.ulc,.ulc i{animation:none}}
 @media (max-height:640px){#tools .tb span{display:none}nav button span{font-size:11px}#spawn{padding:11px 8px}}
 #goal span{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25}
+
+/* =====================================================================
+   Schermi diversi: cellulare (base), tablet in verticale, PC e tablet/
+   cellulari in orizzontale (barra laterale + area di gioco)
+   ===================================================================== */
+/* Tablet in verticale: colonna più larga e testi più grandi */
+@media (min-width:600px) and (max-aspect-ratio:5/4){
+ html,body{font-size:17px}
+ #app{max-width:720px;padding:18px 18px max(18px,env(safe-area-inset-bottom));gap:12px}
+ #coins{font-size:32px}#inc{font-size:14px}#stg{font-size:14px}#ess{font-size:19px}
+ .ib{flex-basis:50px;height:50px;font-size:24px}
+ #tools .tb,#tools .tb:not(.ic){max-width:110px;font-size:12.5px;padding:8px 2px 7px}.tb b{font-size:28px}
+ #goal{font-size:15px;min-height:44px}
+ #grid{gap:10px}.c::after{font-size:13px}
+ #spawn{font-size:19px;padding:18px 8px}#mall{font-size:16px}#adr .b{font-size:14.5px;padding:12px 6px}
+ nav button{font-size:14px;padding:9px 2px}nav button b{font-size:28px}
+ #ups,.ov{padding:20px}#ups>.b[id^=u]{grid-template-columns:52px 1fr auto;padding:14px 16px}#ups>.b[id^=u] i{font-size:32px}
+ #ups>.b[id^=u] b{font-size:17px}#ups>.b[id^=u] small{font-size:13.5px}#ups>.b[id^=u] strong{font-size:15px;padding:9px 14px}
+ #team{font-size:min(9vw,6dvh)}#ts{font-size:13.5px}.sk{font-size:14px;padding:12px 2px}
+ .ulc{max-width:420px}.ulc i{font-size:96px}.ulc b{font-size:28px}.ulc p{font-size:17px}
+}
+/* Orizzontale (PC, tablet e cellulari girati): a sinistra HUD, icone, obiettivo e navigazione; a destra il gioco */
+@media (min-aspect-ratio:5/4) and (min-width:700px){
+ #app{max-width:1280px;display:grid;grid-template-columns:clamp(240px,26vw,340px) 1fr;grid-template-rows:auto auto auto auto 1fr;align-content:start;column-gap:20px;row-gap:10px;padding:16px 20px}
+ #top{grid-column:1;grid-row:1;display:grid;grid-template-columns:auto 1fr;padding:8px 8px 8px 12px;row-gap:6px}#top .cn{grid-column:1/-1}#top #stg{justify-self:start}#top .tr8{justify-self:end}
+ #tools{grid-column:1;grid-row:2;display:grid!important;grid-template-columns:repeat(3,1fr);overflow:visible}
+ #tools[style*="none"]{display:none!important}
+ #tools .tb,#tools .tb:not(.ic){max-width:none;padding:8px 2px}
+ #goal{grid-column:1;grid-row:3}
+ nav{grid-column:1;grid-row:4;flex-direction:column}
+ nav button{flex-direction:row;justify-content:flex-start;gap:10px;padding:10px 14px;font-size:15px}nav button b{font-size:24px}
+ nav button.lk::after{top:50%;right:12px;transform:translateY(-50%)}
+ #tut{grid-column:1;grid-row:5;align-self:start}
+ .view{grid-column:2;grid-row:1/6;min-height:0}
+ /* laboratorio: griglia con vasche quasi quadrate, centrata */
+ #labV{align-items:center}
+ #grid{width:min(100%,calc((100dvh - 150px) * .8));flex:1}
+ #grid[data-r="6"]{width:min(100%,calc((100dvh - 150px) * .66))}#grid[data-r="7"]{width:min(100%,calc((100dvh - 150px) * .57))}
+ #labV .row{width:min(100%,560px)}
+ .c{font-size:min(7vw,7dvh)}#grid[data-r="6"] .c{font-size:min(6vw,6dvh)}#grid[data-r="7"] .c{font-size:min(5.5vw,5.2dvh)}
+ /* battaglia: arena larga, comandi sotto */
+ #batV{max-width:900px;width:100%;justify-self:center}
+ #en{font-size:min(18vw,20dvh)}#en.big{font-size:min(24vw,26dvh)}#team{font-size:min(5vw,6dvh)}
+ /* pannelli: finestra centrata invece che a tutto schermo */
+ #ups,.ov:not(#ulp):not(#pull):not(#wb):not(#intro){inset:24px max(24px,calc(50% - 320px));border-radius:22px;border:1px solid var(--line);box-shadow:0 30px 80px #000c}
+ #app:has(#ups.on,.ov.on:not(#ulp))::after{content:'';position:absolute;inset:0;z-index:4;background:#05020bb3;filter:none;width:auto;height:auto;border-radius:0;animation:none;opacity:1}
+ .ov>h2,#ups>h2{border-radius:22px 22px 0 0}
+}
+/* Cellulare girato (poco alto): tutto più compatto */
+@media (min-aspect-ratio:5/4) and (min-width:700px) and (max-height:520px){
+ #app{grid-template-columns:220px 1fr;padding:8px 12px;row-gap:6px}
+ #coins{font-size:20px}#tools .tb span,nav button span{display:none}nav{flex-direction:row}nav button{justify-content:center;padding:6px}
+ #goal{font-size:11.5px;min-height:0;padding:5px 8px}
+ #grid,#grid[data-r="6"],#grid[data-r="7"]{width:min(100%,calc((100dvh - 110px) * 1.15));grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(4,minmax(0,1fr));gap:5px}
+ #grid[data-r="6"]{grid-template-rows:repeat(5,minmax(0,1fr))}#grid[data-r="7"]{grid-template-rows:repeat(6,minmax(0,1fr))}
+ #grid .c,#grid[data-r] .c{font-size:min(6vw,6.5dvh);border-radius:12px}
+ #top{padding:6px 8px}
+ #spawn{padding:8px}#adr .b{padding:6px}
+ #ups,.ov:not(#ulp):not(#pull):not(#wb):not(#intro){inset:8px max(8px,calc(50% - 300px))}
+}

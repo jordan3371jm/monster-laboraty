@@ -119,7 +119,7 @@ Tutto è calcolato da `Date.now()`, senza server: i timer proseguono a gioco chi
 
 ## Controlli automatici
 - `npm test`: economia, regole (incl. `fmt`), logica dei timer (`scripts/timers.mjs`), coerenza testi it/en (`check-text.mjs`).
-- `npm run smoke`: flussi dell'interfaccia in jsdom (109 controlli, incl. gli sblocchi).
+- `npm run smoke`: flussi dell'interfaccia in jsdom (114 controlli, incl. gli sblocchi).
 - `npm run fuzz [passi] [semi] [primo-seme]`: clic casuali su tutta l'interfaccia, salti di tempo di ore e salvataggi di partenza diversi; controlla errori JS, testi anomali (`NaN`, `undefined`) e valori impossibili nel salvataggio.
 
 ## Sblocchi a obiettivi e grafica 3.0 (`src/game/unlocks.js`)
@@ -128,24 +128,32 @@ Prima il gioco mostrava quasi tutto dall'inizio e non sembrava di fare progressi
 | Sblocco | Requisito |
 |---|---|
 | ⚙️ Potenziamenti | mostro di livello 3 |
-| ⚔️ Battaglia | mostro di livello 4 (prima la battaglia è ferma, anche offline) |
+| ⚡ Boost con video | mostro di livello 4 |
 | 🎁 Bonus giornaliero e missioni | mostro di livello 5 |
-| ⚡ Boost con video | livello di battaglia 4 |
-| 📖 Collezione | mostro di livello 6 |
+| 📖 Collezione | mostro di livello 7 |
 | 🧭 Spedizioni, nidi, ordini, evento | mostro di livello 7 |
-| 🏆 Trofei | livello 8 |
 | 🔮 Evocazione oscura | 25.000 monete nella partita |
-| 🔁 Scelta del livello / farm | livello 12 |
+| ⚔️ Battaglia | prima Evocazione oscura (prima la battaglia è ferma, anche offline) |
 | 🌀 Portale dei Campioni | prima Evocazione oscura |
+| 🏆 Trofei | livello di battaglia 8 |
+| 🔁 Scelta del livello / farm | livello 12 |
 | 🎟️ Pass | livello 20 |
 | 🗼 Torre | livello 25 |
 | 🔥 Invasione dei boss | livello 30 |
 
+Senza battaglia la prima Evocazione oscura arriva comunque presto: nella simulazione (giocatore ottimale) a ~6 minuti invece di ~4.
+
 Anche i potenziamenti arrivano man mano: Sonno profondo (mostro 5), Unione automatica (6), Laboratorio ampliato (7), Incubatrice (livello 10); il pannello mostra il prossimo con il suo requisito.
 - Ogni sblocco apre la finestra **«Nuova funzione sbloccata!»** con icona, descrizione e «Andiamo!» che porta subito lì (una alla volta).
-- La **barra obiettivo**, quando non c'è nulla da riscuotere, mostra il prossimo sblocco con la barra di avanzamento (🔒 Battaglia · Crea un mostro di livello 4).
+- La **barra obiettivo**, quando non c'è nulla da riscuotere, mostra il prossimo sblocco con la barra di avanzamento (🔒 Battaglia · Fai la tua prima Evocazione oscura, con l'avanzamento verso la prima Evocazione).
 - Le schede chiuse (Battaglia, Potenziamenti) restano visibili con il lucchetto: toccandole si legge cosa serve.
 - Lo sbloccato resta in `S.ul` (anche dopo l'Evocazione oscura). I salvataggi precedenti (senza il segno `v2`) con un'Evocazione oscura o oltre il livello 15 trovano tutto aperto; gli altri ottengono subito ciò che hanno già raggiunto.
 - Per cambiare ordine o requisiti basta modificare `UL` e `UPL` in `unlocks.js` (+ i testi `ul_*`, `uld_*`).
 
 **Grafica 3.0** (in fondo a `style.css`): HUD con monete a sinistra e Essenze/impostazioni a destra; icone in alto con etichetta corta, che compaiono solo quando sbloccate; barra di navigazione con icona sopra ed etichetta sotto; vasche con meno bagliori; potenziamenti come schede «icona · nome e descrizione · prezzo»; nei pannelli il titolo e «Chiudi» restano sempre visibili; in battaglia si vedono solo le abilità sbloccate (niente più riga di lucchetti).
+
+### Cellulare, tablet e PC (in fondo a `style.css`)
+- **Cellulare in verticale**: colonna unica (la base).
+- **Tablet in verticale** (≥600px di larghezza): colonna fino a 720px, testi, icone e pulsanti più grandi.
+- **Orizzontale** (PC, tablet e cellulari girati, almeno 700px e più largo che alto): barra laterale a sinistra con monete, icone, obiettivo e navigazione; a destra il laboratorio (griglia centrata con vasche quasi quadrate) o la battaglia. I pannelli diventano finestre centrate con lo sfondo scurito.
+- **Cellulare girato** (altezza ≤520px): barra laterale compatta (solo icone) e laboratorio su 5 colonne.

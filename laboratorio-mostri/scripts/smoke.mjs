@@ -199,11 +199,18 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  ok(t.$('goal').classList.contains('ul')&&/level 4|livello 4/.test(t.$('goalT').textContent),'la barra obiettivo indica il prossimo sblocco ('+t.$('goalT').textContent+')');
  ok(t.$('u2').style.display==='none'&&t.$('uLk').style.display!=='none','potenziamenti: quelli chiusi non si vedono, il prossimo mostra il requisito');
  const st0=t.S().st;await t.adv(3000);ok(t.S().st===st0,'prima dello sblocco la battaglia è ferma');
- t.click(t.$('n1'));ok(!t.$('batV').classList.contains('on'),'toccare una scheda chiusa non la apre');
+ t.click(t.$('n1'));ok(!t.$('batV').classList.contains('on')&&/Dark summoning|Evocazione oscura/.test(t.$('toast').textContent),'toccare Battaglia chiusa non la apre e dice cosa serve ('+t.$('toast').textContent+')');
  const cells=t.qa('#grid .c');t.click(cells[0]);t.click(cells[1]);await t.adv(1500);
- ok(t.S().ul.includes('bat')&&t.$('ulp').classList.contains('on'),'mostro di livello 4 → Battaglia sbloccata con la finestra «Nuova funzione»');
- t.click(t.q('#ulp [data-a=go]'));ok(t.$('batV').classList.contains('on')&&!t.$('n1').classList.contains('lk'),'«Andiamo!» apre la Battaglia');
+ ok(t.S().ul.includes('ads')&&!t.S().ul.includes('bat')&&t.$('ulp').classList.contains('on')&&t.$('adr').style.display!=='none','mostro di livello 4 → boost con video sbloccati con la finestra «Nuova funzione»');
+ t.click(t.q('#ulp [data-a=go]'));ok(!t.$('ulp').classList.contains('on'),'«Andiamo!» chiude la finestra');
+ t.click(t.$('n2'));t.click(t.$('pr'));ok(t.S().ach.pr===0,'senza abbastanza monete niente Evocazione oscura');
  ok(t.errs.length===0,'sblocchi: nessun errore JS '+t.errs.slice(0,2));}
+{const t=await boot({g:[5,5,...z(18)],tut:3,disc:[1,1,1,1,1,1,1,0,...z(18)],ul:['v2','ups','ads','day','col','exp','pr','u2','u3','u4'],run:9e5,introSeen:1},{});await t.adv(600);
+ ok(t.$('n1').classList.contains('lk'),'prima dell\'Evocazione oscura la Battaglia è chiusa');
+ t.click(t.$('n2'));t.click(t.$('pr'));await t.adv(1500);
+ ok(t.S().ach.pr===1&&t.S().ul.includes('bat')&&t.S().ul.includes('por')&&t.$('ulp').classList.contains('on'),'prima Evocazione oscura → Battaglia (e Portale) sbloccati');
+ t.click(t.q('#ulp [data-a=go]'));ok(t.$('batV').classList.contains('on'),'«Andiamo!» apre la Battaglia');
+ ok(t.errs.length===0,'sblocchi dopo l\'Evocazione: nessun errore JS '+t.errs.slice(0,2));}
 {const t=await boot({...base,ul:['col']},{});await t.adv(600);
  ok(['ups','bat','day','col','exp','por','tow','u5'].every(k=>t.S().ul.includes(k))&&!t.$('ulp').classList.contains('on'),'salvataggio di prima con Evocazione oscura: tutto resta aperto, senza finestre');}
 
