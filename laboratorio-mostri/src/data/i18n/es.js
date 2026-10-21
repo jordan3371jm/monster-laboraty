@@ -2,7 +2,7 @@
 export default {
 tx:{
  n0:"🧪 Laboratorio",n1:"⚔️ Batalla",n2:"⚙️ Mejoras",stage:"Nivel",boss:"JEFE",atk:"ATQ",win:"¡Victoria! ",lose:"Derrotados, reintentando el nivel",stb:"ganancias",noteam:"¡Invoca monstruos para luchar!",sec:"/s",
- spawn:"Invocar huevo",a1:"📺 x2 · 5 min",a2:"📺 +5 min 🪙",a3:"📺 🔄 Auto 5 min",a3on:"Los monstruos se fusionan solos durante 5 minutos",ups:"Mejoras",close:"Cerrar",lvl:"Nv",max:"MÁX",
+ spawn:"Invocar huevo",a1:"x2 · 5 min",a2:"+5 min 🪙",a3:"🔄 Auto 5 min",a3on:"Los monstruos se fusionan solos durante 5 minutos",ups:"Mejoras",close:"Cerrar",lvl:"Nv",max:"MÁX",
  u0:"Laboratorio",u0d:"+25% ganancias",u1:"Descuento en huevos",u1d:"-8% coste de los huevos",u2:"Sueño profundo",u2d:"Más ganancias sin conexión",
  u3:"Velocidad de fusión",u3d:"La fusión automática actúa más a menudo",u4:"Laboratorio ampliado",u4d:"+1 casilla en el laboratorio",
  combo:"Combo",lucky:"✨ ¡Fusión perfecta! Un nivel extra",luckyS:"¡Perfecta!",u5:"Incubadora automática",u5d:"Un huevo gratis cada pocos segundos en las casillas libres",amOn:"¡Fusión automática activa para siempre!",amD:"Cada 15 segundos dos huevos iguales se fusionan solos. Desbloquéala para siempre con 5 Esencias.",amT:"Fusión automática",u6d:"La fusión automática también une monstruos más altos",u6:"Nivel de fusión",

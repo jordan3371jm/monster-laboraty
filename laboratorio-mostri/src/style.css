@@ -490,3 +490,6 @@ html,body{overscroll-behavior:none;touch-action:manipulation;-webkit-text-size-a
 img{-webkit-user-drag:none;user-select:none}
 #adr .b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:9px 3px;font-size:12px}#adr{gap:6px}
 #adr .b{position:relative;padding-left:22px}#adr .b::after{content:'AD';position:absolute;left:4px;top:50%;translate:0 -50%;font-size:8.5px;font-weight:900;padding:1px 3px;border-radius:4px;background:#0006;color:#ffe9c0;letter-spacing:.3px}
+#coins,#ess,#stg{white-space:nowrap}
+@media (max-width:400px){#coins{font-size:20px}#inc{font-size:11px}#stg{font-size:11px;padding:3px 7px}.ib{flex-basis:34px;height:34px;font-size:16px;border-radius:10px}#ess{font-size:14px;padding:3px 7px}.tr8{gap:4px}#top{gap:4px}}
+@media (max-width:350px){#stg{display:none}}
