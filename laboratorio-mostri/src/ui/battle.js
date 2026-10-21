@@ -12,13 +12,14 @@ import {track} from '../analytics.js';
 import {ui} from './hud.js';
 import {prog} from './missions.js';
 import {chest} from './rewards.js';
+import {attack,coinFly} from './juice.js';
 
 const F={eh:0,th:0,wait:0,st:0,dm:0,stun:0,sl:0,wn:false,dd:false,lose:0,cd:[0,0,0],rd:[0,0,0]};
-['arena','en'].forEach(id=>$(id).addEventListener('animationend',e=>{if(['shake','enter','slam'].includes(e.animationName))e.currentTarget.classList.remove(e.animationName)}));
+['arena','en','team'].forEach(id=>$(id).addEventListener('animationend',e=>{if(['shake','enter','slam','hurt'].includes(e.animationName))e.currentTarget.classList.remove(e.animationName)}));
 const en0=$('en');
 const onB=()=>$('batV').classList.contains('on');
 function startFight(){F.st=S.st;F.eh=eHp(S.st);F.th=tHp();F.wait=0;F.dm=0;F.stun=0;F.sl=0;F.wn=false;F.dd=false;
- if(isBoss(S.st)){fx($('en'),'enter');fx($('arena'),'shake');if(onB())sfx('boss')}}
+ $('en').classList.remove('die');fx($('en'),'enter');if(isBoss(S.st)){fx($('arena'),'shake');if(onB())sfx('boss')}}
 function hitFx(d,sp){if(!onB())return;const e=document.createElement('div');e.className='dm'+(sp?' sp':'');e.textContent=sp?sp:'-'+fmt(d);e.style.left=(35+Math.random()*30)+'%';e.style.top='32%';$('arena').appendChild(e);setTimeout(()=>e.remove(),950);const n=$('en');n.classList.remove('hit');void n.offsetWidth;n.classList.add('hit')}
 function cast(i,pw){const a=tAtk(),h=tHp();prog('ability',1);S.ach.ab++;F.cd[i]=SK[i].cd*(1-.08*S.pk.a);F.rd[i]=0;
  if(i===0){const d=a*5*pw;F.eh-=d;hitFx(d,'🔥 '+tr('sk0')+' -'+fmt(d))}
@@ -45,9 +46,9 @@ function fight(dt){
   if(F.cd[i]>0)F.cd[i]-=dt;
   else if(i===1&&F.th>h*.8)F.rd[i]=0; // la cura automatica parte solo se la squadra è ferita
   else if((F.rd[i]+=dt)>=AUTO_T)cast(i,.6)}
- if(F.dm>=a*.9){hitFx(F.dm);if(onB())sfx('hit');F.dm=0}
- if(F.eh<=0){const rw=stageReward(s);earn(rw);S.ach.wn++;toast(trv('win')+'🪙 +'+fmt(rw));sfx('win');prog('win',1);if(onB())burst($('arena'),isBoss(s)?['🪙','✨','⭐']:['🪙'],isBoss(s)?16:4);if(S.ach.wn===1)track('first_win');if([5,10,20,30,40].includes(s))track('stage_'+s);prog('winEl',1,eEl(s));const first=s>=S.bs&&!S.fm;F.lose=0;if(!S.fm){S.st++;if(S.st>S.bs)S.bs=S.st}save();F.wait=1;if(isBoss(s)&&first)chest()}
- else if(F.th<=0){toast(trv('lose'));sfx('lose');F.wait=2.5;
+ if(F.dm>=a*.9){hitFx(F.dm);if(onB()){sfx('hit');attack()}F.dm=0}
+ if(F.eh<=0){const rw=stageReward(s);earn(rw);S.ach.wn++;toast(trv('win')+'🪙 +'+fmt(rw));sfx('win');prog('win',1);if(onB()){burst($('arena'),isBoss(s)?['🪙','✨','⭐']:['✨'],isBoss(s)?16:5);$('en').classList.add('die');coinFly($('en'),isBoss(s)?10:4)}if(S.ach.wn===1)track('first_win');if([5,10,20,30,40].includes(s))track('stage_'+s);prog('winEl',1,eEl(s));const first=s>=S.bs&&!S.fm;F.lose=0;if(!S.fm){S.st++;if(S.st>S.bs)S.bs=S.st}save();F.wait=1;if(isBoss(s)&&first)chest()}
+ else if(F.th<=0){toast(trv('lose'));sfx('lose');if(onB())fx($('team'),'hurt');F.wait=2.5;
   if(++F.lose>=RETREAT&&S.st>1){F.lose=0;S.st--;toast(tr('retreat'),1)}}} // dopo RETREAT sconfitte di fila si torna al livello prima, poi si risale da soli
 function drawB(){const s=S.st,b=isBoss(s),tt=trait(s);$('stg').textContent='⚔️ '+tr('stage')+' '+s+(S.bs>s?' · 🏁'+S.bs:'');
  if(!onB())return;
@@ -58,8 +59,8 @@ function drawB(){const s=S.st,b=isBoss(s),tt=trait(s);$('stg').textContent='⚔�
  $('arena').classList.toggle('bossA',b);
  $('tag').textContent=(b?'👑 '+tr('boss')+(F.eh<eHp(s)*.5?' · '+tr('enr'):''):(tt!=='n'?tr('t_'+tt):''))+' '+EL[eEl(s)];
  $('enm').textContent=fmt(Math.max(F.eh,0))+' / '+fmt(eHp(s))+(F.stun>0?'  💫':'');
- $('ehb').style.width=Math.max(0,F.eh/eHp(s)*100)+'%';
- const h=tHp();$('thb').style.width=h?Math.max(0,Math.min(1,F.th/h))*100+'%':'0%';
+ const ew=Math.max(0,F.eh/eHp(s)*100)+'%';$('ehb').style.width=ew;$('eh').style.setProperty('--g',ew); // --g: barra «fantasma» che segue in ritardo
+ const h=tHp(),tw=h?Math.max(0,Math.min(1,F.th/h))*100+'%':'0%';$('thb').style.width=tw;$('th').style.setProperty('--g',tw);
  let lk=0;for(let i=0;i<3;i++){const on=skOn(i),k=$('sk'+i),rdy=on&&F.cd[i]<=0&&F.wait<=0;if(!on)lk=1;
   k.classList.toggle('lock',!on);k.classList.toggle('rdy',rdy);k.firstChild.style.width=on?(F.cd[i]>0?(1-F.cd[i]/(SK[i].cd*(1-.08*S.pk.a)))*100:100)+'%':'0%';
   setT('skl'+i,on?SK[i].ic+' '+tr('sk'+i)+(F.cd[i]>0?' · '+Math.ceil(F.cd[i])+'s':''):'🔒 '+EL[i])}
