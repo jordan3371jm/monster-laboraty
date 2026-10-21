@@ -31,7 +31,7 @@ function chCard(i,extra){const s=M.star(i),c=CH[i];
  return '<button class="chc r'+c.r+(s?' f':'')+(R.chSel===i?' sl':'')+'" data-a="sel" data-i="'+i+'"'+(extra||'')+'><i'+(s?'':' class="u"')+'>'+ci(i)+'</i><small>'+(s?stars(s).replace(/☆/g,''):'?')+'</small>'+(M.leaders().includes(i)?'<b class="cr">👑</b>':'')+(M.busy(i)?'<b class="cr">🧭</b>':'')+'</button>'}
 function detail(i){const c=CH[i],s=M.star(i),lead=S.ch.ld.includes(i),eq=S.ch.eq[i]||[0,0,0];
  let h='<div class="chd r'+c.r+'"><div class="chh"><i>'+ci(i)+'</i><div><b>'+nm(i)+'</b><small>'+RAR[c.r]+' '+tr('rar'+c.r)+' · '+EL[c.el]+'</small><small class="st">'+stars(s)+'</small>'+(s&&s<MAXSTAR?'<small>'+tr('pullCp').replace('{a}',M.cps(i)).replace('{b}',M.needCp(i))+'</small>':'')+'</div></div>'
-  +'<div class="xr">✨ '+skTxt(i)+'</div><div class="xr">👑 '+tr('chLeadB').replace('{v}',pc([.05,.1,.18,.3][c.r]*M.sMul(i)))+'</div>'
+  +'<div class="xr">✨ '+skTxt(i)+'</div><div class="xr">👑 '+tr('chLeadB').replace('{v}',pc(M.LEADB[c.r]*M.sMul(i)))+'</div>'
   +(c.f.length>1?'<div class="evl">'+c.f.map((k,j)=>'<span class="'+(s>=evoAt(c)[j]?'on':'')+'">'+mImg(k)+'<small>★'+evoAt(c)[j]+'</small></span>').join('<b>›</b>')+'</div>':'')
   +(c.ex?'<small class="d">'+tr({iv:'exIv',ps:'exPs',tw:'exTw'}[c.ex])+'</small>':'');
  if(!s)return h+'</div>';

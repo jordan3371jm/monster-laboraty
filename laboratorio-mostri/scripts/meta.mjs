@@ -68,4 +68,7 @@ const D0=Date.now;const at=ms=>{Date.now=()=>ms};const back=()=>{Date.now=D0};
 {const bad=[null,5,'x',[],{t:'a',own:{0:99,99:3,x:2},ld:[0,0,77],gear:[{id:1,s:9,r:1},{id:2,s:0,r:2,v:1e9}],eq:{0:[2,2,2]},tw:{tries:-4,buf:['z'],ch:[]},ps:{xp:-1,cl:[0,1,1,99]},iv:{pts:NaN},cards:[NaN,5]}];
  for(const b of bad){const c=M.sanCh(b);fresh();S.ch=c;let e=null;try{M.leaders();tAtk();inc();M.psCan();M.twSim(1);M.ivBoard()}catch(x){e=x}ok(!e&&c.t>=0&&c.tw.tries>=0&&c.cards.length===18,'salvataggio rovinato ('+JSON.stringify(b).slice(0,30)+'): campioni riparati')}
  const c=M.sanCh(bad[4]);ok(c.own[0]===MAXSTAR&&!c.own[99]&&c.ld.length===1&&c.gear.length===1&&c.gear[0].v===100&&c.eq[0][0]===2&&c.eq[0][1]===0,'campi impossibili corretti (stelle, capi, equipaggiamento)')}
+// Ogni rarità (compresa la Speciale) ha i suoi valori: niente NaN nei testi e nei bonus
+{for(let r=0;r<=4;r++)ok(isFinite(M.LEADB[r]),'bonus da capo definito per la rarità '+r);
+ fresh();for(let i=0;i<CH.length;i++){M.ch().own[i]=1;M.ch().ld=[i];ok(isFinite(M.atkMul())&&isFinite(M.expMulCh(i))&&isFinite(M.skVal(i)),'valori finiti: '+M.form(i))}}
 process.exit(fails?1:0);

@@ -177,7 +177,7 @@ setCK('el',el=>1+sk('atkEl',el));setCK('atk',atkMul);setCK('hp',hpMul);
 setHook('inc',incMul);setHook('egg',()=>Math.max(.5,1-sk('egg')));
 setCK('ehp',()=>ivOn()?1.25:1);
 
-export {form,needCp,cps,C as ch,expMulCh,defCh,sanCh,LDMAX,FREE_CD,AD_MAX,star,sMul,skVal,busy,leaders,sk,leadAtk,gearOf,atkMul,hpMul,incMul,goldMul,cdMul,luckAdd,bossStun,slamMul,bossMul,setLeader,
+export {LEADB,form,needCp,cps,C as ch,expMulCh,defCh,sanCh,LDMAX,FREE_CD,AD_MAX,star,sMul,skVal,busy,leaders,sk,leadAtk,gearOf,atkMul,hpMul,incMul,goldMul,cdMul,luckAdd,bossStun,slamMul,bossMul,setLeader,
  rollRar,giveCh,pull1,pullT,pullFree,pullAd,freeLeft,adLeft,addT,gearRar,addGear,salvage,equip,unequip,autoEquip,SALV,
  addCard,albHave,albDone,albDup,albClaim,albTrade,ALB_T,
  TW_TRIES,BUFS,twCheck,twStage,twBoss,twSim,twStart,twFight,twPick,twQuit,twBuf,
