@@ -22,7 +22,7 @@ import './style.css';
 // Salvataggio periodico e sincronizzazione audio
 setInterval(()=>save(),5000);
 addEventListener('visibilitychange',()=>{if(document.hidden){ordersExpire();save(true)}else drawTimers();aSync();syncPlay()});
-addEventListener('pointerdown',()=>{actx();aSync()});
+addEventListener('pointerdown',()=>{R.lastTap=Date.now();actx();aSync()});
 // Regole delle piattaforme: niente menu del tasto destro, niente zoom (pizzico, Ctrl+rotella) e i tasti non fanno scorrere la pagina
 addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
@@ -41,6 +41,7 @@ function hookBridge(){R.inited=true;
   if(s==='opened'){AU.ad=true;aSync()}else if(s==='closed'||s==='failed'){AU.ad=false;aSync()}syncPlay();
   if(!R.pend)return;if(s==='rewarded'||s==='failed'||s==='closed')R.pend(s)})}catch(e){}
  try{window.bridge.advertisement.on(ev('INTERSTITIAL_STATE_CHANGED','interstitial_state_changed'),s=>{AU.ad=s==='opened';aSync();syncPlay()})}catch(e){}
+ try{const a=window.bridge.advertisement;if(a.interstitialState==='opened'||a.rewardedState==='opened')AU.ad=true}catch(e){} // un annuncio già aperto all'avvio: muto e in pausa
  try{AU.plat=window.bridge.platform.isAudioEnabled!==false;window.bridge.platform.on(ev('AUDIO_STATE_CHANGED','audio_state_changed'),v=>{AU.plat=!!v;aSync()})}catch(e){}
  // pausa della piattaforma: gioco e audio fermi, il tempo in pausa non conta
  try{window.bridge.platform.on(ev('PAUSE_STATE_CHANGED','pause_state_changed'),p=>{R.PZ=!!p;if(R.PZ)save(true);else{R.lastT=Date.now();R.lastO=Date.now()}aSync();syncPlay()})}catch(e){}}
@@ -67,6 +68,6 @@ async function lateBridge(){const t0=Date.now();
  try{await (initP||window.bridge.initialize())}catch(e){return}
  hookBridge();let cl=null;
  try{const r=await Promise.race([window.bridge.storage.get(K),sleep(5000).then(()=>null)]);cl=typeof r==='string'?JSON.parse(r):r}catch(e){}
- if(cl&&Array.isArray(cl.g)&&(cl.pt||0)>(S.pt||0)){try{localStorage.setItem(K,JSON.stringify(cl))}catch(e){}await load();R.lastT=Date.now();if(LANGS.includes(S.lp))R.lang=S.lp;redraw()}
+ if(cl&&Array.isArray(cl.g)&&(cl.pt||0)>(S.pt||0)){await load();R.lastT=Date.now();if(LANGS.includes(S.lp))R.lang=S.lp;redraw()}
  save(true);ready()}
 boot().catch(e=>{console.error(e);if(window.__fatal)window.__fatal(e)});

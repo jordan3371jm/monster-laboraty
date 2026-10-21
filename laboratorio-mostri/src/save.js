@@ -5,12 +5,17 @@ import {timersTick} from './game/timers.js';
 import {obj,num0,sanitize} from './sanitize.js';
 import {dayCheck} from './ui/missions.js';
 
+// Con Playgama Bridge si salva SOLO con bridge.storage (regola della piattaforma): l'SDK sceglie da solo cloud o memoria locale
+// e, quando il cloud riesce, cancella la copia locale con la stessa chiave. localStorage diretto solo se il Bridge non c'è (offline).
+const brSt=()=>R.inited&&window.bridge&&window.bridge.storage&&typeof window.bridge.storage.set==='function'?window.bridge.storage:null;
 function save(force){if(!R.loaded)return; // prima di load() S è lo stato vuoto: non deve sovrascrivere il salvataggio vero
- S.ls=Date.now();const j=JSON.stringify(S);try{localStorage.setItem(K,j)}catch(e){}
- if(R.inited&&(force||S.ls-R.lastB>10000)&&window.bridge.storage&&window.bridge.storage.set){R.lastB=S.ls;try{Promise.resolve(window.bridge.storage.set(K,j)).catch(()=>{})}catch(e){}}}
-async function load(){const c=[];
- try{const r=localStorage.getItem(K);if(r)c.push(JSON.parse(r))}catch(e){}
- if(R.inited&&window.bridge.storage&&window.bridge.storage.get){try{const r=await Promise.race([window.bridge.storage.get(K),sleep(3000).then(()=>null)]);if(r)c.push(typeof r==='string'?JSON.parse(r):r)}catch(e){}}
+ const st=brSt();if(st&&!force&&Date.now()-R.lastB<10000)return; // sulla piattaforma ogni 10s (e subito quando serve)
+ S.ls=Date.now();const j=JSON.stringify(S);
+ if(st){R.lastB=S.ls;try{Promise.resolve(st.set(K,j)).catch(()=>{})}catch(e){}return}
+ try{localStorage.setItem(K,j)}catch(e){}}
+async function load(){const c=[],st=brSt();
+ if(st){try{const r=await Promise.race([st.get(K),sleep(5000).then(()=>null)]);if(r)c.push(typeof r==='string'?JSON.parse(r):r)}catch(e){}} // l'SDK legge anche i vecchi salvataggi locali (stessa chiave)
+ else{try{const r=localStorage.getItem(K);if(r)c.push(JSON.parse(r))}catch(e){}}
  const v=c.filter(x=>x&&Array.isArray(x.g)&&x.g.length>=1&&x.g.length<=N).sort((a,b)=>(b.ls||0)-(a.ls||0))[0];
  if(v){const d=def();setS({...d,...v,up:{...d.up,...obj(v.up)},dl:{...d.dl,...obj(v.dl)}});sanitize(d);
   if(v.sfxOn===undefined){S.sfxOn=S.musOn=v.snd===0?0:1}delete S.snd; // il vecchio interruttore unico diventa effetti + musica
