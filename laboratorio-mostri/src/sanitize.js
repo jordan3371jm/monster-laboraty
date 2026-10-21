@@ -2,6 +2,7 @@ import {S} from './core/state.js';
 import {E,MAXT} from './data/config.js';
 import {PK,PKR,UP,mult} from './game/economy.js';
 import {GR,NID,NEST,ORD_DUR,ORD_Q,ORD_WAIT,SH} from './game/timers.js';
+import {sanCh} from './game/meta.js';
 
 // ---- Difesa da salvataggi rovinati (null, testo al posto di numeri, tipi sbagliati): senza questo un solo campo storto bloccava l'avvio per sempre ----
 const num0=x=>typeof x==='number'&&isFinite(x)?x:Date.now();
@@ -19,6 +20,8 @@ function sanitize(d){
  S.st=Math.floor(fin(S.st,1,1));S.introSeen=S.introSeen?1:0;S.bs=Math.floor(fin(S.bs,1,1));S.tut=Math.floor(fin(S.tut,0,0,3));S.wd=fin(S.wd,1,1,2)|0||1;
  S.sfxOn=S.sfxOn?1:0;S.musOn=S.musOn?1:0;if(!['auto','it','en'].includes(S.lp))S.lp='auto';
  S.g=S.g.map(t=>Number.isInteger(t)&&t>0&&t<=MAXT?t:0);
+ const gv=Array.isArray(S.gv)?S.gv:[];S.gv=S.g.map((t,i)=>t&&gv[i]?1:0); // varianti dorate: solo sulle celle occupate
+ S.ch=sanCh(S.ch);S.ul=Array.isArray(S.ul)?S.ul.filter(k=>typeof k==='string').slice(0,50):[];
  S.sq=Array.isArray(S.sq)?S.sq.filter(t=>Number.isInteger(t)&&t>0&&t<=MAXT).slice(0,4):[];
  for(const u of UP)S.up[u.k]=Math.floor(fin(S.up[u.k],0,0,u.max));
  const pk=obj(S.pk);S.pk={...d.pk};for(const p of PK)S.pk[p.k]=Math.floor(fin(pk[p.k],0,0,p.max));for(const p of PKR)S.pk[p.k]=Math.floor(fin(pk[p.k],0,0,p.max));
@@ -34,7 +37,7 @@ function sanitize(d){
  const now=Date.now(),exp=obj(S.exp);S.exp={run:Array.isArray(exp.run)?exp.run.slice(0,3):[]};
  S.exp.run=S.exp.run.filter(e=>e&&typeof e==='object').map(e=>{const q=Math.floor(fin(e.q,0,0,2)),std=Math.min(fin(e.st,now,0,now),now),dur=fin(e.et,NaN)-std,ok=dur>0&&dur<=8*3600e3;
   const et=ok?std+dur:now+3600e3*(1+q*3);                                  // durata illeggibile: riparte dalla durata standard del tipo
-  return{q,st:std,et:Math.min(et,now+8*3600e3),v:Math.floor(fin(e.v,0))}});
+  return{q,st:std,et:Math.min(et,now+8*3600e3),v:Math.floor(fin(e.v,0)),c:Number.isInteger(e.c)&&e.c>=0&&e.c<64?e.c:-1}});
  // ---- Nidi delle uova: tipo valido, orario di partenza mai nel futuro, un solo uovo per tipo ----
  const inc=obj(S.inc);S.inc={r:Array.isArray(inc.r)?inc.r.slice(0,NEST):[],h:Math.floor(fin(inc.h,0)),nes:Math.floor(fin(inc.nes,1,1,NEST)),
   k:ints(arr(inc.k)).filter(k=>NID[k]).slice(0,NID.length)};

@@ -4,7 +4,7 @@ import {R,S,setS} from '../core/state.js';
 import {fmt} from '../core/util.js';
 import {E} from '../data/config.js';
 import {tr} from '../data/text.js';
-import {PG,PK,PKR,UP,eggInt,inc,pgain,pkrCost,prestigeState,spCost} from '../game/economy.js';
+import {essMult,pgN,PK,PKR,UP,eggInt,inc,pgain,pkrCost,prestigeState,spCost} from '../game/economy.js';
 import {save} from '../save.js';
 import {inter} from './ads.js';
 import {drawB,startFight} from './battle.js';
@@ -20,6 +20,21 @@ import {tutNext} from './tutorial.js';
 import {renderGoal} from './goal.js';
 import {drawTimers} from './timers.js';
 import {track} from '../analytics.js';
+import {metaLang,metaUi} from './meta.js';
+import * as Mt from '../game/meta.js';
+
+// ---- Sistemi sbloccati a tappe: all'inizio poche cose, il resto compare man mano (con un avviso la prima volta) ----
+const UL=[{k:'col',id:'tCol',ok:()=>S.disc.filter(Boolean).length>=3},{k:'tr',id:'tTr',ok:()=>R.trC>=1},{k:'por',id:'tPor',ok:()=>S.bs>=8},
+ {k:'pas',id:'tPas',ok:()=>S.bs>=12},{k:'exp',id:'tExp',ok:()=>S.disc.filter(Boolean).length>=7},{k:'tow',id:'bTow',ok:()=>S.bs>=16}];
+const old=()=>S.ach.pr>0||S.bs>=15; // chi gioca da tempo trova già tutto aperto
+function gate(){const tut=S.tut>=3;$('tDaily').style.display=tut?'':'none';
+ for(const u of UL){const on=tut&&(old()||u.ok());$(u.id).style.display=on?'':'none';
+  if(on&&!S.ul.includes(u.k)){S.ul.push(u.k);if(R.ulInit)toast(tr('ulNew').replace('{n}',tr('ul_'+u.k)),1)}}
+ R.ulInit=1;const ivc=Mt.ch().iv,inv=tut&&(old()||S.bs>=6)&&(Mt.ivOn()||(ivc.pts>0&&!ivc.cl&&Mt.ivEnded()));$('bInv').style.display=inv?'':'none';
+ $('mrow').style.display=$('bTow').style.display==='none'&&!inv?'none':'';
+ Mt.twCheck();const c=Mt.ch();$('tPor').classList.toggle('n',Mt.freeLeft()<=0||c.t>=1);$('tPas').classList.toggle('n',Mt.psCan());
+ $('bTow').classList.toggle('n',c.tw.tries>0&&!c.tw.run);$('bInv').classList.toggle('n',Mt.ivEnded()&&ivc.pts>0&&!ivc.cl)}
+const xf=v=>v<100?v.toFixed(2):fmt(v);
 
 function ui(){const b=Date.now()<S.boost;
  $('coins').textContent='🪙 '+fmt(S.c);
@@ -29,18 +44,18 @@ function ui(){const b=Date.now()<S.boost;
  const ma=S.up.a>=1,cdl=Math.ceil((R.mallT-Date.now())/1000);$('mall').style.display=ma?'block':'none';setT('mall',tr('mall')+(cdl>0?' '+cdl+'s':''));$('mall').disabled=cdl>0;
  UP.forEach((u,i)=>{const l=S.up[u.k],m=l>=u.max,c=u.cost(l);
   setT('u'+i,`<b>${tr('u'+i)}</b> · ${tr('lvl')} ${l}<br><small>${tr('u'+i+'d')}${u.k==='f'&&l?' · '+Math.round(eggInt())+'s':''}</small><br>${m?tr('max'):'🪙 '+fmt(c)}`);$('u'+i).disabled=m||S.c<c});
- const pg=pgain();setT('pr',`<b>${tr('pr')}</b><br><small>${tr('prd')}</small><br>${pg>0?tr('get')+' 🔮 '+pg:tr('need')+' ('+fmt(S.run)+'/'+fmt(PG)+')'}`);$('pr').disabled=pg<1;
+ const pg=pgain();setT('pr',`<b>${tr('pr')}</b><br><small>${tr('prd')}</small><br>${pg>0?tr('get')+' 🔮 '+pg+'<br><small>'+tr('prPrev').replace('{a}',xf(essMult(S.essT+pg))).replace('{b}',xf(essMult(S.essT)))+'</small>':tr('need')+' ('+fmt(S.run)+'/'+fmt(pgN())+')'}`);$('pr').disabled=pg<1;
  const di=dailyInfo();$('tDaily').classList.toggle('n',di.can||S.dl.m.some(m=>m.p>=m.n&&!m.c)||(S.dl.w&&S.dl.w.p>=S.dl.w.n&&!S.dl.w.c));
  $('tCol').classList.toggle('n',[0,1,2,3,4,5,6,7].some(r=>rowOk(r)&&!S.col[r]));
  if($('daily').classList.contains('on'))renderDaily();if($('col').classList.contains('on'))renderCol();
  if($('trop').classList.contains('on'))renderTr();if($('tree').classList.contains('on'))renderTree();
  if($('set').classList.contains('on'))renderSet();if($('stat').classList.contains('on'))renderStats();
- drawTimers();drawB();renderGoal()}
+ drawTimers();drawB();renderGoal();gate();metaUi()}
 function applyLang(){document.documentElement.lang=R.lang;$('a1').textContent=tr('a1');$('a2').textContent=tr('a2');$('n0').textContent=tr('n0');$('n1').textContent=tr('n1');$('n2').textContent=tr('n2');$('upsT').textContent=tr('ups');$('closeUps').textContent=tr('close');
  $('sqT').textContent=tr('sqT');$('sqClose').textContent=tr('close');$('tTr').textContent=tr('trb');$('trT').textContent=tr('trT');$('trClose').textContent=tr('close');$('tT').textContent=tr('treeT');$('tClose').textContent=tr('close');$('treeB').textContent=tr('treeB');
  $('tDaily').firstChild.textContent=tr('dly');$('tCol').firstChild.textContent=tr('colb');$('dT').textContent=tr('dT');$('cT').textContent=tr('colT');$('dClose').textContent=tr('close');$('cClose').textContent=tr('close');
  $('tmT').textContent=tr('introT');$('tmClose').textContent=tr('close');$('tExp').title=tr('expT');
- $('setT').textContent=tr('setT');$('setClose').textContent=tr('close');$('statT').textContent=tr('statT');$('statClose').textContent=tr('close')}
+ $('setT').textContent=tr('setT');$('setClose').textContent=tr('close');$('statT').textContent=tr('statT');$('statClose').textContent=tr('close');metaLang()}
 UP.forEach((u,i)=>$('u'+i).onclick=()=>{const l=S.up[u.k],c=u.cost(l);if(l>=u.max||S.c<c)return;S.c-=c;S.up[u.k]++;prog('upg',1);sfx('claim');if(u.k==='c')draw();save();ui()});
 $('pr').onclick=()=>{const p=pgain();if(p<1)return;setS(prestigeState(S,p));track('prestige',{n:S.ach.pr,p});R.sel=-1;R.pB=0;R.pC=0;startFight();save(true);draw();ui();toast('🔮 +'+p);sfx('win');$('ups').classList.remove('on');inter('prestige')};
 function show(v){['labV','batV'].forEach((id,i)=>{$(id).classList.toggle('on',i===v);$('n'+i).classList.toggle('on',i===v)});if(v===1){tutNext(3);track('first_battle')}ui()}

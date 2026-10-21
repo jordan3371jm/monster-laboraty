@@ -8,6 +8,8 @@ import {save} from '../save.js';
 import {adThen,inter} from './ads.js';
 import {setT,toast} from './common.js';
 import {track} from '../analytics.js';
+import {gearRar,grant} from '../game/meta.js';
+import {RAR,ALB} from '../data/champs.js';
 
 // ---- Finestra «bentornato» / avvisi (raddoppio offline con pubblicità) ----
 function openWB(h){setT('wbB',h);$('wb').classList.add('on')}
@@ -24,9 +26,12 @@ else if(b.dataset.a==='cd')adThen('chest',()=>{if(!R.chR)return;chApply(R.chR);t
 const CHR=[{c:2,e:()=>Math.random()<.3?1:0,b:()=>Math.random()<.25?300:0},{c:5,e:()=>1+(Math.random()<.5?1:0),b:()=>Math.random()<.4?300:0},{c:12,e:()=>3+(Math.random()*3|0),b:()=>600}],CHI=['📦','🎁','💎'];
 const chTxt=r=>'🪙 +'+fmt(r.c)+(r.e?' · 🔮 +'+r.e:'')+(r.b?' · ⚡x2 '+r.b/60+'m':'');
 function chApply(r){give(r.c,r.e);if(r.b)S.boost=Math.max(Date.now(),S.boost)+r.b*1000}
+// Extra dei forzieri (non raddoppiati dalla pubblicità): biglietti del Portale, equipaggiamento, figurine
+const xTxt=x=>x?[x.t?'🎫 +'+x.t:'',x.gear?RAR[x.gear.r]+'🎒':'',x.cd?ALB[x.cd.a].c[x.cd.k]:''].filter(Boolean).join(' · '):'';
 function chest(){const q=Math.random(),pe=.08+.04*S.pk.b,k=q<pe?2:q<pe+.3?1:0,d=CHR[k];
- R.chR={k,c:Math.floor(rBase()*d.c),e:d.e(),b:d.b()};chApply(R.chR);S.ach.ch++;track('first_boss');sfx('new');save();
+ R.chR={k,c:Math.floor(rBase()*d.c),e:d.e(),b:d.b()};chApply(R.chR);
+ const x={t:[2,3,5][k]};if(k||Math.random()<.35)x.g=gearRar([0,.2,.45][k]);if(Math.random()<.5)x.card=1;const xt=xTxt(grant(x));S.ach.ch++;track('first_boss');sfx('new');save();
  // finestra solo se si sta guardando la battaglia: nel laboratorio un popup a ogni boss interrompeva le unioni (il premio è già accreditato)
- if($('wb').classList.contains('on')||document.hidden||!$('batV').classList.contains('on'))toast(CHI[k]+' '+tr('ch'+k)+' · '+chTxt(R.chR),1);
- else openWB('<div class="wbi">'+CHI[k]+'</div><div class="wbh">'+tr('ch'+k)+'</div><div class="wbc">'+chTxt(R.chR).replace(/ · /g,'<br>')+'</div><button class="b o" data-a="cd">'+tr('chDbl')+'</button><button class="b g" data-a="wc">'+tr('chOk')+'</button>')}
+ if($('wb').classList.contains('on')||document.hidden||!$('batV').classList.contains('on'))toast(CHI[k]+' '+tr('ch'+k)+' · '+chTxt(R.chR)+' · '+xt,1);
+ else openWB('<div class="wbi">'+CHI[k]+'</div><div class="wbh">'+tr('ch'+k)+'</div><div class="wbc">'+chTxt(R.chR).replace(/ · /g,'<br>')+'</div><div class="dc">'+xt+'</div><button class="b o" data-a="cd">'+tr('chDbl')+'</button><button class="b g" data-a="wc">'+tr('chOk')+'</button>')}
 export {openWB,showOff,CHR,CHI,chTxt,chApply,chest};

@@ -9,7 +9,7 @@
     "preview": "vite preview",
     "sim": "node scripts/sim-economy.mjs",
     "sim:update": "node scripts/sim-economy.mjs update",
-    "test": "node scripts/sim-economy.mjs check && node scripts/rules.mjs && node scripts/timers.mjs && node scripts/check-text.mjs",
+    "test": "node scripts/sim-economy.mjs check && node scripts/rules.mjs && node scripts/timers.mjs && node scripts/meta.mjs && node scripts/check-text.mjs",
     "smoke": "vite build && node scripts/smoke.mjs",
     "fuzz": "vite build && node scripts/fuzz.mjs"
   },

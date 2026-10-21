@@ -9,6 +9,8 @@ import {autoEgg,mergeAll} from './ui/lab.js';
 import {dayCheck} from './ui/missions.js';
 import {showOff} from './ui/rewards.js';
 import {chk} from './ui/trophies.js';
+import {ivCheck} from './game/meta.js';
+import {grantMsg} from './ui/meta.js';
 
 // ---- Ciclo di gioco ----
 function tick(){const n=Date.now();if(R.PZ){R.lastT=n;return}
@@ -20,6 +22,7 @@ function tick(){const n=Date.now();if(R.PZ){R.lastT=n;return}
  if(R.pO>0&&!document.hidden){showOff(R.pO,R.pS,R.pB,R.pC);R.pO=0;R.pS=0;R.pB=0;R.pC=0} // una sola finestra al ritorno, anche se la scheda era in background
  if(!document.hidden){S.pt=(S.pt||0)+full;S.an.ls=n}dayCheck();timersTick();fight(full);evTick(full);chk();
  autoEgg(full);
+ const ivo=ivCheck();if(ivo)grantMsg(ivo); // inizia una nuova invasione: quella vecchia non riscossa si riscuote da sola
  if(S.up.a>=2){R.autoT+=full;if(R.autoT>=Math.max(5,30-5*(S.up.a-1))){R.autoT=0;mergeAll()}}else R.autoT=0;
  ui()}
 export {tick};

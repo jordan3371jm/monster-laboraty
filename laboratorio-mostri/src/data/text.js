@@ -73,6 +73,53 @@ w0n:'🧪 World 1 · Laboratory',w1n:'🌌 World 2 · Starry Abyss',wNew:'New wo
 setT:'⚙️ Settings',setLang:'Language',setAud:'Audio',setSfx:'Effects',setMus:'Music',setStat:'📊 Statistics',setData:'Game data',rsBtn:'🗑️ Reset save',rsAsk:'Do you really want to delete all your progress? This cannot be undone.',rsYes:'Yes, delete everything',rsNo:'Cancel',rsDone:'Save reset',
 statT:'📊 Statistics',st_pt:'⏱️ Time played',st_mg:'🔗 Total merges',st_sp:'🥚 Eggs summoned',st_wn:'⚔️ Stages won',st_st:'🏁 Stage reached',st_tm:'👑 Highest monster',st_dc:'📖 Monsters found',st_lt:'🪙 Coins earned',st_es:'🔮 Essences gained',st_pr:'🌑 Dark summonings',st_ch:'🎁 Chests opened',st_ev:'👻 Events caught',st_ab:'✨ Abilities cast',st_dy:'🔥 Daily streak',st_tf:'🏆 Trophies',
 m_winEl:'Win {n} stages against {e} enemies',m_ability:'Cast {n} abilities in battle',m_event:'Catch {n} events 👻💎',weekly:'📅 Weekly mission',wkLeft:'days left',monLv:'Level'}};
+// ---- Progressione permanente: Portale dei Campioni, equipaggiamento, Torre, Pass, Invasione, album, sblocchi ----
+Object.assign(TX.it,{
+ porT:'🌀 Portale dei Campioni',porTk:'Biglietti',porX1:'Evoca ×1',porX10:'Evoca ×10',porFree:'🎁 Evocazione gratis',porFreeIn:'Gratis tra',porAd:'▶ Evoca con video',porAdN:'oggi',
+ porPity:'Raro garantito tra {n} · Leggendario entro {m}',porOdds:'Probabilità: ⚪ 60% · 🔵 28% · 🟣 10% · 🟡 2%',porLd:'👑 Capi squadra',porLdD:'Guidano la squadra: danno attacco e la loro abilità. Al massimo 2. Restano dopo l\'Evocazione oscura.',
+ porAll:'Collezione campioni',porNone:'Ancora nessun campione: evocane uno!',porEmpty:'Posto libero',chLead:'👑 Metti a capo',chUnlead:'Togli dai capi',chBusy:'🧭 In spedizione',
+ rar0:'Comune',rar1:'Raro',rar2:'Epico',rar3:'Leggendario',
+ sk_atkEl:'+{v} attacco ai mostri {e}',sk_atk:'+{v} attacco della squadra',sk_hp:'+{v} vita della squadra',sk_inc:'+{v} guadagni',sk_gold:'+{v} monete dei livelli',sk_exp:'+{v} premio della spedizione che accompagna',
+ sk_cd:'-{v} ricarica delle abilità',sk_luck:'+{v} probabilità di fusione perfetta',sk_egg:'-{v} attesa dell\'incubatrice',sk_stun:'Il boss parte stordito per {v}s',sk_slam:'-{v} danno del colpo a terra',sk_boss:'+{v} danno contro i boss',sk_all:'+{v} attacco, vita e guadagni',
+ chLeadB:'Da capo: +{v} attacco alla squadra',exIv:'Esclusivo: solo dall\'Invasione dei boss',exPs:'Esclusivo: solo dal Pass stagionale',
+ pullT:'Evocazione!',pullNew:'NUOVO!',pullBack:'Già ★5: +{n} 🎫',pullOk:'Fantastico!',
+ gearT:'🎒 Equipaggiamento',gearAuto:'Equipaggia i migliori sui capi',gearNone:'Nessun pezzo: arrivano dai forzieri dei boss, dalla Torre e dal Pass.',gearSalv:'Smonta',gearOnly:'L\'equipaggiamento conta solo sui capi squadra.',
+ gear0:'Arma',gear1:'Armatura',gear2:'Amuleto',gearE0:'attacco',gearE1:'vita',gearE2:'guadagni',gearOn:'su',gearPick:'Scegli il pezzo',gearFree:'vuoto',gearGot:'Nuovo equipaggiamento',
+ twT:'🗼 Torre giornaliera',twD:'3 tentativi al giorno. Ogni piano è più duro e dopo ogni vittoria scegli un potenziamento. I premi arrivano la prima volta che superi un piano nella giornata.',
+ twTries:'Tentativi',twBest:'Record di oggi',twRec:'Record assoluto',twStart:'⚔️ Inizia la scalata',twFloor:'Piano',twFight:'⚔️ Combatti il piano {n}',twQuit:'Ritirati',twWin:'Piano {n} superato!',twLose:'Sconfitto al piano {n}',
+ twPick:'Scegli un potenziamento',twNoTry:'Tentativi finiti: torna domani!',twBoss:'Boss',twBufs:'Potenziamenti attivi',twNext:'Prossimo nemico',
+ buf_a:'+20% attacco',buf_h:'+25% vita',buf_b:'+10% attacco e vita',buf_r:'+40% attacco, -15% vita',buf_g:'+50% monete della Torre',
+ psT:'🎟️ Pass stagionale',psD:'Si riempie giocando: missioni, boss, Torre, unioni e vittorie. Al livello 30 il campione esclusivo 🦚.',psLv:'Livello',psLeft:'giorni alla fine della stagione',
+ psFree:'Gratis',psPrem:'Premium',psUnl:'▶ Sblocca il Premium con un video',psAll:'Riscuoti tutto',psDone:'✓',
+ ivT:'⚔️ Invasione dei boss',ivD:'Ogni sabato e domenica: nemici +25% vita, monete x2 e punti per ogni livello vinto (i boss valgono 5 volte). Scala la classifica!',ivOff:'La prossima invasione inizia sabato.',
+ ivPts:'Punti',ivRank:'Posizione',ivYou:'Tu',ivRewT:'Premi finali',ivR1:'1°: 30 🎫 + 🦍',ivR3:'2°-3°: 20 🎫 + 🦍',ivR6:'4°-6°: 10 🎫',ivR10:'7°-10°: 4 🎫',ivClaim:'Riscuoti il premio',ivOn:'Invasione in corso!',ivEnd:'Invasione finita: riscuoti il premio!',ivGot:'Invasione: {n}° posto',
+ albT:'🃏 Album di figurine',albD:'Le figurine arrivano da forzieri, Torre e Pass. Album completo: 25 🎫 e un bonus permanente.',alb0:'Laboratorio · +5% guadagni',alb1:'Spazio · +5% attacco',albTrade:'Scambia 3 doppioni',albClaim:'Riscuoti 25 🎫',albDone:'✓ Completato',cardGot:'Nuova figurina',
+ prPrev:'Ripartirai con guadagni ×{a} (ora ×{b})',ulNew:'🔓 Nuovo: {n}',ul_por:'Portale dei Campioni',ul_pas:'Pass stagionale',ul_tow:'Torre giornaliera',ul_exp:'Spedizioni e uova',ul_tr:'Trofei',ul_col:'Collezione',
+ gold:'✨ Mostro dorato! Rende ×3',expCh:'Accompagnatore',expNoCh:'Nessuno',expChD:'Un campione rende la spedizione più ricca, ma mentre è via non guida la squadra.',
+ bTow:'🗼 Torre',bInv:'⚔️ Invasione',facB:'Bonus elemento',tkGot:'🎫 +{n} biglietti'});
+Object.assign(TX.en,{
+ porT:'🌀 Champion Portal',porTk:'Tickets',porX1:'Summon ×1',porX10:'Summon ×10',porFree:'🎁 Free summon',porFreeIn:'Free in',porAd:'▶ Summon with video',porAdN:'today',
+ porPity:'Rare guaranteed in {n} · Legendary within {m}',porOdds:'Odds: ⚪ 60% · 🔵 28% · 🟣 10% · 🟡 2%',porLd:'👑 Squad leaders',porLdD:'They lead the squad: extra attack plus their skill. Up to 2. They stay after the Dark summoning.',
+ porAll:'Champion collection',porNone:'No champions yet: summon one!',porEmpty:'Empty slot',chLead:'👑 Make leader',chUnlead:'Remove from leaders',chBusy:'🧭 On expedition',
+ rar0:'Common',rar1:'Rare',rar2:'Epic',rar3:'Legendary',
+ sk_atkEl:'+{v} attack to {e} monsters',sk_atk:'+{v} squad attack',sk_hp:'+{v} squad health',sk_inc:'+{v} income',sk_gold:'+{v} stage coins',sk_exp:'+{v} reward of the expedition it joins',
+ sk_cd:'-{v} ability cooldown',sk_luck:'+{v} perfect merge chance',sk_egg:'-{v} auto-incubator wait',sk_stun:'Bosses start stunned for {v}s',sk_slam:'-{v} slam damage',sk_boss:'+{v} damage to bosses',sk_all:'+{v} attack, health and income',
+ chLeadB:'As leader: +{v} squad attack',exIv:'Exclusive: only from the Boss Invasion',exPs:'Exclusive: only from the Season Pass',
+ pullT:'Summon!',pullNew:'NEW!',pullBack:'Already ★5: +{n} 🎫',pullOk:'Awesome!',
+ gearT:'🎒 Equipment',gearAuto:'Equip the best on leaders',gearNone:'No items yet: they drop from boss chests, the Tower and the Pass.',gearSalv:'Salvage',gearOnly:'Equipment only counts on squad leaders.',
+ gear0:'Weapon',gear1:'Armor',gear2:'Amulet',gearE0:'attack',gearE1:'health',gearE2:'income',gearOn:'on',gearPick:'Pick an item',gearFree:'empty',gearGot:'New equipment',
+ twT:'🗼 Daily Tower',twD:'3 attempts a day. Every floor is harder and after each win you pick a power-up. Rewards come the first time you clear a floor each day.',
+ twTries:'Attempts',twBest:'Today\'s best',twRec:'All-time best',twStart:'⚔️ Start the climb',twFloor:'Floor',twFight:'⚔️ Fight floor {n}',twQuit:'Retreat',twWin:'Floor {n} cleared!',twLose:'Defeated on floor {n}',
+ twPick:'Pick a power-up',twNoTry:'No attempts left: come back tomorrow!',twBoss:'Boss',twBufs:'Active power-ups',twNext:'Next enemy',
+ buf_a:'+20% attack',buf_h:'+25% health',buf_b:'+10% attack and health',buf_r:'+40% attack, -15% health',buf_g:'+50% Tower coins',
+ psT:'🎟️ Season Pass',psD:'Fills up as you play: missions, bosses, Tower, merges and wins. Level 30 gives the exclusive champion 🦚.',psLv:'Level',psLeft:'days until the season ends',
+ psFree:'Free',psPrem:'Premium',psUnl:'▶ Unlock Premium with a video',psAll:'Claim all',psDone:'✓',
+ ivT:'⚔️ Boss Invasion',ivD:'Every Saturday and Sunday: enemies +25% health, coins x2 and points for every stage won (bosses are worth 5x). Climb the leaderboard!',ivOff:'The next invasion starts on Saturday.',
+ ivPts:'Points',ivRank:'Rank',ivYou:'You',ivRewT:'Final rewards',ivR1:'1st: 30 🎫 + 🦍',ivR3:'2nd-3rd: 20 🎫 + 🦍',ivR6:'4th-6th: 10 🎫',ivR10:'7th-10th: 4 🎫',ivClaim:'Claim reward',ivOn:'Invasion in progress!',ivEnd:'Invasion over: claim your reward!',ivGot:'Invasion: rank {n}',
+ albT:'🃏 Sticker album',albD:'Stickers drop from chests, the Tower and the Pass. A full album gives 25 🎫 and a permanent bonus.',alb0:'Laboratory · +5% income',alb1:'Space · +5% attack',albTrade:'Trade 3 duplicates',albClaim:'Claim 25 🎫',albDone:'✓ Complete',cardGot:'New sticker',
+ prPrev:'You will restart with income ×{a} (now ×{b})',ulNew:'🔓 New: {n}',ul_por:'Champion Portal',ul_pas:'Season Pass',ul_tow:'Daily Tower',ul_exp:'Expeditions and eggs',ul_tr:'Trophies',ul_col:'Collection',
+ gold:'✨ Golden monster! Earns ×3',expCh:'Companion',expNoCh:'None',expChD:'A champion makes the expedition richer, but while away it does not lead the squad.',
+ bTow:'🗼 Tower',bInv:'⚔️ Invasion',facB:'Element bonus',tkGot:'🎫 +{n} tickets'});
 const tr=k=>TX[R.lang][k];
 // Messaggi con più varianti (scelta a caso): la prima è il testo originale. Nei «win» ogni variante finisce con uno spazio.
 const VAR={it:{
