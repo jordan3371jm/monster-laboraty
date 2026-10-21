@@ -493,3 +493,4 @@ img{-webkit-user-drag:none;user-select:none}
 #coins,#ess,#stg{white-space:nowrap}
 @media (max-width:400px){#coins{font-size:20px}#inc{font-size:11px}#stg{font-size:11px;padding:3px 7px}.ib{flex-basis:34px;height:34px;font-size:16px;border-radius:10px}#ess{font-size:14px;padding:3px 7px}.tr8{gap:4px}#top{gap:4px}}
 @media (max-width:350px){#stg{display:none}}
+#shopB>.b.sh.off{opacity:.55}#shopB>.b.sh.off strong{background:#ffffff1a;box-shadow:none}

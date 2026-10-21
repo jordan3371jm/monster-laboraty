@@ -198,7 +198,7 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
 // --- sblocchi a obiettivi: un giocatore nuovo parte con il solo laboratorio, le funzioni si aprono con i traguardi
 {const t=await boot({g:[3,3,...z(18)],tut:3,disc:[1,1,1,...z(23)],ul:['v2','ups'],introSeen:0},{});await t.adv(1200);
  ok(t.$('n1').classList.contains('lk')&&!t.$('n2').classList.contains('lk'),'giocatore nuovo: Battaglia chiusa (lucchetto), Potenziamenti aperti');
- ok(t.$('tools').style.display==='none'&&t.$('adr').style.display==='none'&&!t.$('intro').classList.contains('on'),'all\'inizio niente icone in alto, niente boost, niente introduzione ai timer');
+ ok(t.qa('#tools .tb').filter(b=>b.style.display!=='none').map(b=>b.id).join()==='tShop'&&t.$('adr').style.display==='none'&&!t.$('intro').classList.contains('on'),'all\'inizio in alto solo il negozio, niente boost, niente introduzione ai timer');
  ok(t.$('goal').classList.contains('ul')&&/level 4|livello 4/.test(t.$('goalT').textContent),'la barra obiettivo indica il prossimo sblocco ('+t.$('goalT').textContent+')');
  ok(t.$('u2').style.display==='none'&&t.$('uLk').style.display!=='none','potenziamenti: quelli chiusi non si vedono, il prossimo mostra il requisito');
  const st0=t.S().st;await t.adv(3000);ok(t.S().st===st0,'prima dello sblocco la battaglia è ferma');
@@ -251,7 +251,7 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  ok(t.calls.includes('msg:gameplay_started'),'Playgama: gameplay_started dopo il caricamento');
  ok(t.S().iap.x2===1&&t.calls.includes('lb:best_stage:9'),'Playgama: acquisto permanente «Guadagni ×2» ripristinato all\'avvio, classifica del livello record');
  ok(t.$('tShop').style.display!=='none','negozio: il pulsante 🛒 compare se ci sono i pagamenti');
- t.click(t.$('tShop'));ok(t.qa('#shopB [data-id]').length===2&&/20 Gam/.test(t.$('shopB').textContent)&&t.q('#shopB [data-id=income_x2]').disabled,'negozio: solo i prodotti del gioco, prezzi della piattaforma, «Guadagni ×2» già posseduto');
+ t.click(t.$('tShop'));ok(t.qa('#shopB [data-id]').length===7&&t.qa('#shopB [data-id]:not([disabled])').length===1&&/20 Gam/.test(t.$('shopB').textContent)&&t.q('#shopB [data-id=income_x2]').disabled,'negozio: tutti i prodotti, compra solo quelli con un prezzo, «Guadagni ×2» già posseduto');
  const t0=JSON.parse(t.w.localStorage.getItem('ml_save_v1')).ch.t||0;t.click(t.q('#shopB [data-id=tickets_10]'));await t.adv(400);
  ok(t.calls.includes('buy:tickets_10')&&t.calls.includes('consume:tickets_10')&&t.S().ch.t===t0+10,'negozio: 10 biglietti consegnati e acquisto consumato');
  t.click(t.$('shopClose'));t.click(t.$('n1'));await t.adv(8000);
@@ -262,7 +262,8 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  t.click(t.$('tSet'));ok(!!t.q('[data-a=login]')&&!!t.q('[data-a=soc][data-v=share]')&&!t.q('[data-a=soc][data-v=rate]'),'impostazioni: «Accedi» e solo i pulsanti social supportati');
  t.click(t.q('[data-a=login]'));t.click(t.q('[data-a=soc][data-v=share]'));await t.adv(300);ok(t.calls.includes('auth')&&t.calls.includes('share'),'accesso e condivisione chiamano il Bridge');
  ok(t.errs.length===0,'Playgama: nessun errore JS '+t.errs.slice(0,2));}
-{const t=await boot({...base},{});ok(t.$('tShop').style.display==='none','senza Bridge niente negozio');}
+{const t=await boot({...base},{});ok(t.$('tShop').style.display!=='none','il negozio 🛒 si vede sempre (anche senza pagamenti)');t.click(t.$('tShop'));
+ ok(t.$('shop').classList.contains('on')&&t.qa('#shopB [data-id][disabled]').length===7&&!!t.q('#shopB [data-a=ad]'),'senza pagamenti: prodotti visibili ma non acquistabili, biglietto gratis con video');}
 
 // --- app di Playgama: Bridge che arriva tardi → si collega e recupera il salvataggio della piattaforma (più tempo di gioco)
 {const t=await boot({...base,g:[1,1,...z(18)],c:50,pt:10,introSeen:1,dl:dl0({last:dn})},{});await t.adv(1500);

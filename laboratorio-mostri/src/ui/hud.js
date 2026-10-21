@@ -35,7 +35,7 @@ function gate(){Ul.ulMigrate();const tut=S.tut>=3,on=k=>tut&&Ul.has(k);
  for(const u of Ul.ulCheck()){if(u.up!==undefined)toast(tr('ulNew').replace('{n}',tr('u'+u.up)),1);else R.ulq.push(u.k)}
  if(R.ulq.length&&!R.ulT&&!$('ulp').classList.contains('on'))R.ulT=setTimeout(openUl,900); // dopo la scheda del mostro nuovo
  for(const k in UIC)for(const id of UIC[k])$(id).style.display=on(k)?'':'none';
- const shop=tut&&R.shop&&Ul.has('ups');$('tShop').style.display=shop?'':'none'; // negozio: solo se la piattaforma ha i pagamenti
+ const shop=tut&&Ul.has('ups');$('tShop').style.display=shop?'':'none'; // negozio sempre visibile dopo lo sblocco dei Potenziamenti
  $('tools').style.display=shop||['day','col','tr','exp','por','pas'].some(on)?'':'none';$('nav').style.display=tut?'':'none';
  for(const i in NAVK)$('n'+i).classList.toggle('lk',!on(NAVK[i]));
  UP.forEach((u,i)=>{$('u'+i).style.display=Ul.upOpen(i)&&(!u.am||S.am)?'':'none'});$('amB').style.display=S.am?'none':'';
