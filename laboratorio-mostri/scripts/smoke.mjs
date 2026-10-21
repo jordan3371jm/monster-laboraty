@@ -5,7 +5,7 @@ const P=fileURLToPath(new URL('..',import.meta.url)).replace(/\/$/,'');
 const js=(()=>{const d=P+'/dist/assets/';return fs.readFileSync(d+fs.readdirSync(d).find(f=>f.endsWith('.js')),'utf8')})();
 const html=fs.readFileSync(P+'/index.html','utf8').replace(/<script[\s\S]*?<\/script>/g,'');
 let fails=0;const ok=(c,m)=>{console.log((c?'✓ ':'✗ ')+m);if(!c)fails++};
-async function boot(save,{bridge=false,lang='it'}={}){
+async function boot(save,{bridge=false,lang='it',bx=null}={}){
  let clock=1.8e12,seed=7;const timers=[];let id=1;const calls=[];
  const dom=new JSDOM(html,{runScripts:'outside-only',pretendToBeVisual:true,url:'https://x.test/'});const w=dom.window;
  const D=w.Date;w.Date=class extends D{constructor(...a){a.length?super(...a):super(clock)}static now(){return clock}};
@@ -14,6 +14,7 @@ async function boot(save,{bridge=false,lang='it'}={}){
  w.clearTimeout=w.clearInterval=i=>{const k=timers.findIndex(x=>x.id===i);if(k>=0)timers.splice(k,1)};
  const errs=[];w.addEventListener('error',e=>errs.push(String(e.message)));
  if(bridge)w.bridge={initialize:async()=>{},platform:{language:lang,on(){},sendMessage(){},isAudioEnabled:true},advertisement:{on(){},showInterstitial:p=>{calls.push(p);return Promise.resolve()},showRewarded:()=>Promise.resolve()},storage:{get:async()=>null,set:async()=>{}},EVENT_NAME:{}};
+ if(bridge&&bx){const b=w.bridge;b.platform.sendMessage=(m,o)=>{calls.push('msg:'+m+(o&&o.level?':'+o.level:'')+(o&&o.achievement?':'+o.achievement:''));return Promise.resolve()};Object.assign(b,bx(calls))}
  if(save)w.localStorage.setItem('ml_save_v1',JSON.stringify({ls:clock-1000,...save}));
  w.eval(js);const flush=()=>new Promise(r=>setImmediate(r));
  const adv=async ms=>{const end=clock+ms;for(;;){let n=null;for(const t of timers)if(t.t<=end&&(!n||t.t<n.t))n=t;if(!n)break;clock=Math.max(clock,n.t);if(n.rep)n.t+=n.ms;else timers.splice(timers.indexOf(n),1);try{n.f()}catch(e){errs.push('T:'+e.stack)}await flush()}clock=end};
@@ -54,15 +55,15 @@ const base={c:5e5,g:[3,3,4,2,2,1,0,5,0,6,1,1,0,0,2,4,0,0,0,0],sp:30,up:{l:3,d:2,
  t.click(t.$('dClose'));
  ok(t.errs.length===0,'nessun errore JS '+t.errs.slice(0,2));}
 
-// --- interstitial: non più ogni 40 unioni; solo prestigio e cambio mondo
+// --- interstitial: ogni 50 unioni (a mano o automatiche), al prestigio e al cambio mondo
 {const t=await boot({...base,g:[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],run:9e9},{bridge:true});
  const cells=t.qa('#grid .c');
  for(let r=0;r<2;r++){for(let i=0;i<20;i+=2){t.click(cells[i]);t.click(cells[i+1])}
   // rimetti tutti a livello 1 tramite nuovi mostri non possibile: ripeti unioni di livello 2
  }
- for(let r=0;r<80&&t.S().ach.mg-60<45;r++){t.click(t.$('spawn'));for(let i=0;i<20;i++)for(let j=i+1;j<20;j++){t.click(cells[i]);t.click(cells[j])}}
- const merges=t.S().ach.mg-60;ok(merges>=10&&t.calls.length===0,'dopo '+merges+' unioni nessun interstitial ('+t.calls.length+')');
- t.click(t.$('pr'));ok(t.calls.join()==='prestige','Evocazione oscura → interstitial «prestige» ('+t.calls+')');}
+ for(let r=0;r<80&&t.S().ach.mg-60<55;r++){t.click(t.$('spawn'));for(let i=0;i<20;i++)for(let j=i+1;j<20;j++){t.click(cells[i]);t.click(cells[j])}}
+ const merges=t.S().ach.mg-60;ok(merges>=50&&t.calls.filter(c=>c==='merge').length===1,'dopo '+merges+' unioni un interstitial «merge» ('+t.calls+')');
+ t.click(t.$('pr'));ok(t.calls[t.calls.length-1]==='prestige','Evocazione oscura → interstitial «prestige» ('+t.calls+')');}
 {const t=await boot({...base,g:[13,13,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],disc:Array(26).fill(0).map((_,i)=>i<13?1:0)},{bridge:true});
  const cells=t.qa('#grid .c');t.click(cells[0]);t.click(cells[1]);await t.adv(300);
  ok(t.$('wb').classList.contains('on')&&t.calls.length===0,'nuovo mondo: finestra aperta, ancora nessun interstitial');
@@ -213,6 +214,70 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  ok(t.errs.length===0,'sblocchi dopo l\'Evocazione: nessun errore JS '+t.errs.slice(0,2));}
 {const t=await boot({...base,ul:['col']},{});await t.adv(600);
  ok(['ups','bat','day','col','exp','por','tow','u5'].every(k=>t.S().ul.includes(k))&&!t.$('ulp').classList.contains('on'),'salvataggio di prima con Evocazione oscura: tutto resta aperto, senza finestre');}
+
+// --- video «Unione 5 minuti» (prima dell'unione automatica) e boost x2 di 5 minuti
+{const rw={};const adv=calls=>({advertisement:{on:(e,cb)=>{if(e==='rewarded_state_changed')rw.cb=cb},showInterstitial:p=>{calls.push(p);return Promise.resolve()},showRewarded:p=>{calls.push('rw:'+p);Promise.resolve().then(()=>{rw.cb('opened');rw.cb('rewarded');rw.cb('closed')})}}});
+ const t=await boot({...base,pk:{s:0,a:0,o:0,g:0,b:0},g:[1,1,4,4,6,6,...z(14)],introSeen:1,dl:dl0({last:dn})},{bridge:true,bx:adv});await t.adv(600);
+ ok(t.$('a3').style.display!=='none','senza unione automatica c\'è il pulsante «Unione 5 min»');
+ t.click(t.$('a3'));await t.adv(300);ok(t.S().amAd>1.8e12+290e3,'video guardato: unione dei mostri attiva per 5 minuti');
+ await t.adv(10300);const g=t.S().g;ok(g.filter(x=>x===2).length===1&&g.filter(x=>x===4).length===2,'dopo 10s si uniscono 2 mostri (la coppia più bassa)');
+ await t.adv(20500);ok(t.S().g.filter(x=>x===7).length===1,'le coppie di livello alto si uniscono anche loro (fino al livello 7)');
+ t.click(t.$('a1'));await t.adv(300);ok(t.calls.includes('rw:boost')&&t.S().boost-1.8e12>=290e3,'x2 per 5 minuti');
+ ok(t.errs.length===0,'video: nessun errore JS '+t.errs.slice(0,2));}
+
+// --- Unione automatica: si sblocca per sempre con 5 Essenze, poi una coppia ogni 15s; velocità e livello si comprano con le monete
+{const t=await boot({...base,c:1e6,ess:6,essT:10,pk:{s:0,a:0,o:0,g:0,b:0},up:{l:0,d:0,o:0,a:0,c:0,f:0,m:0},g:[1,1,1,1,1,1,1,1,1,1,2,2,...z(8)],introSeen:1,dl:{d:-1,m:[],last:dn2,st:2,dbl:1,lr:null}},{});await t.adv(600);
+ const cnt=v=>t.S().g.filter(x=>x===v).length;
+ ok(t.$('u3').style.display==='none'&&t.$('u6').style.display==='none'&&t.$('amB').style.display!=='none','prima dello sblocco: niente velocità né livello di unione, c\'è la scheda «Unione automatica · 🔮 5»');
+ await t.adv(16000);ok(cnt(1)===10,'senza sblocco le uova non si uniscono da sole');
+ t.click(t.$('amB'));ok(t.S().am===1&&t.S().ess===1,'sblocco con 5 Essenze ('+t.S().ess+' rimaste)');
+ ok(t.$('u3').style.display!=='none'&&t.$('u6').style.display!=='none'&&t.$('amB').style.display==='none','dopo lo sblocco compaiono i 2 potenziamenti');
+ await t.adv(15200);ok(cnt(1)===8&&cnt(2)===3,'dopo 15s si uniscono solo 2 uova di livello 1 (livello 1: '+cnt(1)+', livello 2: '+cnt(2)+')');
+ await t.adv(15000*5);ok(cnt(1)===0&&cnt(3)===0,'livello di unione 0: i mostri di livello 2 non si uniscono (livello 2: '+cnt(2)+')');
+ t.click(t.$('u6'));await t.adv(15200);ok(t.S().up.m===1&&cnt(3)===1,'«Livello di unione» 1: ora si uniscono anche i livello 2');
+ const a0=t.S().up.a;t.click(t.$('u3'));ok(t.S().up.a===a0+1&&/14\.5s/.test(t.$('u3').textContent),'«Velocità di unione»: 15s → 14,5s');
+ t.click(t.$('n2'));t.click(t.$('pr'));await t.adv(600);ok(t.S().am===1&&t.S().up.a===0,'dopo l\'Evocazione oscura l\'unione automatica resta, i potenziamenti a monete si azzerano');
+ ok(t.errs.length===0,'unione automatica: nessun errore JS '+t.errs.slice(0,2));}
+
+// --- Playgama Bridge (simulato): messaggi, acquisti, account e condivisione
+{const mock=calls=>({payments:{isSupported:true,getCatalog:async()=>[{id:'tickets_10',price:'20 Gam'},{id:'income_x2',price:'250 Gam'},{id:'sconosciuto',price:'1'}],
+  getPurchases:async()=>[{id:'income_x2',orderId:'o1'}],purchase:async id=>{calls.push('buy:'+id);return{id,orderId:'o2'}},consumePurchase:async id=>{calls.push('consume:'+id)}},
+ player:{isAuthorizationSupported:true,isAuthorized:false,name:'',authorize:async()=>{calls.push('auth')}},
+ social:{isShareSupported:true,share:async()=>{calls.push('share')},isRateSupported:false,rate:async()=>{}},
+ leaderboards:{type:'in_game',setScore:async(id,v)=>{calls.push('lb:'+id+':'+v)}},achievements:{isSupported:true,unlock:async id=>{calls.push('ach:'+id)}},analytics:{send:ev=>calls.push('an:'+ev)}});
+ const t=await boot({...base,g:[13,13,13,13,...z(16)],st:9,bs:9,fm:0,essT:0,ess:0,introSeen:1,dl:dl0({last:dn})},{bridge:true,bx:mock});await t.adv(1500);
+ ok(t.calls.includes('msg:gameplay_started'),'Playgama: gameplay_started dopo il caricamento');
+ ok(t.S().iap.x2===1&&t.calls.includes('lb:best_stage:9'),'Playgama: acquisto permanente «Guadagni ×2» ripristinato all\'avvio, classifica del livello record');
+ ok(t.$('tShop').style.display!=='none','negozio: il pulsante 🛒 compare se ci sono i pagamenti');
+ t.click(t.$('tShop'));ok(t.qa('#shopB [data-id]').length===2&&/20 Gam/.test(t.$('shopB').textContent)&&t.q('#shopB [data-id=income_x2]').disabled,'negozio: solo i prodotti del gioco, prezzi della piattaforma, «Guadagni ×2» già posseduto');
+ const t0=JSON.parse(t.w.localStorage.getItem('ml_save_v1')).ch.t||0;t.click(t.q('#shopB [data-id=tickets_10]'));await t.adv(400);
+ ok(t.calls.includes('buy:tickets_10')&&t.calls.includes('consume:tickets_10')&&t.S().ch.t===t0+10,'negozio: 10 biglietti consegnati e acquisto consumato');
+ t.click(t.$('shopClose'));t.click(t.$('n1'));await t.adv(8000);
+ ok(t.calls.some(c=>/^msg:level_started:9/.test(c))&&t.calls.some(c=>/^msg:level_completed:9/.test(c)),'Playgama: level_started / level_completed sul livello record');
+ ok(t.calls.some(c=>/^msg:player_got_achievement/.test(c))&&t.calls.some(c=>/^ach:/.test(c)),'Playgama: trofeo → player_got_achievement e obiettivo della piattaforma');
+ ok(t.calls.some(c=>/^an:/.test(c)),'Playgama: eventi di analytics inviati alla piattaforma');
+ t.w.document.dispatchEvent(new t.w.Event('visibilitychange'));
+ t.click(t.$('tSet'));ok(!!t.q('[data-a=login]')&&!!t.q('[data-a=soc][data-v=share]')&&!t.q('[data-a=soc][data-v=rate]'),'impostazioni: «Accedi» e solo i pulsanti social supportati');
+ t.click(t.q('[data-a=login]'));t.click(t.q('[data-a=soc][data-v=share]'));await t.adv(300);ok(t.calls.includes('auth')&&t.calls.includes('share'),'accesso e condivisione chiamano il Bridge');
+ ok(t.errs.length===0,'Playgama: nessun errore JS '+t.errs.slice(0,2));}
+{const t=await boot({...base},{});ok(t.$('tShop').style.display==='none','senza Bridge niente negozio');}
+
+// --- app di Playgama: Bridge che arriva tardi → si collega e recupera il salvataggio della piattaforma (più tempo di gioco)
+{const t=await boot({...base,g:[1,1,...z(18)],c:50,pt:10,introSeen:1,dl:dl0({last:dn})},{});await t.adv(1500);
+ const cloud={...base,c:12345,pt:5000,st:8,bs:8,introSeen:1,dl:dl0({last:dn}),ls:1.8e12-5000},got=[];
+ t.w.bridge={initialize:async()=>{},platform:{language:'en',on(){},sendMessage:m=>{got.push(m);return Promise.resolve()},isAudioEnabled:true},advertisement:{on(){}},
+  storage:{get:async()=>JSON.stringify(cloud),set:async(k,v)=>{got.push('set')}}};
+ await t.adv(4000);ok(Math.floor(t.S().c)>=12345&&t.S().pt>=5000,'Bridge in ritardo: salvataggio della piattaforma recuperato (monete '+Math.floor(t.S().c)+')');
+ ok(got.includes('game_ready')&&got.includes('set'),'Bridge in ritardo: game_ready inviato e salvataggio scritto sulla piattaforma');
+ ok(t.errs.length===0,'Bridge in ritardo: nessun errore JS '+t.errs.slice(0,2));}
+// --- banner: in basso a sinistra in orizzontale, dentro i pannelli in verticale, mai con «Niente pubblicità»
+{const bn=calls=>({advertisement:{isAdvancedBannersSupported:true,on(){},showAdvancedBanners:p=>calls.push('bn:'+p),hideAdvancedBanners:()=>calls.push('bn:hide'),showInterstitial:()=>Promise.resolve(),showRewarded:()=>Promise.resolve()}});
+ const t=await boot({...base,introSeen:1,dl:dl0({last:dn})},{bridge:true,bx:bn});await t.adv(800);
+ ok(t.calls.includes('bn:main'),'banner: posizione «main» durante il gioco');
+ t.click(t.$('n2'));await t.adv(500);ok(t.calls[t.calls.length-1]==='bn:menu','banner: posizione «menu» con un pannello aperto');
+ t.click(t.$('closeUps'));await t.adv(500);ok(t.calls[t.calls.length-1]==='bn:main','banner: di nuovo «main» alla chiusura');
+ const t2=await boot({...base,introSeen:1,iap:{x2:0,na:1,st:0,got:[]},dl:dl0({last:dn})},{bridge:true,bx:bn});await t2.adv(800);
+ ok(!t2.calls.some(c=>c==='bn:main'||c==='bn:menu'),'banner: nessuno con «Niente pubblicità»');}
 
 // --- salvataggi rovinati: l'avvio non deve rompersi (prima la pagina restava bianca per sempre)
 for(const [nome,sv] of [['sq null',{sq:null}],['campi null',{c:null,up:null,pk:'x',tr:5,dl:{m:null,w:7}}],['celle sporche',{g:['a',null,99,-3,2,1]}],['numeri NaN',{st:'9',bs:null,essT:'много',tut:77}]]){

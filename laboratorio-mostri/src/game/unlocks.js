@@ -10,7 +10,7 @@ const UL=[
  {k:'pr',c:25000,ic:'🔮'},{k:'bat',p:1,ic:'⚔️'},{k:'por',p:1,ic:'🌀'},{k:'tr',s:8,ic:'🏆'},{k:'fm',s:12,ic:'🔁'},
  {k:'pas',s:20,ic:'🎟️'},{k:'tow',s:25,ic:'🗼'},{k:'inv',s:30,ic:'🔥'}];
 // Potenziamenti: i primi due ci sono da subito, gli altri si aggiungono man mano (indice in UP di economy.js)
-const UPL=[null,null,{m:5},{m:6},{m:7},{s:10}];
+const UPL=[null,null,{m:5},null,{m:7},{s:10},null]; // 3 e 6 (Unione automatica) si vedono dopo averla sbloccata con le Essenze
 const disc=()=>S.disc.filter(Boolean).length;
 // avanzamento verso il requisito, da 0 a 1
 function rqP(r){if(r.p)return S.ach.pr>=r.p?1:Math.min(.99,(S.ach.pr+Math.min(1,S.run/pgN()))/r.p); // verso l'Evocazione oscura conta anche quanto manca alla prossima
