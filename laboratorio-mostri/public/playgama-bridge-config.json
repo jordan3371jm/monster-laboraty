@@ -45,6 +45,9 @@
                 },
                 {
                     "id": "merge5"
+                },
+                {
+                    "id": "shop"
                 }
             ]
         },
@@ -81,25 +84,34 @@
     },
     "payments": [
         {
+            "id": "starter_pack"
+        },
+        {
             "id": "tickets_10"
         },
         {
             "id": "tickets_60"
         },
         {
+            "id": "tickets_150"
+        },
+        {
             "id": "ess_10"
         },
         {
-            "id": "coins_4h"
+            "id": "ess_60"
         },
         {
-            "id": "starter_pack"
+            "id": "ess_150"
+        },
+        {
+            "id": "coins_12h"
+        },
+        {
+            "id": "coins_24h"
         },
         {
             "id": "income_x2"
-        },
-        {
-            "id": "no_ads"
         }
     ],
     "leaderboards": [

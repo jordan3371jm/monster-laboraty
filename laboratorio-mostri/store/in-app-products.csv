@@ -1,0 +1,11 @@
+productId,title,description,type,priceUsd
+starter_pack,Starter pack,30 tickets + 30 Essences + 4 hours of income. Only once.,non_consumable,4.99
+tickets_10,10 tickets,+10 tickets for the Champion Portal.,consumable,0.99
+tickets_60,60 tickets,+60 tickets for the Champion Portal.,consumable,4.99
+tickets_150,150 tickets,+150 tickets for the Champion Portal. Best value.,consumable,9.99
+ess_10,10 Essences,+10 Essences: more income forever and perks in the Essence tree.,consumable,0.50
+ess_60,60 Essences,+60 Essences: a big boost to income forever.,consumable,2.50
+ess_150,150 Essences,+150 Essences. Best value.,consumable,4.99
+coins_12h,Bag of coins,12 hours of income right away.,consumable,0.50
+coins_24h,Chest of coins,24 hours of income right away.,consumable,1.00
+income_x2,Income x2,Doubles all income forever.,non_consumable,19.99

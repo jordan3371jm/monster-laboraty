@@ -45,8 +45,11 @@ const bannerMenu=()=>bnr==='menu'&&R.bnr;
 // Gli id devono esistere anche nel pannello sviluppatore di Playgama e in playgama-bridge-config.json («payments»).
 // perm = acquisto permanente (si ripristina a ogni avvio con getPurchases); gli altri si consumano dopo la consegna.
 const PROD={
- tickets_10:{ic:'🎫',t:10},tickets_60:{ic:'🎫',t:60},ess_10:{ic:'🔮',e:10},coins_4h:{ic:'🪙',h:4},
- starter_pack:{ic:'🎁',t:20,e:5,h:1,perm:'st'},income_x2:{ic:'💰',perm:'x2'},no_ads:{ic:'🚫',perm:'na'}};
+ starter_pack:{ic:'🎁',t:30,e:30,h:4,perm:'st'},
+ tickets_10:{ic:'🎫',t:10},tickets_60:{ic:'🎫',t:60},tickets_150:{ic:'🎫',t:150},
+ ess_10:{ic:'🔮',e:10},ess_60:{ic:'🔮',e:60},ess_150:{ic:'🔮',e:150},
+ coins_12h:{ic:'🪙',h:12},coins_24h:{ic:'💰',h:24},income_x2:{ic:'📈',perm:'x2'}};
+// (S.iap.na, il vecchio «Niente pubblicità», non è più in vendita ma resta valido per chi lo avesse)
 const payOn=()=>safe(b=>!!(b.payments&&b.payments.isSupported),false);
 async function catalog(){if(!payOn())return[];try{const c=await B().payments.getCatalog();return(Array.isArray(c)?c:[]).filter(p=>p&&PROD[p.id]&&p.price!=null&&!/undefined|NaN/.test(String(p.price)))}catch(e){return[]}} // solo i prodotti con un prezzo vero (creati nel pannello)
 const owned=id=>{const p=PROD[id];return!!(p&&p.perm&&S.iap[p.perm])};
