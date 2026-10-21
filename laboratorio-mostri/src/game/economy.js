@@ -31,8 +31,11 @@ const spCost=()=>Math.floor(10*Math.pow(2,S.pk.s)*Math.pow(1.07,S.sp)*Math.pow(.
 const UP=[{k:'l',max:99,cost:l=>Math.floor(100*Math.pow(2.2,l))},{k:'d',max:10,cost:l=>Math.floor(150*Math.pow(2.5,l))},{k:'o',max:7,cost:l=>Math.floor(200*Math.pow(2.5,l))},{k:'a',max:20,am:1,cost:l=>Math.floor(250*Math.pow(1.5,l))},{k:'c',max:8,cost:l=>Math.floor(1500*Math.pow(3.5,l))},
  {k:'f',max:8,cost:l=>Math.floor(1000*Math.pow(5,l))},{k:'m',max:MAXT-2,am:1,cost:l=>Math.floor(400*Math.pow(2.8,l))}]; // f: Incubatrice automatica (uova gratis a intervalli, vedi eggInt)
 // a, m: potenziamenti dell'Unione automatica (am: si vedono solo dopo averla sbloccata con AM_COST Essenze, per sempre in S.am).
-// Ogni amInt() secondi si uniscono due mostri uguali (i più bassi), fino al livello amMax(): 15s → 5s (-0,5s a livello), livello 1 → 25.
-const AM_COST=5,amInt=()=>Math.max(5,15-.5*S.up.a),amMax=()=>Math.min(MAXT-1,1+(S.up.m||0));
+// Ogni amInt() secondi si uniscono due mostri uguali qualsiasi (la coppia più bassa presente), fino al livello amMax():
+// 15s → 5s (-0,5s a livello). Il massimo parte dal livello delle uova evocate (anche con «Uova antiche») e sale di 1 a livello.
+const AM_COST=5,amInt=()=>Math.max(5,15-.5*S.up.a),amMax=()=>Math.min(MAXT-1,1+S.pk.s+(S.up.m||0));
+// Video «Unione 5 minuti» (finché l'unione automatica non è sbloccata): una coppia ogni AMV_INT secondi, a qualsiasi livello
+const AMV_INT=10,AMV_MS=5*60e3,AD_MERGES=50; // AD_MERGES: ogni 50 unioni (a mano o automatiche) parte un interstitial
 const PK=[{k:'s',ic:'🥚',max:12,cost:[2,4,8,16,32,64,128,256,512,1024,2048,4096]},{k:'a',ic:'✨',max:5,cost:[2,3,5,8,12]},{k:'o',ic:'🌙',max:5,cost:[1,2,3,5,8]},{k:'g',ic:'💰',max:8,cost:[1,2,3,4,6,8,11,15]},{k:'b',ic:'👑',max:4,cost:[2,3,5,8]},
  {k:'i',ic:'🔥',max:8,cost:[2,3,4,6,8,11,15,20]}]; // Incubatrice: -4% tempi delle uova a tempo per livello
 // Rami infiniti dell'albero: livelli ripetibili a costo crescente (x guadagni, t attacco, h vita, e sconto uova, v eventi più frequenti)
@@ -59,4 +62,4 @@ function prestigeState(old,p){const x=def();KEEP.forEach(k=>x[k]=old[k]);x.ord={
  x.ess=old.ess+p;x.essT=old.essT+p;x.ach.pr++;
  const s0=1+x.pk.s;x.g[0]=x.g[1]=s0;for(let t=1;t<=s0;t++)x.disc[t-1]=1; // perk «Uova antiche»
  return x}
-export {AM_COST,amInt,amMax,PG1,pgN,GOLD,setHook,eggInt,incBase,essBonus,essMult,offRate,slots,freeCell,PG,mult,val,inc,spCost,UP,PK,PKR,pkrCost,trN,spT,earn,rBase,give,dayNum,pgain,mergePairs,prestigeState,setEvMul};
+export {AMV_INT,AMV_MS,AD_MERGES,AM_COST,amInt,amMax,PG1,pgN,GOLD,setHook,eggInt,incBase,essBonus,essMult,offRate,slots,freeCell,PG,mult,val,inc,spCost,UP,PK,PKR,pkrCost,trN,spT,earn,rBase,give,dayNum,pgain,mergePairs,prestigeState,setEvMul};

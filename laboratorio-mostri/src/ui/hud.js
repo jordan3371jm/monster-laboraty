@@ -23,6 +23,7 @@ import {track} from '../analytics.js';
 import {metaLang,metaUi} from './meta.js';
 import * as Mt from '../game/meta.js';
 import * as Ul from '../game/unlocks.js';
+import {banner,bannerMenu} from '../platform.js';
 
 // ---- Sblocchi a obiettivi (game/unlocks.js): all'inizio c'è solo il laboratorio, il resto si apre raggiungendo dei traguardi.
 // Ogni sblocco ha una finestra «Nuova funzione!»; le schede ancora chiuse restano visibili con il lucchetto e dicono cosa serve.
@@ -63,6 +64,7 @@ function ui(){const b=Date.now()<S.boost;
  const sc=spCost();setT('spawn',tr('spawn')+(S.pk.s?' '+E[S.pk.s]:'')+' 🪙 '+fmt(sc));$('spawn').disabled=S.c<sc;
  // Unione automatica: si sblocca per sempre con AM_COST Essenze (poi velocità e livello si potenziano con le monete)
  if(!S.am){setT('amB',`<i>🔄</i><span><b>${tr('amT')}</b><small>${tr('amD')}</small></span><strong>🔮 ${AM_COST}</strong>`);$('amB').disabled=S.ess<AM_COST}
+ {const l=Math.ceil((S.amAd-Date.now())/1000);$('a3').style.display=S.am?'none':'';setT('a3',l>0?'🔄 '+Math.floor(l/60)+':'+String(l%60).padStart(2,'0'):tr('a3'))}
  const ma=S.am,cdl=Math.ceil((R.mallT-Date.now())/1000);$('mall').style.display=ma?'block':'none';setT('mall',tr('mall')+(cdl>0?' '+cdl+'s':''));$('mall').disabled=cdl>0;
  UP.forEach((u,i)=>{const l=S.up[u.k],m=l>=u.max,c=u.cost(l);
   setT('u'+i,`<i>${UPI[i]}</i><span><b>${tr('u'+i)} <em>${tr('lvl')} ${l}</em></b><small>${tr('u'+i+'d')}${u.k==='f'&&l?' · '+Math.round(eggInt())+'s':''}${u.k==='a'?' · '+amInt()+'s':''}${u.k==='m'?' · ≤ '+tr('lvl')+' '+amMax():''}</small></span><strong>${m?tr('max'):'🪙 '+fmt(c)}</strong>`);$('u'+i).disabled=m||S.c<c});
@@ -72,7 +74,8 @@ function ui(){const b=Date.now()<S.boost;
  if($('daily').classList.contains('on'))renderDaily();if($('col').classList.contains('on'))renderCol();
  if($('trop').classList.contains('on'))renderTr();if($('tree').classList.contains('on'))renderTree();
  if($('set').classList.contains('on'))renderSet();if($('stat').classList.contains('on'))renderStats();
- drawTimers();drawB();renderGoal();gate();metaUi()}
+ drawTimers();drawB();renderGoal();gate();metaUi();
+ banner(!!document.querySelector('#ups.on,.ov.on:not(#ulp):not(#pull):not(#wb):not(#intro)'));$('app').classList.toggle('bnm',bannerMenu()&&innerHeight>innerWidth)}
 // Testo «🎁 Missioni» → icona sopra ed etichetta sotto (pulsanti in alto e barra di navigazione)
 const lbl=(id,t)=>{$(id).querySelector('span').textContent=String(t).replace(/^\S+\s/,'')};
 function applyLang(){document.documentElement.lang=R.lang;$('a1').textContent=tr('a1');$('a2').textContent=tr('a2');lbl('n0',tr('n0'));lbl('n1',tr('n1'));lbl('n2',tr('n2'));

@@ -1,8 +1,8 @@
 import {$} from '../core/dom.js';
 import {R,S} from '../core/state.js';
 import {fmt} from '../core/util.js';
-import {trv} from '../data/text.js';
-import {earn,incBase} from '../game/economy.js';
+import {tr,trv} from '../data/text.js';
+import {AMV_MS,earn,incBase} from '../game/economy.js';
 import {save} from '../save.js';
 import {toast} from './common.js';
 import {ui} from './hud.js';
@@ -19,9 +19,10 @@ function inter(place){if(S.iap.na)return;track('ad_inter',{place});try{const b=w
 async function adThen(pl,fn){if(R.pend)return;const r=await rewarded(pl);if(r==='rewarded'){track('ad_'+pl);fn();save(true)}else if(r!=='closed')toast(trv('noad'));renderDaily();ui()}
 async function watch(kind){if(R.pend)return;const r=await rewarded(kind);
  if(r==='rewarded'){track('ad_'+kind);
-  if(kind==='boost'){S.boost=Math.min(Math.max(Date.now(),S.boost)+60000,Date.now()+300000);toast('⚡ x2')}
+  if(kind==='boost'){S.boost=Math.min(Math.max(Date.now(),S.boost)+AMV_MS,Date.now()+3*AMV_MS);toast('⚡ x2 · 5 min')} // x2 per 5 minuti (si accumula fino a 15)
+  else if(kind==='merge5'){S.amAd=Math.min(Math.max(Date.now(),S.amAd)+AMV_MS,Date.now()+3*AMV_MS);toast('🔄 '+tr('a3on'))}
   else{const g=Math.max(incBase()*300,50);earn(g);toast('🪙 +'+fmt(g))}
   save();ui()}
  else if(r!=='closed')toast(trv('noad'))}
-$('a1').onclick=()=>watch('boost');$('a2').onclick=()=>watch('bonus');
+$('a1').onclick=()=>watch('boost');$('a2').onclick=()=>watch('bonus');$('a3').onclick=()=>watch('merge5');
 export {rewarded,inter,adThen,watch};

@@ -11,6 +11,9 @@
                 },
                 {
                     "id": "world"
+                },
+                {
+                    "id": "merge"
                 }
             ]
         },
@@ -39,8 +42,41 @@
                 },
                 {
                     "id": "pass"
+                },
+                {
+                    "id": "merge5"
                 }
             ]
+        },
+        "advancedBanners": {
+            "main": {
+                "landscape:ar>=1.25:h>=640": [
+                    {
+                        "width": "24%",
+                        "height": "20%",
+                        "left": "0%",
+                        "bottom": "0%"
+                    }
+                ]
+            },
+            "menu": {
+                "portrait": [
+                    {
+                        "width": "100%",
+                        "height": "10%",
+                        "left": "0%",
+                        "bottom": "0%"
+                    }
+                ],
+                "landscape:w>=1300:h>=640": [
+                    {
+                        "width": "24%",
+                        "height": "20%",
+                        "left": "0%",
+                        "bottom": "0%"
+                    }
+                ]
+            }
         }
     },
     "payments": [

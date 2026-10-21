@@ -2,7 +2,7 @@
 export default {
 tx:{
  n0:"🧪 Laboratoire",n1:"⚔️ Combat",n2:"⚙️ Améliorations",stage:"Niveau",boss:"BOSS",atk:"ATQ",win:"Victoire ! ",lose:"Vaincus, on retente le niveau",stb:"gains",noteam:"Invoque des monstres pour combattre !",sec:"/s",
- spawn:"Invoquer un œuf",a1:"▶ x2 pendant 60 s",a2:"▶ +5 min de gains",ups:"Améliorations",close:"Fermer",lvl:"Nv",max:"MAX",
+ spawn:"Invoquer un œuf",a1:"▶ x2 · 5 min",a2:"▶ +5 min 🪙",a3:"▶ 🔄 Auto 5 min",a3on:"Les monstres fusionnent tout seuls pendant 5 minutes",ups:"Améliorations",close:"Fermer",lvl:"Nv",max:"MAX",
  u0:"Laboratoire",u0d:"+25 % de gains",u1:"Œufs en promo",u1d:"-8 % sur le prix des œufs",u2:"Sommeil profond",u2d:"Plus de gains hors ligne",
  u3:"Vitesse de fusion",u3d:"La fusion automatique agit plus souvent",u4:"Labo agrandi",u4d:"+1 case dans le laboratoire",
  combo:"Combo",lucky:"✨ Fusion parfaite ! Un niveau de plus",luckyS:"Parfaite !",u5:"Couveuse automatique",u5d:"Un œuf gratuit toutes les quelques secondes dans les cases libres",amOn:"Fusion automatique active pour toujours !",amD:"Toutes les 15 secondes, deux œufs identiques fusionnent tout seuls. Débloque-la pour toujours avec 5 Essences.",amT:"Fusion automatique",u6d:"La fusion automatique unit aussi des monstres plus hauts",u6:"Niveau de fusion",

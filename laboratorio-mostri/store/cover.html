@@ -1,0 +1,61 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+*{box-sizing:border-box;margin:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#0c0718;font-family:"Nunito","Varela Round",ui-rounded,system-ui,sans-serif}
+#c{position:relative;width:100%;height:100%;overflow:hidden;
+ background:radial-gradient(ellipse 70% 55% at 50% 52%,#7a3fe0 0,#3b1c70 38%,transparent 72%),radial-gradient(circle at 12% 95%,#1d6b3f88 0,transparent 40%),radial-gradient(circle at 92% 8%,#ff7a1a55 0,transparent 35%),linear-gradient(#1a0f33,#0a0614)}
+/* raggi */
+#c::before{content:'';position:absolute;left:50%;top:52%;width:240vmax;height:240vmax;translate:-50% -50%;background:repeating-conic-gradient(#ffffff10 0 7deg,transparent 7deg 16deg);-webkit-mask:radial-gradient(circle,#000 8%,transparent 42%)}
+/* piastrelle */
+#c::after{content:'';position:absolute;inset:0;background:linear-gradient(#ffffff08 1px,transparent 1px) 0 0/var(--t) var(--t),linear-gradient(90deg,#ffffff08 1px,transparent 1px) 0 0/var(--t) var(--t);-webkit-mask:linear-gradient(transparent 50%,#000)}
+.m{position:absolute;filter:drop-shadow(0 calc(var(--u)*.6) calc(var(--u)*1.2) #000c)}
+.m img{width:100%;display:block}
+.tank{position:absolute;border-radius:18% 18% 14% 14%;border:calc(var(--u)*.35) solid hsl(var(--h) 75% 62%);
+ background:linear-gradient(100deg,transparent 12%,#ffffff30 16%,#ffffff08 24%,transparent 27%),radial-gradient(ellipse at 50% 120%,hsl(var(--h) 85% 55% / .7),transparent 65%),linear-gradient(hsl(var(--h) 45% 20%),hsl(var(--h) 55% 9%));
+ box-shadow:0 0 calc(var(--u)*3) hsl(var(--h) 90% 55% / .6),inset 0 calc(var(--u)*-1.5) calc(var(--u)*3) hsl(var(--h) 90% 50% / .5),0 calc(var(--u)*.8) 0 hsl(var(--h) 50% 10%);display:flex;align-items:center;justify-content:center;overflow:hidden}
+.tank img{width:84%;filter:drop-shadow(0 calc(var(--u)*.5) calc(var(--u)*.6) #000b)}
+.tank b{position:absolute;right:7%;bottom:6%;font-size:calc(var(--u)*2.4);color:#fff;font-weight:900;padding:0 calc(var(--u)*.9);border-radius:calc(var(--u)*1.2);background:linear-gradient(hsl(var(--h) 60% 45%),hsl(var(--h) 60% 22%));border:2px solid #fff6}
+.title{position:absolute;left:50%;translate:-50% 0;text-align:center;white-space:nowrap}
+.title h1{font-size:calc(var(--u)*var(--ts));font-weight:900;line-height:.95;letter-spacing:calc(var(--u)*.1);color:transparent;background:linear-gradient(#fff6c8,#ffd36b 45%,#ff8a1a);-webkit-background-clip:text;background-clip:text;
+ filter:drop-shadow(0 calc(var(--u)*.55) 0 #6a2a00) drop-shadow(0 0 calc(var(--u)*2.5) #ffb02eaa);-webkit-text-stroke:calc(var(--u)*.12) #fff3}
+.title h1 span{display:block;font-size:.62em;color:transparent;background:linear-gradient(#e9d6ff,#b77bff);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 calc(var(--u)*.4) 0 #2a0f55)}
+.tag{display:inline-block;margin-top:calc(var(--u)*1.4);font-size:calc(var(--u)*2.5);font-weight:900;color:#fff;padding:calc(var(--u)*.7) calc(var(--u)*2.4);border-radius:calc(var(--u)*5);background:linear-gradient(#6cc22a,#3f8a14);box-shadow:0 calc(var(--u)*.5) 0 #1f4a08,0 0 calc(var(--u)*2) #6cc22a88}
+.plus{position:absolute;font-size:calc(var(--u)*7);font-weight:900;color:#fff;text-shadow:0 0 calc(var(--u)*2) #c06bff,0 calc(var(--u)*.4) 0 #3a0f6a;translate:-50% -50%}
+.spark{position:absolute;width:calc(var(--u)*1.2);height:calc(var(--u)*1.2);border-radius:50%;background:radial-gradient(#fff,#ffd36b 40%,transparent 70%);box-shadow:0 0 calc(var(--u)*1.5) #ffd36b}
+.coin{position:absolute;width:calc(var(--u)*4.4);height:calc(var(--u)*4.4);border-radius:50%;translate:-50% -50%;background:radial-gradient(circle at 35% 30%,#fff6c8,#ffd36b 35%,#e08a10 70%,#9a5a00);border:calc(var(--u)*.35) solid #ffe9a0;box-shadow:0 0 calc(var(--u)*2) #ffb02ecc,inset 0 calc(var(--u)*-.5) 0 #b8700a}
+</style></head><body><div id="c"></div>
+<script>
+const r=new URLSearchParams(location.search).get('r')||'sq',c=document.getElementById('c');
+const W=innerWidth,H=innerHeight,u=Math.min(W,H)/100;c.style.setProperty('--u',u+'px');c.style.setProperty('--t',u*7+'px');
+const add=h=>c.insertAdjacentHTML('beforeend',h);
+// x,y = centro in % di larghezza/altezza; s = lato in u
+const mon=(n,x,y,s,rot=0,z=1)=>add(`<div class="m" style="left:${x}%;top:${y}%;width:${s*u}px;translate:-50% -50%;rotate:${rot}deg;z-index:${z}"><img src="../public/m/${n}.webp"></div>`);
+const tank=(n,x,y,s,h,l,z=2)=>add(`<div class="tank" style="--h:${h};left:${x}%;top:${y}%;width:${s*u}px;height:${s*u*1.08}px;translate:-50% -50%;z-index:${z}"><img src="../public/m/${n}.webp"><b>${l}</b></div>`);
+const spark=(x,y,k=1)=>add(`<div class="spark" style="left:${x}%;top:${y}%;scale:${k}"></div>`);
+const coin=(x,y,k=1)=>add(`<div class="coin" style="left:${x}%;top:${y}%;scale:${k}"></div>`);
+const title=(y,ts)=>add(`<div class="title" style="top:${y}%;--ts:${ts};z-index:5"><h1>MONSTER<span>LABORATORY</span></h1><div class="tag">MERGE · EVOLVE · BATTLE</div></div>`);
+if(r==='sq'){
+ title(5,13);
+ tank('fanghiglia',22,58,24,90,3);tank('fanghiglia',22,86,24,90,3);
+ add(`<div class="plus" style="left:22%;top:72.5%;z-index:3">+</div>`);
+ mon('lumizucca',56,66,52,0,3);
+ tank('candelino',86,42,19,30,5);tank('fantesmina',86,63,19,270,7);tank('criopinguo',86,84,19,200,9);
+ mon('infernax',10,30,22,-8,1);mon('grifospettrale',90,24,22,6,1);
+ coin(40,40,1);coin(70,38,.8);coin(36,86,.9);spark(30,45);spark(75,55,1.4);spark(48,90);spark(64,32,.8);
+}else if(r==='h'){
+ title(6,15);
+ tank('fanghiglia',12,52,15,90,3);tank('fanghiglia',12,82,15,90,3);add(`<div class="plus" style="left:12%;top:67%;z-index:3">+</div>`);
+ mon('lumizucca',50,70,48,0,3);
+ mon('conte_mezzanotte',27,68,30,-4,2);mon('grifospettrale',73,66,32,4,2);
+ tank('candelino',89,45,14,30,5);tank('fantesmina',89,68,14,270,7);tank('boccettina',89,91,14,300,9);
+ mon('infernax',11,20,17,-10,1);mon('krakentuscolo',89,15,15,8,1);
+ coin(40,50,1);coin(62,48,.8);coin(20,40,.9);coin(80,85,.9);spark(36,40);spark(64,58,1.4);spark(54,92);spark(24,90,.8);
+}else{ // verticale 9:16
+ title(4,15);
+ mon('lumizucca',50,50,74,0,3);
+ tank('fanghiglia',20,77,22,90,3);tank('fanghiglia',50,77,22,90,3);add(`<div class="plus" style="left:35%;top:77%;z-index:3">+</div>`);
+ add(`<div class="plus" style="left:65%;top:77%;z-index:3">=</div>`);tank('melmostro',80,77,22,100,4);
+ tank('candelino',20,92,19,30,5);tank('fantesmina',50,92,19,270,7);tank('criopinguo',80,92,19,200,9);
+ mon('infernax',14,34,26,-8,1);mon('grifospettrale',86,32,26,6,1);
+ coin(30,58,1.2);coin(72,56,1);coin(18,48,.9);spark(28,40,1.3);spark(76,44,1.5);spark(58,63);spark(40,30,.8);
+}
+</script></body></html>

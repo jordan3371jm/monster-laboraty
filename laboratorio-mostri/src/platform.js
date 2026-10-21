@@ -30,6 +30,17 @@ function lbScore(){safe(b=>{const l=b.leaderboards;if(!l||!l.type||l.type==='not
 // Analytics della piattaforma (oltre a quelle salvate nel gioco, vedi analytics.js)
 function aSend(ev,d){safe(b=>{if(b.analytics&&typeof b.analytics.send==='function')b.analytics.send(ev,d&&typeof d==='object'?d:{})})}
 
+// ---- Banner (advanced banners, posizioni in playgama-bridge-config.json) ----
+// Solo dove non coprono il gioco: in orizzontale (PC, tablet) nell'angolo in basso a sinistra, sotto la barra laterale che lì è vuota;
+// in verticale solo dentro i pannelli (Potenziamenti, Missioni…), in fondo, dove il CSS lascia lo spazio (#app.bnm).
+// Niente banner durante il tutorial né per chi ha comprato «Niente pubblicità». Durante video e interstitial li nasconde l'SDK.
+let bnr=null;R.bnr=false;
+function banner(menu){const want=S.tut<3||S.iap.na?'':menu?'menu':'main';if(want===bnr)return;bnr=want;
+ safe(b=>{const a=b.advertisement;if(!a||!a.isAdvancedBannersSupported)return;
+  if(!a.__bl&&a.on){a.__bl=1;a.on('advanced_banners_state_changed',s=>{R.bnr=s==='shown'})}
+  if(want)a.showAdvancedBanners(want);else{a.hideAdvancedBanners();R.bnr=false}})}
+const bannerMenu=()=>bnr==='menu'&&R.bnr;
+
 // ---- Acquisti nel gioco ----
 // Gli id devono esistere anche nel pannello sviluppatore di Playgama e in playgama-bridge-config.json («payments»).
 // perm = acquisto permanente (si ripristina a ogni avvio con getPurchases); gli altri si consumano dopo la consegna.
@@ -58,4 +69,4 @@ const SOC=[['share','isShareSupported'],['addToHomeScreen','isAddToHomeScreenSup
 const socials=()=>safe(b=>b.social?SOC.filter(([f,k])=>b.social[k]&&typeof b.social[f]==='function').map(([f])=>f):[],[]);
 const social=(f,o)=>safe(b=>Promise.resolve(b.social[f](o)),null)||Promise.reject();
 
-export {msg,syncPlay,levelStart,levelDone,levelFail,achieve,lbScore,aSend,PROD,payOn,catalog,owned,buy,restore,grant,player,authorize,socials,social};
+export {banner,bannerMenu,msg,syncPlay,levelStart,levelDone,levelFail,achieve,lbScore,aSend,PROD,payOn,catalog,owned,buy,restore,grant,player,authorize,socials,social};

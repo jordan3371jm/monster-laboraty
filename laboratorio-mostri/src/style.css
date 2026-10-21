@@ -482,3 +482,10 @@ nav button.lk::after{content:'🔒';position:absolute;top:3px;right:8px;font-siz
 #amB{background:linear-gradient(#5a2c8a,#3a1a63)!important;border:1px solid #c79bff66}#amB strong{background:#a35cff!important;box-shadow:0 2px 0 #3a0f6a!important}#amB:disabled strong{background:#ffffff1a!important;box-shadow:none!important}
 #shopB{display:flex;flex-direction:column;gap:10px}#shopB>.b.sh:disabled strong{background:#3f8a14;color:#fff}
 #shop{display:none;position:absolute;inset:0;flex-direction:column;padding:14px;gap:10px;overflow-y:auto;overscroll-behavior:contain;z-index:5;background:#0f081cfa}#shop.on{display:flex}#shop h2{margin:0;text-align:center;color:#ffd36b}
+/* Banner in fondo ai pannelli (solo in verticale): il pannello si accorcia così il banner non copre «Chiudi» */
+#app.bnm :is(#ups,.ov){bottom:10%}
+/* ---- Regole delle piattaforme (Playgama): la pagina non scorre, non si zooma e non mostra barre di scorrimento ---- */
+html,body{overscroll-behavior:none;touch-action:manipulation;-webkit-text-size-adjust:100%;text-size-adjust:100%;-webkit-touch-callout:none;position:fixed;inset:0;width:100%}
+*{scrollbar-width:none;-ms-overflow-style:none}*::-webkit-scrollbar{display:none;width:0;height:0}
+img{-webkit-user-drag:none;user-select:none}
+#adr .b{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:9px 3px;font-size:12px}#adr{gap:6px}
