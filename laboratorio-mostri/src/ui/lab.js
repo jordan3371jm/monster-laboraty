@@ -4,7 +4,7 @@ import {R,S} from '../core/state.js';
 import {fmt,hueOf} from '../core/util.js';
 import {E,MAXT,N} from '../data/config.js';
 import {tr,trv} from '../data/text.js';
-import {earn,eggInt,freeCell,incBase,mergePairs,slots,spCost,spT} from '../game/economy.js';
+import {amMax,earn,eggInt,freeCell,incBase,mergePairs,slots,spCost,spT} from '../game/economy.js';
 import {onMerge} from '../game/timers.js';
 import {save} from '../save.js';
 import {disc} from './collection.js';
@@ -42,7 +42,8 @@ function tap(i){const g=S.g;
  else if(g[i]===g[R.sel]&&g[i]<MAXT){mergeFly(grid.children[R.sel],grid.children[i],g[i]+1);S.gv[i]=S.gv[i]&&S.gv[R.sel]?1:0;S.gv[R.sel]=0;g[i]++;g[R.sel]=0;R.sel=-1;handBonus(i);sfx('merge',g[i]);merged(i,1);if(onMerge(g[i]))toast('📜 '+trv('ordRdy'),1);save()}
  else{R.sel=i;sfx('tap')}
  draw()}
-function mergeAll(){const m=mergePairs(S.g,S.gv),n=m.length;let od=false;m.forEach((x,k)=>{disc(x.t);if(onMerge(x.t))od=true;pop(x.i,k>=m.length-3?6:0);if(k>=m.length-3)shock(grid.children[x.i],0,false)});if(od)toast('📜 '+trv('ordRdy'),1);
+// Unisci tutto / Unione automatica: solo fino al livello amMax(); n = quante unioni al massimo (l'automatica ne fa una per volta)
+function mergeAll(lim){const m=mergePairs(S.g,S.gv,amMax(),lim),n=m.length;let od=false;m.forEach((x,k)=>{disc(x.t);if(onMerge(x.t))od=true;pop(x.i,k>=m.length-3?6:0);if(k>=m.length-3)shock(grid.children[x.i],0,false)});if(od)toast('📜 '+trv('ordRdy'),1);
  if(n){R.sel=-1;track('first_merge');prog('merge',n);S.ach.mg+=n;sfx('mall',n);tutNext(3);save();draw()}
  return n}
 function draw(){const g=S.g,hl=S.tut===1?pairIdx():[],sl=slots();grid.dataset.r=Math.ceil(sl/4);for(let i=0;i<N;i++){const el=grid.children[i],t=g[i],h=hl.includes(i),k=t+'|'+(i===R.sel)+'|'+h+'|'+(i<sl)+'|'+(t&&S.gv[i]?1:0);
@@ -52,5 +53,5 @@ $('spawn').onclick=()=>{const c=spCost(),i=freeCell();if(i<0){sfx('err');return 
 // Incubatrice automatica: un uovo gratis ogni eggInt() secondi in una cella libera (non conta per prezzo, missioni e statistiche delle uova)
 function autoEgg(dt){const iv=eggInt();if(!iv){R.eggT=0;return}if((R.eggT+=dt)<iv)return;const i=freeCell();if(i<0){R.eggT=iv;return}
  R.eggT=0;const t=spT();S.g[i]=t;S.gv[i]=0;for(let k=1;k<=t;k++)S.disc[k-1]=1;goldRoll(i,GOLD_P);draw();drop(i)}
-$('mall').onclick=()=>{if(Date.now()<R.mallT)return;if(mergeAll())R.mallT=Date.now()+Math.max(5,20-3*S.up.a)*1000;else{sfx('err');toast(trv('nomerge'))}ui()};
+$('mall').onclick=()=>{if(Date.now()<R.mallT)return;if(mergeAll())R.mallT=Date.now()+Math.max(5,20-S.up.a)*1000;else{sfx('err');toast(trv('nomerge'))}ui()};
 export {draw,pop,mergeAll,rar,autoEgg};

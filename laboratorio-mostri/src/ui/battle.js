@@ -14,13 +14,15 @@ import {prog} from './missions.js';
 import {chest} from './rewards.js';
 import {attack,coinFly} from './juice.js';
 import {ci} from './meta.js';
+import {levelDone,levelFail,levelStart} from '../platform.js';
+import * as Ul from '../game/unlocks.js';
 import {bossMul,bossStun,cdMul,goldMul,ivAdd,ivOn,leaders,psAdd,slamMul} from '../game/meta.js';
 
 const F={eh:0,th:0,wait:0,st:0,dm:0,stun:0,sl:0,wn:false,dd:false,lose:0,cd:[0,0,0],rd:[0,0,0]};
 ['arena','en','team'].forEach(id=>$(id).addEventListener('animationend',e=>{if(['shake','enter','slam','hurt'].includes(e.animationName))e.currentTarget.classList.remove(e.animationName)}));
 const en0=$('en');
 const onB=()=>$('batV').classList.contains('on');
-function startFight(){F.st=S.st;F.eh=eHp(S.st);F.th=tHp();F.wait=0;F.dm=0;F.stun=0;F.sl=0;F.wn=false;F.dd=false;
+function startFight(){F.st=S.st;if(!S.fm&&S.st>=S.bs&&Ul.has('bat'))levelStart(S.st);F.eh=eHp(S.st);F.th=tHp();F.wait=0;F.dm=0;F.stun=0;F.sl=0;F.wn=false;F.dd=false;
  if(isBoss(S.st))F.stun=bossStun(); // Leone Reale: il boss parte stordito
  $('en').classList.remove('die');fx($('en'),'enter');if(isBoss(S.st)){fx($('arena'),'shake');if(onB())sfx('boss')}}
 function hitFx(d,sp){if(!onB())return;const e=document.createElement('div');e.className='dm'+(sp?' sp':'');e.textContent=sp?sp:'-'+fmt(d);e.style.left=(35+Math.random()*30)+'%';e.style.top='32%';$('arena').appendChild(e);setTimeout(()=>e.remove(),950);const n=$('en');n.classList.remove('hit');void n.offsetWidth;n.classList.add('hit')}
@@ -51,8 +53,8 @@ function fight(dt){
   else if((F.rd[i]+=dt)>=AUTO_T)cast(i,.6)}
  if(F.dm>=a*.9){hitFx(F.dm);if(onB()){sfx('hit');attack()}F.dm=0}
  if(F.eh<=0){const rw=Math.floor(stageReward(s)*goldMul()*(ivOn()?2:1));earn(rw);ivAdd(s,isBoss(s));psAdd(1,'w');if(isBoss(s)&&s>=S.bs&&!S.fm)psAdd(15); // invasione: monete x2 e punti; PE del pass
- S.ach.wn++;toast(trv('win')+'🪙 +'+fmt(rw));sfx('win');prog('win',1);if(onB()){burst($('arena'),isBoss(s)?['🪙','✨','⭐']:['✨'],isBoss(s)?16:5);$('en').classList.add('die');coinFly($('en'),isBoss(s)?10:4)}if(S.ach.wn===1)track('first_win');if([5,10,20,30,40].includes(s))track('stage_'+s);prog('winEl',1,eEl(s));const first=s>=S.bs&&!S.fm;F.lose=0;if(!S.fm){S.st++;if(S.st>S.bs)S.bs=S.st}save();F.wait=1;if(isBoss(s)&&first)chest()}
- else if(F.th<=0){toast(trv('lose'));sfx('lose');if(onB())fx($('team'),'hurt');F.wait=2.5;
+ S.ach.wn++;toast(trv('win')+'🪙 +'+fmt(rw));sfx('win');prog('win',1);if(onB()){burst($('arena'),isBoss(s)?['🪙','✨','⭐']:['✨'],isBoss(s)?16:5);$('en').classList.add('die');coinFly($('en'),isBoss(s)?10:4)}if(S.ach.wn===1)track('first_win');if([5,10,20,30,40].includes(s))track('stage_'+s);prog('winEl',1,eEl(s));const first=s>=S.bs&&!S.fm;if(first)levelDone(s);F.lose=0;if(!S.fm){S.st++;if(S.st>S.bs)S.bs=S.st}save();F.wait=1;if(isBoss(s)&&first)chest()}
+ else if(F.th<=0){if(s>=S.bs&&!S.fm)levelFail(s);toast(trv('lose'));sfx('lose');if(onB())fx($('team'),'hurt');F.wait=2.5;
   if(++F.lose>=RETREAT&&S.st>1){F.lose=0;S.st--;toast(tr('retreat'),1)}}} // dopo RETREAT sconfitte di fila si torna al livello prima, poi si risale da soli
 function drawB(){const s=S.st,b=isBoss(s),tt=trait(s);$('stg').textContent=(ivOn()?'🔥 ':'⚔️ ')+tr('stage')+' '+s+(S.bs>s?' · 🏁'+S.bs:'');
  if(!onB())return;

@@ -4,7 +4,7 @@ import {R,S,setS} from '../core/state.js';
 import {fmt} from '../core/util.js';
 import {E} from '../data/config.js';
 import {tr} from '../data/text.js';
-import {essMult,pgN,PK,PKR,UP,eggInt,inc,pgain,pkrCost,prestigeState,spCost} from '../game/economy.js';
+import {AM_COST,amInt,amMax,essMult,pgN,PK,PKR,UP,eggInt,inc,pgain,pkrCost,prestigeState,spCost} from '../game/economy.js';
 import {save} from '../save.js';
 import {inter} from './ads.js';
 import {drawB,startFight} from './battle.js';
@@ -27,16 +27,17 @@ import * as Ul from '../game/unlocks.js';
 // ---- Sblocchi a obiettivi (game/unlocks.js): all'inizio c'è solo il laboratorio, il resto si apre raggiungendo dei traguardi.
 // Ogni sblocco ha una finestra «Nuova funzione!»; le schede ancora chiuse restano visibili con il lucchetto e dicono cosa serve.
 const UIC={day:['tDaily'],col:['tCol'],tr:['tTr'],exp:['tExp'],por:['tPor'],pas:['tPas'],ads:['adr'],fm:['fmr'],bat:['stg'],pr:['pr']};
-const NAVK={1:'bat',2:'ups'},UPI=['🧪','🏷️','😴','🔄','➕','🐣'];
+const NAVK={1:'bat',2:'ups'},UPI=['🧪','🏷️','😴','⏱️','➕','🐣','🆙'];
 const rqTxt=r=>r.m?tr('rq_m').replace('{n}',r.m+' '+E[r.m-1]):r.s?tr('rq_s').replace('{n}',r.s):r.c?tr('rq_c').replace('{n}',fmt(r.c)):tr('rq_p');
 const ulName=k=>k[0]==='u'&&k.length===2?tr(k):tr('ul_'+k);
 function gate(){Ul.ulMigrate();const tut=S.tut>=3,on=k=>tut&&Ul.has(k);
  for(const u of Ul.ulCheck()){if(u.up!==undefined)toast(tr('ulNew').replace('{n}',tr('u'+u.up)),1);else R.ulq.push(u.k)}
  if(R.ulq.length&&!R.ulT&&!$('ulp').classList.contains('on'))R.ulT=setTimeout(openUl,900); // dopo la scheda del mostro nuovo
  for(const k in UIC)for(const id of UIC[k])$(id).style.display=on(k)?'':'none';
- $('tools').style.display=['day','col','tr','exp','por','pas'].some(on)?'':'none';$('nav').style.display=tut?'':'none';
+ const shop=tut&&R.shop&&Ul.has('ups');$('tShop').style.display=shop?'':'none'; // negozio: solo se la piattaforma ha i pagamenti
+ $('tools').style.display=shop||['day','col','tr','exp','por','pas'].some(on)?'':'none';$('nav').style.display=tut?'':'none';
  for(const i in NAVK)$('n'+i).classList.toggle('lk',!on(NAVK[i]));
- UP.forEach((u,i)=>{$('u'+i).style.display=Ul.upOpen(i)?'':'none'});
+ UP.forEach((u,i)=>{$('u'+i).style.display=Ul.upOpen(i)&&(!u.am||S.am)?'':'none'});$('amB').style.display=S.am?'none':'';
  const nl=Ul.UPL.findIndex((r,i)=>r&&!Ul.upOpen(i));$('uLk').style.display=nl<0?'none':'';
  if(nl>=0)setT('uLk','<i>🔒</i><span><b>'+tr('u'+nl)+'</b><small>'+rqTxt(Ul.UPL[nl])+'</small></span>');
  $('treeB').style.display=S.essT>0?'':'none';
@@ -60,9 +61,11 @@ function ui(){const b=Date.now()<S.boost;
  $('inc').textContent='+'+fmt(inc(),1)+tr('sec')+(b?'  ⚡x2 '+Math.ceil((S.boost-Date.now())/1000)+'s':'');
  $('ess').textContent=S.essT?'🔮 '+S.ess:'';$('ess').classList.toggle('n',PK.some(p=>S.pk[p.k]<p.max&&S.ess>=p.cost[S.pk[p.k]])||PKR.some(p=>(S.pk[p.k]||0)<p.max&&S.ess>=pkrCost(S.pk[p.k]||0)));$('app').classList.toggle('w2',S.wd>1);
  const sc=spCost();setT('spawn',tr('spawn')+(S.pk.s?' '+E[S.pk.s]:'')+' 🪙 '+fmt(sc));$('spawn').disabled=S.c<sc;
- const ma=S.up.a>=1,cdl=Math.ceil((R.mallT-Date.now())/1000);$('mall').style.display=ma?'block':'none';setT('mall',tr('mall')+(cdl>0?' '+cdl+'s':''));$('mall').disabled=cdl>0;
+ // Unione automatica: si sblocca per sempre con AM_COST Essenze (poi velocità e livello si potenziano con le monete)
+ if(!S.am){setT('amB',`<i>🔄</i><span><b>${tr('amT')}</b><small>${tr('amD')}</small></span><strong>🔮 ${AM_COST}</strong>`);$('amB').disabled=S.ess<AM_COST}
+ const ma=S.am,cdl=Math.ceil((R.mallT-Date.now())/1000);$('mall').style.display=ma?'block':'none';setT('mall',tr('mall')+(cdl>0?' '+cdl+'s':''));$('mall').disabled=cdl>0;
  UP.forEach((u,i)=>{const l=S.up[u.k],m=l>=u.max,c=u.cost(l);
-  setT('u'+i,`<i>${UPI[i]}</i><span><b>${tr('u'+i)} <em>${tr('lvl')} ${l}</em></b><small>${tr('u'+i+'d')}${u.k==='f'&&l?' · '+Math.round(eggInt())+'s':''}</small></span><strong>${m?tr('max'):'🪙 '+fmt(c)}</strong>`);$('u'+i).disabled=m||S.c<c});
+  setT('u'+i,`<i>${UPI[i]}</i><span><b>${tr('u'+i)} <em>${tr('lvl')} ${l}</em></b><small>${tr('u'+i+'d')}${u.k==='f'&&l?' · '+Math.round(eggInt())+'s':''}${u.k==='a'?' · '+amInt()+'s':''}${u.k==='m'?' · ≤ '+tr('lvl')+' '+amMax():''}</small></span><strong>${m?tr('max'):'🪙 '+fmt(c)}</strong>`);$('u'+i).disabled=m||S.c<c});
  const pg=pgain();setT('pr',`<b>${tr('pr')}</b><br><small>${tr('prd')}</small><br>${pg>0?tr('get')+' 🔮 '+pg+'<br><small>'+tr('prPrev').replace('{a}',xf(essMult(S.essT+pg))).replace('{b}',xf(essMult(S.essT)))+'</small>':tr('need')+' ('+fmt(S.run)+'/'+fmt(pgN())+')'}`);$('pr').disabled=pg<1;
  const di=dailyInfo();$('tDaily').classList.toggle('n',di.can||S.dl.m.some(m=>m.p>=m.n&&!m.c)||(S.dl.w&&S.dl.w.p>=S.dl.w.n&&!S.dl.w.c));
  $('tCol').classList.toggle('n',[0,1,2,3,4,5,6,7].some(r=>rowOk(r)&&!S.col[r]));
@@ -73,12 +76,13 @@ function ui(){const b=Date.now()<S.boost;
 // Testo «🎁 Missioni» → icona sopra ed etichetta sotto (pulsanti in alto e barra di navigazione)
 const lbl=(id,t)=>{$(id).querySelector('span').textContent=String(t).replace(/^\S+\s/,'')};
 function applyLang(){document.documentElement.lang=R.lang;$('a1').textContent=tr('a1');$('a2').textContent=tr('a2');lbl('n0',tr('n0'));lbl('n1',tr('n1'));lbl('n2',tr('n2'));
- lbl('tPor',tr('lb_por'));lbl('tPas',tr('lb_pas'));lbl('tExp',tr('lb_exp'));$('upsT').textContent=tr('ups');$('closeUps').textContent=tr('close');
+ lbl('tPor',tr('lb_por'));lbl('tShop',tr('lb_shop'));$('shopT').textContent='🛒 '+tr('shopT');$('shopClose').textContent=tr('close');lbl('tPas',tr('lb_pas'));lbl('tExp',tr('lb_exp'));$('upsT').textContent=tr('ups');$('closeUps').textContent=tr('close');
  $('sqT').textContent=tr('sqT');$('sqClose').textContent=tr('close');lbl('tTr',tr('trb'));$('trT').textContent=tr('trT');$('trClose').textContent=tr('close');$('tT').textContent=tr('treeT');$('tClose').textContent=tr('close');$('treeB').textContent=tr('treeB');
  lbl('tDaily',tr('dly'));lbl('tCol',tr('colb'));$('dT').textContent=tr('dT');$('cT').textContent=tr('colT');$('dClose').textContent=tr('close');$('cClose').textContent=tr('close');
  $('tmT').textContent=tr('introT');$('tmClose').textContent=tr('close');$('tExp').title=tr('expT');
  $('setT').textContent=tr('setT');$('setClose').textContent=tr('close');$('statT').textContent=tr('statT');$('statClose').textContent=tr('close');metaLang()}
 UP.forEach((u,i)=>$('u'+i).onclick=()=>{const l=S.up[u.k],c=u.cost(l);if(l>=u.max||S.c<c)return;S.c-=c;S.up[u.k]++;prog('upg',1);sfx('claim');if(u.k==='c')draw();save();ui()});
+$('amB').onclick=()=>{if(S.am||S.ess<AM_COST)return;S.ess-=AM_COST;S.am=1;R.autoT=0;sfx('new');toast('🔄 '+tr('amOn'),1);track('automerge');save(true);ui()};
 $('pr').onclick=()=>{const p=pgain();if(p<1)return;setS(prestigeState(S,p));track('prestige',{n:S.ach.pr,p});R.sel=-1;R.pB=0;R.pC=0;startFight();save(true);draw();ui();toast('🔮 +'+p);sfx('win');$('ups').classList.remove('on');inter('prestige')};
 function show(v){['labV','batV'].forEach((id,i)=>{$(id).classList.toggle('on',i===v);$('n'+i).classList.toggle('on',i===v)});if(v===1){tutNext(3);track('first_battle')}ui()}
 // Scheda ancora chiusa: dice cosa serve per aprirla

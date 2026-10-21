@@ -1,5 +1,5 @@
 import {R,S} from './core/state.js';
-import {earn,inc,incBase,offRate} from './game/economy.js';
+import {amInt,earn,inc,incBase,offRate} from './game/economy.js';
 import {offBattle} from './game/combat.js';
 import {fight} from './ui/battle.js';
 import {evTick} from './ui/events.js';
@@ -24,6 +24,6 @@ function tick(){const n=Date.now();if(R.PZ){R.lastT=n;return}
  if(!document.hidden){S.pt=(S.pt||0)+full;S.an.ls=n}dayCheck();timersTick();if(has('bat'))fight(full);evTick(full);chk();
  autoEgg(full);
  const ivo=ivCheck();if(ivo)grantMsg(ivo); // inizia una nuova invasione: quella vecchia non riscossa si riscuote da sola
- if(S.up.a>=2){R.autoT+=full;if(R.autoT>=Math.max(5,30-5*(S.up.a-1))){R.autoT=0;mergeAll()}}else R.autoT=0;
+ if(S.am){R.autoT+=full;if(R.autoT>=amInt()){R.autoT=0;mergeAll(1)}}else R.autoT=0; // Unione automatica: una coppia ogni amInt() secondi
  ui()}
 export {tick};

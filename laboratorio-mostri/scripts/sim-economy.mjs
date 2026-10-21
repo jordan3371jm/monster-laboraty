@@ -34,7 +34,7 @@ function run(){
     // evocazioni finché c'è spazio e monete
     for(let free=freeCell();free>=0&&S.c>=spCost();free=freeCell()){S.c-=spCost();S.sp++;S.g[free]=spT()}
     // potenziamenti: i più utili per primi, solo se non tolgono l'evocazione di quel momento
-    for(let i=0;i<UP.length;i++){const u=UP[i],l=S.up[u.k];if(i===2)continue; // «Sonno profondo» serve solo offline
+    for(let i=0;i<UP.length;i++){const u=UP[i],l=S.up[u.k];if(i===2||UP[i].am)continue; // «Sonno profondo» serve solo offline; l'Unione automatica non serve a chi unisce a mano ogni secondo
       if(l<u.max&&S.c>=u.cost(l)*(i===0?1:2)){S.c-=u.cost(l);S.up[u.k]++}}
     // albero delle Essenze: Avidità, Uova antiche, Bottino, Abilità, Sonno lungo
     for(const k of ['g','s','b','a','o']){const p=PK.find(x=>x.k===k),l=S.pk[k];if(l<p.max&&S.ess>=p.cost[l]){S.ess-=p.cost[l];S.pk[k]++}}

@@ -37,7 +37,7 @@ Comprimi il **contenuto** di `dist` in uno zip, con `index.html` nella radice de
 - **Statistiche** (da ⚙️): tempo giocato, unioni, uova, livelli vinti, mostro più alto, monete, Essenze, forzieri, eventi, abilità, serie, trofei.
 - **Collezione**: toccando un mostro scoperto si vede nome e una breve storia (`src/data/lore.js`).
 - **Missioni**: 3 al giorno (una di unioni, una di battaglia — livelli, livelli contro un elemento o abilità —, una di uova/potenziamenti/eventi) più una **missione settimanale** più lunga (da lunedì) con premio maggiore e 🔮1. I messaggi di vittoria, sconfitta, laboratorio pieno ecc. hanno più varianti (`VAR` in `text.js`).
-- **Unione automatica**: potenziamento «Unione automatica» (6 livelli). Liv. 1 sblocca «Unisci tutto» (con ricarica), dal liv. 2 il laboratorio si fonde da solo ogni 25s→5s.
+- **Unione automatica**: vedi «Unione automatica con le Essenze» più sotto.
 - **Battaglia**: nemici Veloci, Corazzati, Rigeneranti e boss con ingresso e furia sotto il 50%. Il **colpo a terra** del boss (ogni 5s) viene annunciato 1,6s prima: toccando l'arena lo si schiva e il boss resta stordito 2s, altrimenti la squadra perde il 10% della vita (nessun danno se il boss è stordito). Dopo 3 sconfitte di fila si torna al livello prima e si risale da soli; ◀ ▶ e **🔁 Farm** permettono di scegliere a mano un livello già raggiunto (il record resta in `S.bs`, `S.st` è il livello in corso; i forzieri dei boss si prendono solo alla prima vittoria).
 - **Battaglia offline**: mentre si è via la squadra continua a vincere livelli a metà velocità (con 3s di attesa tra l'uno e l'altro, senza forzieri); il risultato compare nella finestra «bentornato».
 - **Squadra ed elementi**: in battaglia combattono fino a 4 mostri del laboratorio (di default i più forti, con +30% di formazione); toccando la squadra si scelgono a mano. Ogni mostro ha un elemento proprio (tabella `ELM` in `combat.js`; i livelli 4, 5 e 6 coprono 🔥, 💧, 🌿) e ogni nemico ne ha uno: 🔥 batte 🌿, 🌿 batte 💧, 💧 batte 🔥 (+50% contro, -30% se svantaggiato).
@@ -119,7 +119,7 @@ Tutto è calcolato da `Date.now()`, senza server: i timer proseguono a gioco chi
 
 ## Controlli automatici
 - `npm test`: economia, regole (incl. `fmt`), logica dei timer (`scripts/timers.mjs`), coerenza testi it/en (`check-text.mjs`).
-- `npm run smoke`: flussi dell'interfaccia in jsdom (114 controlli, incl. gli sblocchi).
+- `npm run smoke`: flussi dell'interfaccia in jsdom (136 controlli, incl. sblocchi, unione automatica e Bridge simulato).
 - `npm run fuzz [passi] [semi] [primo-seme]`: clic casuali su tutta l'interfaccia, salti di tempo di ore e salvataggi di partenza diversi; controlla errori JS, testi anomali (`NaN`, `undefined`) e valori impossibili nel salvataggio.
 
 ## Sblocchi a obiettivi e grafica 3.0 (`src/game/unlocks.js`)
@@ -143,7 +143,7 @@ Prima il gioco mostrava quasi tutto dall'inizio e non sembrava di fare progressi
 
 Senza battaglia la prima Evocazione oscura arriva comunque presto: nella simulazione (giocatore ottimale) a ~6 minuti invece di ~4.
 
-Anche i potenziamenti arrivano man mano: Sonno profondo (mostro 5), Unione automatica (6), Laboratorio ampliato (7), Incubatrice (livello 10); il pannello mostra il prossimo con il suo requisito.
+Anche i potenziamenti arrivano man mano: Sonno profondo (mostro 5), Laboratorio ampliato (7), Incubatrice (livello 10); Velocità e Livello di unione dopo aver sbloccato l'Unione automatica; il pannello mostra il prossimo con il suo requisito.
 - Ogni sblocco apre la finestra **«Nuova funzione sbloccata!»** con icona, descrizione e «Andiamo!» che porta subito lì (una alla volta).
 - La **barra obiettivo**, quando non c'è nulla da riscuotere, mostra il prossimo sblocco con la barra di avanzamento (🔒 Battaglia · Fai la tua prima Evocazione oscura, con l'avanzamento verso la prima Evocazione).
 - Le schede chiuse (Battaglia, Potenziamenti) restano visibili con il lucchetto: toccandole si legge cosa serve.
@@ -157,3 +157,25 @@ Anche i potenziamenti arrivano man mano: Sonno profondo (mostro 5), Unione autom
 - **Tablet in verticale** (≥600px di larghezza): colonna fino a 720px, testi, icone e pulsanti più grandi.
 - **Orizzontale** (PC, tablet e cellulari girati, almeno 700px e più largo che alto): barra laterale a sinistra con monete, icone, obiettivo e navigazione; a destra il laboratorio (griglia centrata con vasche quasi quadrate) o la battaglia. I pannelli diventano finestre centrate con lo sfondo scurito.
 - **Cellulare girato** (altezza ≤520px): barra laterale compatta (solo icone) e laboratorio su 5 colonne.
+
+## Unione automatica con le Essenze (`AM_COST`, `amInt`, `amMax` in `economy.js`)
+- Nei Potenziamenti la scheda **🔄 Unione automatica** costa **🔮 5** e si sblocca **per sempre** (`S.am`, resta anche dopo l'Evocazione oscura). Quando hai 5 Essenze la barra obiettivo lo suggerisce.
+- Da quel momento, ogni **15 secondi** si uniscono **due** mostri uguali, partendo dai più bassi (es. 10 uova di livello 1 → dopo 15s 8 uova + 1 mostro di livello 2).
+- Dopo lo sblocco compaiono 2 potenziamenti a monete (si azzerano con l'Evocazione oscura come gli altri):
+  - **⏱️ Velocità di unione**: −0,5s per livello, da 15s a **5s** (20 livelli, costo `250·1,5^liv`: 250, 375, 562… ~830K all'ultimo).
+  - **🆙 Livello di unione**: all'inizio si uniscono solo i livello 1; ogni livello alza di 1 il massimo (livello 5 del potenziamento → si uniscono fino ai mostri di livello 6), fino a 25. Costo `400·2,8^liv` (400, 1,1K, 3,1K… ~120K al 5°, ~29M al 10°): cresce come il valore dei mostri.
+- «Unisci tutto» (stesso sblocco) unisce subito tutte le coppie fino allo stesso livello massimo, con una ricarica che scende con la Velocità.
+
+## Playgama Bridge (`src/platform.js`, `src/ui/shop.js`, `public/playgama-bridge-config.json`)
+Letto dal codice sorgente ufficiale dell'SDK (github.com/Playgama/bridge, adattatore `PlaygamaPlatformBridge`). Ogni chiamata è protetta: senza Bridge (in locale) non succede nulla.
+- **Avvio**: `initialize()` (max 4s), lingua della piattaforma, `game_ready` quando il gioco è pronto.
+- **Messaggi**: `gameplay_started` / `gameplay_stopped` (pagina nascosta, pausa della piattaforma, pubblicità aperta); `level_started` / `level_completed` / `level_failed` sul livello di battaglia record (`world` = mondo); `player_got_achievement` per ogni trofeo.
+- **Pubblicità**: rewarded con placement (`boost`, `bonus`, `daily`, `offline`, `chest`, `speed`, `pull`, `pass`), interstitial solo a Evocazione oscura e cambio mondo (60s minimo), audio spento durante gli annunci. I banner non sono usati: toglierebbero spazio alla griglia.
+- **Salvataggio**: `storage.get/set` (cloud quando il giocatore è collegato, altrimenti locale; vince il salvataggio più recente).
+- **Account**: in ⚙️ «Accedi per salvare nel cloud» se la piattaforma lo supporta (`player.authorize()`), poi il nome del giocatore.
+- **Condivisione**: in ⚙️ solo i pulsanti supportati (condividi, schermata home, preferiti, valuta, invita, community).
+- **Negozio 🛒** (compare solo se `payments.isSupported` e il catalogo ha prodotti): 10 / 60 biglietti, 10 Essenze, 4 ore di guadagni (consumabili, consegnati e poi `consumePurchase`), Pacchetto iniziale (una volta), Guadagni ×2 e Niente pubblicità (permanenti, ripristinati a ogni avvio con `getPurchases`). Gli ordini già consegnati sono in `S.iap.got`, così nulla viene dato due volte. Gli acquisti restano anche dopo «Azzera il salvataggio».
+  ⚠️ I prodotti vanno creati anche nel pannello sviluppatore di Playgama con **gli stessi id** (`tickets_10`, `tickets_60`, `ess_10`, `coins_4h`, `starter_pack`, `income_x2`, `no_ads`); i prezzi nel file di configurazione (`amount` in Gam) sono solo di riserva.
+- **Classifica** `best_stage` e **obiettivi** (33 trofei, id `mg0`…`ch2`) nel file di configurazione: usati sulle piattaforme che li hanno (su Playgama le classifiche non ci sono, la chiamata viene saltata).
+- **Analytics**: gli eventi del gioco (`track`) vanno anche a `bridge.analytics.send`.
+- **Bordi dello schermo** (notch): gestiti in CSS con `env(safe-area-inset-*)`.

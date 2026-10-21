@@ -15,7 +15,7 @@ function rewarded(pl){return new Promise(res=>{const b=window.bridge;
  let done=false;const fin=r=>{if(done)return;done=true;R.pend=null;res(r)};R.pend=fin;
  try{Promise.resolve(b.advertisement.showRewarded(pl)).catch(()=>fin('failed'))}catch(e){fin('failed')}
  setTimeout(()=>fin('failed'),60000)})}
-function inter(place){track('ad_inter',{place});try{const b=window.bridge;if(R.inited&&b&&b.advertisement&&b.advertisement.showInterstitial)Promise.resolve(b.advertisement.showInterstitial(place||'prestige')).catch(()=>{})}catch(e){}}
+function inter(place){if(S.iap.na)return;track('ad_inter',{place});try{const b=window.bridge;if(R.inited&&b&&b.advertisement&&b.advertisement.showInterstitial)Promise.resolve(b.advertisement.showInterstitial(place||'prestige')).catch(()=>{})}catch(e){}}
 async function adThen(pl,fn){if(R.pend)return;const r=await rewarded(pl);if(r==='rewarded'){track('ad_'+pl);fn();save(true)}else if(r!=='closed')toast(trv('noad'));renderDaily();ui()}
 async function watch(kind){if(R.pend)return;const r=await rewarded(kind);
  if(r==='rewarded'){track('ad_'+kind);

@@ -42,5 +42,190 @@
                 }
             ]
         }
-    }
+    },
+    "payments": [
+        {
+            "id": "tickets_10",
+            "playgama": {
+                "amount": 20
+            }
+        },
+        {
+            "id": "tickets_60",
+            "playgama": {
+                "amount": 100
+            }
+        },
+        {
+            "id": "ess_10",
+            "playgama": {
+                "amount": 60
+            }
+        },
+        {
+            "id": "coins_4h",
+            "playgama": {
+                "amount": 20
+            }
+        },
+        {
+            "id": "starter_pack",
+            "playgama": {
+                "amount": 50
+            }
+        },
+        {
+            "id": "income_x2",
+            "playgama": {
+                "amount": 250
+            }
+        },
+        {
+            "id": "no_ads",
+            "playgama": {
+                "amount": 150
+            }
+        }
+    ],
+    "leaderboards": [
+        {
+            "id": "best_stage",
+            "title": "Best stage",
+            "description": "Highest battle stage reached"
+        }
+    ],
+    "achievements": [
+        {
+            "id": "mg0",
+            "title": "Merge 50 monsters"
+        },
+        {
+            "id": "mg1",
+            "title": "Merge 250 monsters"
+        },
+        {
+            "id": "mg2",
+            "title": "Merge 1K monsters"
+        },
+        {
+            "id": "mg3",
+            "title": "Merge 5K monsters"
+        },
+        {
+            "id": "sp0",
+            "title": "Summon 100 eggs"
+        },
+        {
+            "id": "sp1",
+            "title": "Summon 500 eggs"
+        },
+        {
+            "id": "sp2",
+            "title": "Summon 2.5K eggs"
+        },
+        {
+            "id": "sp3",
+            "title": "Summon 10K eggs"
+        },
+        {
+            "id": "st0",
+            "title": "Reach stage 5"
+        },
+        {
+            "id": "st1",
+            "title": "Reach stage 15"
+        },
+        {
+            "id": "st2",
+            "title": "Reach stage 30"
+        },
+        {
+            "id": "st3",
+            "title": "Reach stage 60"
+        },
+        {
+            "id": "lt0",
+            "title": "Earn 10K coins in total"
+        },
+        {
+            "id": "lt1",
+            "title": "Earn 1M coins in total"
+        },
+        {
+            "id": "lt2",
+            "title": "Earn 1B coins in total"
+        },
+        {
+            "id": "lt3",
+            "title": "Earn 1T coins in total"
+        },
+        {
+            "id": "tm0",
+            "title": "Discover monster #5"
+        },
+        {
+            "id": "tm1",
+            "title": "Discover monster #9"
+        },
+        {
+            "id": "tm2",
+            "title": "Discover monster #13"
+        },
+        {
+            "id": "tm3",
+            "title": "Discover monster #20"
+        },
+        {
+            "id": "tm4",
+            "title": "Discover monster #26"
+        },
+        {
+            "id": "ev0",
+            "title": "Catch 5 events"
+        },
+        {
+            "id": "ev1",
+            "title": "Catch 25 events"
+        },
+        {
+            "id": "ev2",
+            "title": "Catch 100 events"
+        },
+        {
+            "id": "pr0",
+            "title": "Do 1 Dark summonings"
+        },
+        {
+            "id": "pr1",
+            "title": "Do 5 Dark summonings"
+        },
+        {
+            "id": "pr2",
+            "title": "Do 15 Dark summonings"
+        },
+        {
+            "id": "dy0",
+            "title": "3-day streak"
+        },
+        {
+            "id": "dy1",
+            "title": "7-day streak"
+        },
+        {
+            "id": "dy2",
+            "title": "30-day streak"
+        },
+        {
+            "id": "ch0",
+            "title": "Open 1 chests"
+        },
+        {
+            "id": "ch1",
+            "title": "Open 10 chests"
+        },
+        {
+            "id": "ch2",
+            "title": "Open 50 chests"
+        }
+    ]
 }
