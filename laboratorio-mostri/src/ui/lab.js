@@ -24,7 +24,7 @@ for(let i=0;i<N;i++){const d=document.createElement('div');d.className='c';d.dat
 grid.onclick=e=>{const c=e.target.closest('.c');if(c)tap(+c.dataset.i)};
 function pop(i,n=6){const el=grid.children[i];el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');if(n)burst(grid,['✨','⭐','💫'],n,{x:el.offsetLeft+el.offsetWidth/2,y:el.offsetTop+el.offsetHeight/2})} // le particelle stanno nella griglia, non nella cella: draw() riscrive il contenuto delle celle
 function drop(i){const el=grid.children[i];el.classList.remove('drop','pop');void el.offsetWidth;el.classList.add('drop');burst(grid,['💧','✨'],3,{x:el.offsetLeft+el.offsetWidth/2,y:el.offsetTop+el.offsetHeight*.8})}
-function merged(i,n){disc(S.g[i]);pop(i,4+Math.min(8,S.g[i]));shock(grid.children[i],S.g[i],S.g[i]>=8);prog('merge',n);S.ach.mg+=n;track('first_merge');tutNext(2)}
+function merged(i,n){disc(S.g[i]);pop(i,4+Math.min(8,S.g[i]));shock(grid.children[i],S.g[i],S.g[i]>=8);prog('merge',n);S.ach.mg+=n;track('first_merge');tutNext(3)}
 // Solo per le unioni fatte a mano: combo (unioni entro CMB_T ms l'una dall'altra danno monete crescenti, fino a x10)
 // e «fusione perfetta» (probabilità LUCK di saltare un livello; non durante il tutorial). Premiano chi gioca attivamente.
 // Varianti dorate: GOLD_P per ogni uovo, GOLD_M per un'unione a mano (oltre a due dorati che si uniscono)
@@ -43,7 +43,7 @@ function tap(i){const g=S.g;
  else{R.sel=i;sfx('tap')}
  draw()}
 function mergeAll(){const m=mergePairs(S.g,S.gv),n=m.length;let od=false;m.forEach((x,k)=>{disc(x.t);if(onMerge(x.t))od=true;pop(x.i,k>=m.length-3?6:0);if(k>=m.length-3)shock(grid.children[x.i],0,false)});if(od)toast('📜 '+trv('ordRdy'),1);
- if(n){R.sel=-1;track('first_merge');prog('merge',n);S.ach.mg+=n;sfx('mall',n);tutNext(2);save();draw()}
+ if(n){R.sel=-1;track('first_merge');prog('merge',n);S.ach.mg+=n;sfx('mall',n);tutNext(3);save();draw()}
  return n}
 function draw(){const g=S.g,hl=S.tut===1?pairIdx():[],sl=slots();grid.dataset.r=Math.ceil(sl/4);for(let i=0;i<N;i++){const el=grid.children[i],t=g[i],h=hl.includes(i),k=t+'|'+(i===R.sel)+'|'+h+'|'+(i<sl)+'|'+(t&&S.gv[i]?1:0);
   if(el._v!==(i<sl)){el._v=i<sl;el.style.display=i<sl?'':'none'}

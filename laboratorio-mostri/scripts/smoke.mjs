@@ -192,6 +192,21 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  ok(S2.ord.n===7&&S2.ord.tier===3&&S2.ord.list.map(o=>o.et).join()!==oldOrd,'prestigio: grado e conteggio ordini restano, quelli aperti si rinnovano');
  ok(S2.ach.pr===(base.ach.pr||0)+1&&t.errs.length===0,'prestigio con timer: eseguito senza errori');}
 
+// --- sblocchi a obiettivi: un giocatore nuovo parte con il solo laboratorio, le funzioni si aprono con i traguardi
+{const t=await boot({g:[3,3,...z(18)],tut:3,disc:[1,1,1,...z(23)],ul:['v2','ups'],introSeen:0},{});await t.adv(1200);
+ ok(t.$('n1').classList.contains('lk')&&!t.$('n2').classList.contains('lk'),'giocatore nuovo: Battaglia chiusa (lucchetto), Potenziamenti aperti');
+ ok(t.$('tools').style.display==='none'&&t.$('adr').style.display==='none'&&!t.$('intro').classList.contains('on'),'all\'inizio niente icone in alto, niente boost, niente introduzione ai timer');
+ ok(t.$('goal').classList.contains('ul')&&/level 4|livello 4/.test(t.$('goalT').textContent),'la barra obiettivo indica il prossimo sblocco ('+t.$('goalT').textContent+')');
+ ok(t.$('u2').style.display==='none'&&t.$('uLk').style.display!=='none','potenziamenti: quelli chiusi non si vedono, il prossimo mostra il requisito');
+ const st0=t.S().st;await t.adv(3000);ok(t.S().st===st0,'prima dello sblocco la battaglia è ferma');
+ t.click(t.$('n1'));ok(!t.$('batV').classList.contains('on'),'toccare una scheda chiusa non la apre');
+ const cells=t.qa('#grid .c');t.click(cells[0]);t.click(cells[1]);await t.adv(1500);
+ ok(t.S().ul.includes('bat')&&t.$('ulp').classList.contains('on'),'mostro di livello 4 → Battaglia sbloccata con la finestra «Nuova funzione»');
+ t.click(t.q('#ulp [data-a=go]'));ok(t.$('batV').classList.contains('on')&&!t.$('n1').classList.contains('lk'),'«Andiamo!» apre la Battaglia');
+ ok(t.errs.length===0,'sblocchi: nessun errore JS '+t.errs.slice(0,2));}
+{const t=await boot({...base,ul:['col']},{});await t.adv(600);
+ ok(['ups','bat','day','col','exp','por','tow','u5'].every(k=>t.S().ul.includes(k))&&!t.$('ulp').classList.contains('on'),'salvataggio di prima con Evocazione oscura: tutto resta aperto, senza finestre');}
+
 // --- salvataggi rovinati: l'avvio non deve rompersi (prima la pagina restava bianca per sempre)
 for(const [nome,sv] of [['sq null',{sq:null}],['campi null',{c:null,up:null,pk:'x',tr:5,dl:{m:null,w:7}}],['celle sporche',{g:['a',null,99,-3,2,1]}],['numeri NaN',{st:'9',bs:null,essT:'много',tut:77}]]){
  const t=await boot(sv);

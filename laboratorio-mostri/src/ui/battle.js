@@ -65,10 +65,11 @@ function drawB(){const s=S.st,b=isBoss(s),tt=trait(s);$('stg').textContent=(ivOn
  $('enm').textContent=fmt(Math.max(F.eh,0))+' / '+fmt(eHp(s))+(F.stun>0?'  💫':'');
  const ew=Math.max(0,F.eh/eHp(s)*100)+'%';$('ehb').style.width=ew;$('eh').style.setProperty('--g',ew); // --g: barra «fantasma» che segue in ritardo
  const h=tHp(),tw=h?Math.max(0,Math.min(1,F.th/h))*100+'%':'0%';$('thb').style.width=tw;$('th').style.setProperty('--g',tw);
- let lk=0;for(let i=0;i<3;i++){const on=skOn(i),k=$('sk'+i),rdy=on&&F.cd[i]<=0&&F.wait<=0;if(!on)lk=1;
-  k.classList.toggle('lock',!on);k.classList.toggle('rdy',rdy);k.firstChild.style.width=on?(F.cd[i]>0?(1-F.cd[i]/(SK[i].cd*(1-.08*S.pk.a)*cdMul()))*100:100)+'%':'0%';
+ // abilità: si vedono solo quelle sbloccate (niente riga di lucchetti all'inizio)
+ let any=0;for(let i=0;i<3;i++){const on=skOn(i),k=$('sk'+i),rdy=on&&F.cd[i]<=0&&F.wait<=0;if(on)any=1;
+  k.style.display=on?'':'none';k.classList.toggle('lock',!on);k.classList.toggle('rdy',rdy);k.firstChild.style.width=on?(F.cd[i]>0?(1-F.cd[i]/(SK[i].cd*(1-.08*S.pk.a)*cdMul()))*100:100)+'%':'0%';
   setT('skl'+i,on?SK[i].ic+' '+tr('sk'+i)+(F.cd[i]>0?' · '+Math.ceil(F.cd[i])+'s':''):'🔒 '+EL[i])}
- setT('skh',lk?tr('skLock'):tr('skHint'));
+ $('sks').style.display=any?'':'none';setT('skh',any?tr('skHint'):'');
  setT('team',(leaders().length?'<span class="ldr">'+leaders().map(i=>ci(i)).join('')+'<sup>👑</sup></span>':'')+(squad().map(t=>{const m=advM(elOf(t),eEl(s));return'<span class="'+(m>1?'up':m<1?'dn':'')+'">'+E[t-1]+'<sup>'+EL[elOf(t)]+'</sup></span>'}).join('')||tr('noteam'))+'<small class="ed">✏️ '+(S.sq.length?tr('sqMan'):tr('sqAutoL'))+'</small>');
  $('ts').textContent='⚔️ '+tr('atk')+' '+fmt(tAtk(),1)+'/s  ·  ❤️ '+fmt(Math.max(F.th,0))+' / '+fmt(h)+'  ·  +'+Math.round(3*(S.bs-1))+'% '+tr('stb')+(faction()>1?'  ·  🔰 '+tr('facB')+' +'+Math.round((faction()-1)*100)+'%':'')}
 function renderSq(){const sq=squad(),cnt={};S.g.filter(Boolean).forEach(t=>cnt[t]=(cnt[t]||0)+1);sq.forEach(t=>cnt[t]--);

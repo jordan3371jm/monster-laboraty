@@ -2,7 +2,7 @@ import {N,MAXT,NR} from '../data/config.js';
 
 // Stato di gioco. S è un oggetto unico (mai riassegnato): setS lo svuota e lo riempie, così tutti i moduli
 // che lo importano vedono sempre i dati aggiornati. R raccoglie le variabili di runtime condivise tra moduli.
-const R={loaded:false,lang:'en',sel:-1,inited:false,pend:null,rs:0,colSel:0,wbInter:'',lastB:0,lastT:Date.now(),lastO:Date.now(),mallT:0,autoT:0,eggT:0,cmb:0,cmbT:0,expCh:-1,chSel:-1,gearSl:-1,twRes:null,ulInit:0,dlgShown:false,PZ:false,
+const R={loaded:false,lang:'en',sel:-1,inited:false,pend:null,rs:0,colSel:0,ulq:[],ulT:0,wbInter:'',lastB:0,lastT:Date.now(),lastO:Date.now(),mallT:0,autoT:0,eggT:0,cmb:0,cmbT:0,expCh:-1,chSel:-1,gearSl:-1,twRes:null,ulInit:0,dlgShown:false,PZ:false,
  evT:25,evK:null,evX:0,evNew:0,evWb:0,offA:0,pO:0,pS:0,pB:0,pC:0,pE:0,pH:0,pO2:0,trC:0,tkT:0,chR:null,bell:-1,evEgg:0};
 const def=()=>{const g=Array(N).fill(0);g[0]=1;g[1]=1;return{c:30,g,gv:Array(N).fill(0),sp:0,up:{l:0,d:0,o:0,a:0,c:0,f:0},ess:0,run:0,boost:0,st:1,bs:1,fm:0,ls:Date.now(),
  disc:[1,...Array(MAXT-1).fill(0)],col:Array(NR).fill(0),sfxOn:1,musOn:1,lp:'auto',pt:0,tut:0,

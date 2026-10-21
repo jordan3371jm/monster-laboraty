@@ -342,3 +342,80 @@ html:lang(zh),html:lang(zh) body{font-family:ui-rounded,"PingFang SC","Hiragino 
 .evl span.on{opacity:1;filter:none}.evl small{font-size:11px;color:#ffd36b}.evl b{font-size:18px;color:#c79bff}
 .chc.r4.f{border-color:#ff4d6d;background:radial-gradient(circle at 50% 30%,#9a1f3a,#2e0510);box-shadow:0 0 16px #ff4d6daa;animation:leg 1.4s ease-in-out infinite alternate}
 .chd.r4{border-color:#ff4d6d}.pc.r4{border-color:#ff4d6d;background:radial-gradient(circle at 50% 30%,#9a1f3a,#2e0510);box-shadow:0 0 30px #ff4d6d}
+
+/* =====================================================================
+   Grafica 3.0: pulita e leggibile (ispirata ai merge/idle più giocati:
+   pochi elementi alla volta, icone grandi con etichetta, una sola azione
+   principale, pannelli con titolo e «Chiudi» sempre visibili)
+   ===================================================================== */
+:root{--card:#ffffff0c;--line:#ffffff17;--txt2:#bfb0dc;--gold:#ffd36b;--r:16px}
+#app{gap:10px;padding:12px 12px max(12px,env(safe-area-inset-bottom));background:linear-gradient(#1a0f33,#0c0718 60%)}
+#app::before,#app::after{opacity:.14}
+#app>#bgfx{opacity:.35}
+#app.w2{background:linear-gradient(#0b2a44,#050e18 60%)}
+#labV::before{display:none}
+/* HUD in alto: monete a sinistra, Essenze e impostazioni a destra */
+#top{padding:6px 6px 6px 12px;border-radius:var(--r);background:var(--card);border:1px solid var(--line);box-shadow:none;backdrop-filter:none;gap:8px}
+#top .cn{min-width:0}#coins{font-size:24px;line-height:1.1;filter:drop-shadow(0 2px 0 #7a4200)}#inc{font-size:12px;color:var(--txt2);opacity:1;font-weight:700}
+#stg{font-size:12px;padding:4px 10px;white-space:nowrap}
+.tr8{display:flex;align-items:center;gap:6px}
+#ess{font-size:16px;min-width:0;padding:4px 10px;border-radius:20px;background:#a35cff22;border:1px solid #a35cff55;text-shadow:none}#ess:empty{display:none}
+.ib{flex:0 0 40px;height:40px;border:0;border-radius:12px;background:#ffffff12;font-size:19px;padding:0;color:#fff}
+.ib:active{transform:scale(.94)}
+/* Strumenti: una fila di icone con etichetta corta; compaiono man mano che si sbloccano */
+#tools{gap:6px;overflow-x:auto;scrollbar-width:none;flex-shrink:0}#tools::-webkit-scrollbar{display:none}
+#tools .tb,#tools .tb:not(.ic){flex:1 1 0;min-width:0;max-width:84px;display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px 5px;border-radius:14px;background:var(--card);border:1px solid var(--line);font-size:10.5px;line-height:1.1;color:#e6d8ff;white-space:nowrap}
+.tb b{font-size:21px;line-height:1.1;font-weight:400}.tb span{max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.tb.n{border-color:#ff6b6b88;background:#ff4d4d14}.dot{top:4px;right:6px;width:9px;height:9px}
+/* Barra obiettivo: una riga sola */
+#goal{min-height:36px;padding:8px 12px;border-radius:12px;font-size:13px;background:var(--card);border:1px solid var(--line)}
+#goal span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+#goal.ul{border:1px dashed #ffd36b88;background:#ffd36b0d}#goal.ul i{background:linear-gradient(90deg,#ffd36b55,#ffd36b18)}
+/* Laboratorio: vasche più calme, meno bagliori */
+#grid{gap:7px}
+.c{border:1px solid #ffffff10;background:#ffffff06;border-radius:16px}
+.c.f{box-shadow:inset 0 0 0 1px #ffffff10,inset 0 -8px 18px hsl(var(--h) 90% 45% / .28),0 3px 0 hsl(var(--h) 50% 10%)}
+.c.f::before{opacity:.7}
+.c.f[data-r="2"],.c.f[data-r="3"]{animation:bub 4s linear infinite}
+.c::after{font-size:11px}
+.row{gap:8px}
+#spawn{font-size:16px;padding:14px 8px}
+#mall{font-size:14px}
+#adr .b{padding:9px 6px;font-size:12.5px;border-radius:12px}
+/* Barra di navigazione: icona sopra, etichetta sotto, lucchetto sulle schede chiuse */
+nav{gap:6px;flex-shrink:0}
+nav button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:6px 2px;border-radius:14px;background:var(--card);border:1px solid var(--line);color:var(--txt2);font-size:12px;position:relative}
+nav button b{font-size:22px;line-height:1.15;font-weight:400}
+nav button.on{color:#fff;transform:none}
+nav button.lk{opacity:.55}nav button.lk b{filter:grayscale(1)}
+nav button.lk::after{content:'🔒';position:absolute;top:3px;right:8px;font-size:12px}
+/* Pannelli: titolo in alto e «Chiudi» in basso restano sempre visibili */
+.ov>h2,#ups>h2{position:sticky;top:-14px;z-index:2;margin:-14px -14px 0!important;padding:14px;background:#140b26;border-bottom:1px solid var(--line);font-size:19px}
+.ov>button.b:last-child,#ups>button.b:last-child{position:sticky;bottom:-14px;z-index:2;flex-shrink:0;margin-top:auto;box-shadow:0 -10px 20px #0f081c,0 4px 0 #1a0f33}
+#ups,#daily,#col,#trop,#tree,#set,#stat,#tm,#intro,#por,#tow,#pas,#inv,#sqp{background:#0f081cfa}
+/* Potenziamenti: scheda con icona, testo e prezzo a destra */
+#ups>.b[id^=u]{display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:10px;text-align:left;padding:10px 12px;background:linear-gradient(#3d2770,#2c1b52);flex-shrink:0}
+#ups>.b[id^=u] i{font-style:normal;font-size:26px;text-align:center}
+#ups>.b[id^=u] span{display:flex;flex-direction:column;gap:2px;min-width:0}
+#ups>.b[id^=u] b{font-size:14.5px}#ups>.b[id^=u] em{font-style:normal;font-size:11px;padding:1px 6px;margin-left:4px;border-radius:8px;background:#0005;color:var(--txt2)}
+#ups>.b[id^=u] small{font-size:11.5px;font-weight:600;color:var(--txt2);text-shadow:none}
+#ups>.b[id^=u] strong{padding:7px 10px;border-radius:10px;background:#6cc22a;box-shadow:0 2px 0 #1f4a08;font-size:13px;white-space:nowrap}
+#ups>.b[id^=u]:disabled{opacity:1}#ups>.b[id^=u]:disabled strong{background:#ffffff1a;box-shadow:none;color:#ffffffaa}
+#ups>.b[id^=u]:disabled i,#ups>.b[id^=u]:disabled span{opacity:.6}
+.ulk{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;border:1px dashed #ffffff2a;color:var(--txt2);flex-shrink:0}
+.ulk>i{font-style:normal;font-size:22px;width:40px;text-align:center}.ulk span{display:flex;flex-direction:column;gap:2px}.ulk small{font-size:11.5px;color:var(--gold)}
+#treeB,#pr{flex-shrink:0}
+/* Battaglia: meno testo, più spazio all'arena */
+#team{padding:6px 50px 6px 8px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
+#ts{font-size:11.5px;color:var(--txt2);opacity:1}#skh{font-size:10.5px}
+#fmr .b,#mrow .b{border-radius:12px}
+/* Finestra «Nuova funzione sbloccata!» */
+#ulp{display:none;position:absolute;inset:0;z-index:9;align-items:center;justify-content:center;padding:24px;background:#07030fd9}
+#ulp.on{display:flex}
+.ulc{width:100%;max-width:330px;display:flex;flex-direction:column;align-items:center;gap:8px;padding:22px 20px 18px;border-radius:24px;text-align:center;background:linear-gradient(#3a2170,#1c0f38);border:2px solid var(--gold);box-shadow:0 0 0 6px #ffd36b1a,0 20px 50px #000c;animation:cin .5s cubic-bezier(.2,1.5,.4,1)}
+.ulc small{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gold);font-weight:900}
+.ulc i{font-style:normal;font-size:72px;line-height:1.1;filter:drop-shadow(0 6px 12px #000a);animation:bob 2.4s ease-in-out infinite}
+.ulc b{font-size:22px}.ulc p{margin:0 0 6px;font-size:14px;line-height:1.35;color:#e6d8ff;font-weight:600}
+@media (prefers-reduced-motion:reduce){.ulc,.ulc i{animation:none}}
+@media (max-height:640px){#tools .tb span{display:none}nav button span{font-size:11px}#spawn{padding:11px 8px}}
+#goal span{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.25}
