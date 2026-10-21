@@ -11,6 +11,7 @@ import {drawTimers,openIntro} from './ui/timers.js';
 import {ordersExpire} from './game/timers.js';
 import {tutDraw} from './ui/tutorial.js';
 import {initAnalytics} from './analytics.js';
+import {LANGS,pickLang} from './data/text.js';
 
 import './style.css';
 
@@ -24,7 +25,7 @@ const waitBridge=()=>new Promise(res=>{if(window.bridge)return res(true);if(wind
 async function boot(){
  try{if(await waitBridge()){
   await Promise.race([window.bridge.initialize(),sleep(4000).then(()=>{throw 0})]);R.inited=true;
-  R.lang=String(window.bridge.platform.language||'en').slice(0,2)==='it'?'it':'en';
+  R.lang=pickLang(window.bridge.platform.language);
   const ev=(k,f)=>{try{return window.bridge.EVENT_NAME[k]||f}catch(e){return f}};
   try{window.bridge.advertisement.on('rewarded_state_changed',s=>{
    if(s==='opened'){AU.ad=true;aSync()}else if(s==='closed'||s==='failed'){AU.ad=false;aSync()}
@@ -34,9 +35,9 @@ async function boot(){
   // pausa della piattaforma: gioco e audio fermi, il tempo in pausa non conta
   try{window.bridge.platform.on(ev('PAUSE_STATE_CHANGED','pause_state_changed'),p=>{R.PZ=!!p;if(R.PZ)save(true);else{R.lastT=Date.now();R.lastO=Date.now()}aSync()})}catch(e){}
  }}catch(e){}
- if(!R.inited)R.lang=String(navigator.language||'en').slice(0,2)==='it'?'it':'en';
+ if(!R.inited)R.lang=pickLang(navigator.language); // lingua del dispositivo se supportata, altrimenti inglese
  try{await load();R.loaded=true;R.lastT=Math.min(S.ls,Date.now());initAnalytics();
-  if(S.lp==='it'||S.lp==='en')R.lang=S.lp; // lingua scelta nelle impostazioni
+  if(LANGS.includes(S.lp))R.lang=S.lp; // lingua scelta nelle impostazioni
   dayCheck();startFight();applyLang();tutDraw();aSync();draw();drawTimers();ui();setInterval(tick,250);
   if(S.tut>=3&&!S.introSeen)setTimeout(()=>{S.introSeen=1;openIntro()},900); // una sola volta: spiega i timer da riscuotere
  }catch(e){console.error(e);if(window.__fatal)window.__fatal(e);return} // mai pagina bianca: messaggio con pulsante di reset

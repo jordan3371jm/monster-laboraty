@@ -324,3 +324,6 @@ nav button.on{background:linear-gradient(#8a4ff0,#4b1fa0);box-shadow:0 0 16px #7
 @media (prefers-reduced-motion:reduce){.pc,.chc.r3.f,.twb,.twe{animation:none!important}}
 .b.n .dot{display:block}
 #team .ldr{display:inline-flex;align-items:center;white-space:nowrap;flex-shrink:0}
+/* Lingue: selettore a griglia e caratteri per il cinese */
+.lgs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.lgs .b{padding:10px 4px;font-size:13px}
+html:lang(zh),html:lang(zh) body{font-family:ui-rounded,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC",system-ui,sans-serif}

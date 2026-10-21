@@ -1,7 +1,7 @@
 import {sfx,toggleAudio} from '../audio.js';
 import {$} from '../core/dom.js';
 import {R,S,def,setS} from '../core/state.js';
-import {tr} from '../data/text.js';
+import {LANGN,LANGS,tr} from '../data/text.js';
 import {save} from '../save.js';
 import {startFight} from './battle.js';
 import {setT,toast} from './common.js';
@@ -13,7 +13,7 @@ import {tutDraw} from './tutorial.js';
 import {initAnalytics} from '../analytics.js';
 
 function renderSet(){const on=k=>S[k]?' g':'';
- setT('setB','<div class="dh">'+tr('setLang')+'</div><div class="row"><button class="b'+(R.lang==='it'?' g':'')+'" data-a="lang" data-v="it">Italiano</button><button class="b'+(R.lang==='en'?' g':'')+'" data-a="lang" data-v="en">English</button></div>'
+ setT('setB','<div class="dh">'+tr('setLang')+'</div><div class="lgs">'+LANGS.map(l=>'<button class="b'+(R.lang===l?' g':'')+'" data-a="lang" data-v="'+l+'">'+LANGN[l]+'</button>').join('')+'</div>'
  +'<div class="dh">'+tr('setAud')+'</div><div class="row"><button class="b'+on('sfxOn')+'" data-a="au" data-v="sfxOn">'+(S.sfxOn?'🔊':'🔇')+' '+tr('setSfx')+'</button><button class="b'+on('musOn')+'" data-a="au" data-v="musOn">'+(S.musOn?'🎵':'🔇')+' '+tr('setMus')+'</button></div>'
  +'<button class="b" data-a="stat">'+tr('setStat')+'</button>'
  +'<div class="dh">'+tr('setData')+'</div>'

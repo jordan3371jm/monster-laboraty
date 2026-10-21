@@ -1,4 +1,8 @@
 import {R} from '../core/state.js';
+import {CH} from './champs.js';
+import ES from './i18n/es.js';
+import FR from './i18n/fr.js';
+import ZH from './i18n/zh.js';
 
 const TX={
 it:{n0:'🧪 Laboratorio',n1:'⚔️ Battaglia',n2:'⚙️ Potenziamenti',stage:'Livello',boss:'BOSS',atk:'ATT',win:'Vittoria! ',lose:'Sconfitti, riprovo il livello',stb:'guadagni',noteam:'Evoca dei mostri per combattere!',sec:'/s',spawn:'Evoca uovo',a1:'▶ x2 per 60s',a2:'▶ +5 min di guadagni',ups:'Potenziamenti',close:'Chiudi',lvl:'Liv',max:'MAX',
@@ -120,7 +124,12 @@ Object.assign(TX.en,{
  prPrev:'You will restart with income ×{a} (now ×{b})',ulNew:'🔓 New: {n}',ul_por:'Champion Portal',ul_pas:'Season Pass',ul_tow:'Daily Tower',ul_exp:'Expeditions and eggs',ul_tr:'Trophies',ul_col:'Collection',
  gold:'✨ Golden monster! Earns ×3',expCh:'Companion',expNoCh:'None',expChD:'A champion makes the expedition richer, but while away it does not lead the squad.',
  bTow:'🗼 Tower',bInv:'⚔️ Invasion',facB:'Element bonus',tkGot:'🎫 +{n} tickets'});
-const tr=k=>TX[R.lang][k];
+// ---- Altre lingue (src/data/i18n): spagnolo, francese, cinese. L'inglese è la lingua predefinita e di riserva ----
+const MORE={es:ES,fr:FR,zh:ZH};
+for(const l in MORE){TX[l]=MORE[l].tx;MORE[l].ch.forEach((n,i)=>{if(CH[i])CH[i][l]=n})}
+const LANGS=['en','it','es','fr','zh'],LANGN={en:'English',it:'Italiano',es:'Español',fr:'Français',zh:'中文'};
+const pickLang=s=>{const c=String(s||'').slice(0,2).toLowerCase();return LANGS.includes(c)?c:'en'};
+const tr=k=>{const t=TX[R.lang]&&TX[R.lang][k];return t!==undefined?t:TX.en[k]};
 // Messaggi con più varianti (scelta a caso): la prima è il testo originale. Nei «win» ogni variante finisce con uno spazio.
 const VAR={it:{
  lose:['Sconfitti, riprovo il livello','I mostri chiedono una pausa caffè… riprovo','Ahia! Rimettiamo insieme i pezzi e riproviamo','Il nemico vince il round, non la guerra'],
@@ -136,5 +145,6 @@ en:{
  nomerge:['No pairs to merge','No pairs: all your monsters are single','You need two identical monsters'],
  ordRdy:['An order is ready to collect!','The client is waiting: deliver that order!','Merges done, reward ready!'],
  noad:['No ad available right now, try again later','The sponsors are asleep: try again soon','No video for now, come back later']}};
-const trv=k=>{const a=VAR[R.lang][k];return a[Math.random()*a.length|0]};
-export {TX,tr,trv};
+for(const l in MORE)VAR[l]=MORE[l].vr;
+const trv=k=>{const a=(VAR[R.lang]||VAR.en)[k]||VAR.en[k];return a[Math.random()*a.length|0]};
+export {TX,VAR,LANGS,LANGN,pickLang,tr,trv};
