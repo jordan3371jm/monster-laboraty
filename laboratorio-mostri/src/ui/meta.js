@@ -23,13 +23,13 @@ const gearTxt=g=>RAR[g.r]+' '+GEAR[g.s].ic+' +'+g.v+'% '+tr('gearE'+g.s);
 const rwTxt=r=>[r.t?'🎫 '+r.t:'',r.g!==undefined?RAR[r.g]+'🎒':'',r.card?'🃏':'',r.ch!==undefined?CH[r.ch].e:''].filter(Boolean).join(' ');
 // Messaggio per ciò che si è appena ricevuto (biglietti, equipaggiamento, figurina, campione)
 function grantMsg(o){if(!o)return;const p=[];if(o.t)p.push('🎫 +'+o.t);if(o.gear)p.push(tr('gearGot')+' '+gearTxt(o.gear));if(o.cd)p.push(tr('cardGot')+' '+ALB[o.cd.a].c[o.cd.k]);
- if(o.chr)p.push(CH[o.chr.i].e+' '+nm(o.chr.i)+(o.chr.back?' · +'+o.chr.back+' 🎫':' '+stars(o.chr.s)));if(p.length)toast(p.join(' · '),1)}
+ if(o.chr)p.push(CH[o.chr.i].e+' '+nm(o.chr.i)+' '+stars(o.chr.s));if(p.length)toast(p.join(' · '),1)}
 
 // ---- Portale ----
 function chCard(i,extra){const s=M.star(i),c=CH[i];
  return '<button class="chc r'+c.r+(s?' f':'')+(R.chSel===i?' sl':'')+'" data-a="sel" data-i="'+i+'"'+(extra||'')+'><i'+(s?'':' class="u"')+'>'+c.e+'</i><small>'+(s?stars(s).replace(/☆/g,''):'?')+'</small>'+(M.leaders().includes(i)?'<b class="cr">👑</b>':'')+(M.busy(i)?'<b class="cr">🧭</b>':'')+'</button>'}
 function detail(i){const c=CH[i],s=M.star(i),lead=S.ch.ld.includes(i),eq=S.ch.eq[i]||[0,0,0];
- let h='<div class="chd r'+c.r+'"><div class="chh"><i>'+c.e+'</i><div><b>'+nm(i)+'</b><small>'+RAR[c.r]+' '+tr('rar'+c.r)+' · '+EL[c.el]+'</small><small class="st">'+stars(s)+'</small></div></div>'
+ let h='<div class="chd r'+c.r+'"><div class="chh"><i>'+c.e+'</i><div><b>'+nm(i)+'</b><small>'+RAR[c.r]+' '+tr('rar'+c.r)+' · '+EL[c.el]+'</small><small class="st">'+stars(s)+'</small>'+(s&&s<MAXSTAR?'<small>'+tr('pullCp').replace('{a}',M.cps(i)).replace('{b}',M.needCp(i))+'</small>':'')+'</div></div>'
   +'<div class="xr">✨ '+skTxt(i)+'</div><div class="xr">👑 '+tr('chLeadB').replace('{v}',pc([.05,.1,.18,.3][c.r]*M.sMul(i)))+'</div>'
   +(c.ex?'<small class="d">'+tr(c.ex==='iv'?'exIv':'exPs')+'</small>':'');
  if(!s)return h+'</div>';
@@ -58,7 +58,7 @@ function ttick(id){const n=Date.now();$(id).querySelectorAll('.tt').forEach(x=>{
 // Rivelazione delle evocazioni: carte che girano una dopo l'altra, i leggendari brillano
 function reveal(out){if(!out||!out.length)return;let best=0;
  setT('pullB','<div class="wbh">'+tr('pullT')+'</div><div class="pg'+(out.length>1?' many':'')+'">'+out.map((o,k)=>{const c=CH[o.i];best=Math.max(best,c.r);
-  return '<div class="pc r'+c.r+'" style="animation-delay:'+(k*.12)+'s"><i>'+c.e+'</i><b>'+nm(o.i)+'</b><small>'+(o.back?tr('pullBack').replace('{n}',o.back):o.nw?'<em>'+tr('pullNew')+'</em>':stars(o.s))+'</small></div>'}).join('')+'</div><button class="b g" data-a="ok">'+tr('pullOk')+'</button>');
+  return '<div class="pc r'+c.r+'" style="animation-delay:'+(k*.12)+'s"><i>'+c.e+'</i><b>'+nm(o.i)+'</b><small>'+(o.co!==undefined?tr('pullMax').replace('{c}',fmt(o.co))+(o.back?' · 🎫 +'+o.back:''):o.nw?'<em>'+tr('pullNew')+'</em>':o.up?'<em>'+tr('pullUp')+'</em> '+stars(o.s):tr('pullCp').replace('{a}',o.cp).replace('{b}',o.need))+'</small></div>'}).join('')+'</div><button class="b g" data-a="ok">'+tr('pullOk')+'</button>');
  $('pull').classList.add('on');sfx(best>=2?'win':'new');if(best>=3)burst($('pullB'),['✨','🌟','💫'],18);track('pull',{n:out.length,best});save(true);renderPor();ui()}
 $('pull').onclick=e=>{if(e.target.closest('[data-a=ok]'))$('pull').classList.remove('on')};
 $('porB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a,i=+b.dataset.i;
@@ -79,7 +79,7 @@ function renderTow(){M.twCheck();const tw=S.ch.tw;
  let h='<div class="cs">'+tr('twTries')+': <b>'+tw.tries+'/'+M.TW_TRIES+'</b> · '+tr('twBest')+': <b>'+tw.best+'</b> · '+tr('twRec')+': <b>'+tw.rec+'</b></div><small class="d" style="text-align:center">'+tr('twD')+'</small>';
  if(R.twRes){const r=R.twRes;h+='<div class="twf'+(r.win?' w':' l')+'"><div class="twv"><span>'+(S.ch.ld.length?S.ch.ld.map(i=>CH[i].e).join(''):'🧪')+'</span><b>VS</b><span>'+twEmo(r.f)+'</span></div>'
   +'<div class="bar"><i class="twb" style="--to:'+Math.round((1-r.r)*100)+'%"></i></div><div class="wbh">'+tr(r.win?'twWin':'twLose').replace('{n}',r.f)+'</div>'
-  +(r.rw&&r.rw.t?'<div class="dc">'+[r.rw.c?'🪙 +'+fmt(r.rw.c):'','🎫 +'+r.rw.t,r.rw.g?RAR[r.rw.g.r]+'🎒':'',r.rw.card?ALB[r.rw.card.a].c[r.rw.card.k]:''].filter(Boolean).join(' · ')+'</div>':'')+'</div>'}
+  +(r.rw&&r.rw.c!==undefined?'<div class="dc">'+[r.rw.c?'🪙 +'+fmt(r.rw.c):'',r.rw.t?'🎫 +'+r.rw.t:'',r.rw.g?RAR[r.rw.g.r]+'🎒':'',r.rw.card?ALB[r.rw.card.a].c[r.rw.card.k]:''].filter(Boolean).join(' · ')+'</div>':'')+'</div>'}
  if(tw.buf.length)h+='<div class="dh">'+tr('twBufs')+'</div><div class="dc">'+tw.buf.map(k=>tr('buf_'+k)).join(' · ')+'</div>';
  if(!tw.run)h+=tw.tries?'<button class="b g" data-a="start">'+tr('twStart')+'</button>':'<div class="dc">'+tr('twNoTry')+'</div>';
  else if(tw.ch)h+='<div class="dh">'+tr('twPick')+'</div>'+tw.ch.map(k=>'<button class="b o" data-a="pick" data-k="'+k+'">'+tr('buf_'+k)+'</button>').join('');
@@ -88,7 +88,7 @@ function renderTow(){M.twCheck();const tw=S.ch.tw;
  setT('towB',h)}
 $('towB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a;
  if(a==='start'){if(M.twStart()){R.twRes=null;sfx('boss');track('tower_start')}}
- else if(a==='fight'){const r=M.twFight();if(r){R.twRes=r;sfx(r.win?'win':'lose');if(r.win&&r.rw.t){M.psAdd(15);track('tower_floor',{f:r.f})}}}
+ else if(a==='fight'){const r=M.twFight();if(r){R.twRes=r;sfx(r.win?'win':'lose');if(r.win&&r.rw.c!==undefined){M.psAdd(15);track('tower_floor',{f:r.f})}}}
  else if(a==='pick'){if(M.twPick(b.dataset.k)){R.twRes=null;sfx('claim')}}
  else if(a==='quit'){M.twQuit();R.twRes=null;sfx('tap')}
  save(true);renderTow();ui()};

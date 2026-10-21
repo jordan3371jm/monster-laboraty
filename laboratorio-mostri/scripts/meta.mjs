@@ -20,7 +20,11 @@ const D0=Date.now;const at=ms=>{Date.now=()=>ms};const back=()=>{Date.now=D0};
  ok(Object.values(M.ch().own).every(s=>s>=1&&s<=MAXSTAR),'stelle sempre tra 1 e '+MAXSTAR);
  M.ch().t=0;ok(M.pullT(1)===null,'senza biglietti niente evocazione')}
 // Doppioni oltre ★5: biglietti indietro
-{fresh();for(let k=0;k<MAXSTAR;k++)M.giveCh(0);const r=M.giveCh(0);ok(M.star(0)===MAXSTAR&&r.back===1&&M.ch().t===1,'campione già a ★5: +1 biglietto (comune)')}
+{fresh();let n=0;while(M.star(0)<MAXSTAR&&n<100){M.giveCh(0);n++}ok(n===31,'da ★1 a ★5 servono 30 doppioni (3, 6, 9, 12): '+(n-1));
+ const c0=S.c,r=M.giveCh(0);ok(M.star(0)===MAXSTAR&&r.back===0&&r.co>=0&&S.c>=c0&&M.ch().t===0,'campione comune già a ★5: monete, nessun biglietto');
+ M.ch().own[14]=MAXSTAR;const r2=M.giveCh(14);ok(r2.back===2,'leggendario già a ★5: 2 biglietti');
+ // con tutto a ★5 il rimborso medio resta sotto 1 biglietto per evocazione (niente evocazioni infinite)
+ for(let i=0;i<CH.length;i++)M.ch().own[i]=MAXSTAR;M.ch().t=1000;M.pullT(1000);ok(M.ch().t<300,'tutto a ★5: 1000 evocazioni rendono '+M.ch().t+' biglietti (< 1 a evocazione)')}
 // Capi: effetti sui moltiplicatori, i capi in spedizione non contano
 {fresh();S.g=[8,8,8,8,0];const a0=tAtk(),h0=tHp(),i0=inc();M.giveCh(14);M.giveCh(7);M.giveCh(13);
  ok(M.leaders().length===2,'al massimo 2 capi');ok(tAtk()>a0,'un capo aumenta l\'attacco della squadra');
@@ -36,10 +40,10 @@ const D0=Date.now;const at=ms=>{Date.now=()=>ms};const back=()=>{Date.now=D0};
 // Torre: 3 tentativi, premi solo la prima volta nella giornata
 {fresh();S.g=[10,10,10,10];S.bs=8;M.twCheck();let t=0;while(M.twStart()){t++;for(let k=0;k<50;k++){const r=M.twFight();if(!r||!r.win)break;M.twPick(M.ch().tw.ch[0])}}
  ok(t===3&&M.ch().tw.tries===0&&!M.twStart(),'3 tentativi al giorno');const tk=M.ch().t;
- ok(M.ch().tw.best>0&&tk>=M.ch().tw.best,'biglietti per i piani superati (record '+M.ch().tw.best+', 🎫 '+tk+')')}
+ ok(M.ch().tw.best>=5&&tk>=3,'biglietti per i piani superati (record '+M.ch().tw.best+', 🎫 '+tk+')')}
 // Pass: tetto giornaliero per unioni e vittorie, livelli e premi
 {fresh();M.psAdd(1000,'m');M.psAdd(1000,'w');ok(M.ch().ps.xp===120,'unioni e vittorie: al massimo 60 PE al giorno ciascuna');
- M.psAdd(30*150);ok(M.psLv()===30,'livello massimo 30');ok(M.psClaim(1,1)===null,'premium bloccato senza sblocco');
+ M.psAdd(30*M.PS_XP);ok(M.psLv()===30,'livello massimo 30');ok(M.psClaim(1,1)===null,'premium bloccato senza sblocco');
  const r=M.psClaim(30,0);ok(r&&r.chr&&CH[r.chr.i].ex==='ps','livello 30: campione esclusivo 🦚');ok(M.psClaim(30,0)===null,'un premio si riscuote una volta sola')}
 // Invasione: attiva solo nel fine settimana, punti, classifica, premio a fine evento
 {fresh();S.bs=20;const d=dayNum(),dw=((d+3)%7+7)%7,sat=(d+(5-dw+7)%7)*864e5+new Date().getTimezoneOffset()*6e4;

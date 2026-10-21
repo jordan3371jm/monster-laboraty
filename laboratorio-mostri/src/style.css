@@ -323,3 +323,4 @@ nav button.on{background:linear-gradient(#8a4ff0,#4b1fa0);box-shadow:0 0 16px #7
 .c.f.gold::after{background:linear-gradient(#ffe48a,#d08a10);color:#3a2000;content:attr(data-t) ' ✨'}
 @media (prefers-reduced-motion:reduce){.pc,.chc.r3.f,.twb,.twe{animation:none!important}}
 .b.n .dot{display:block}
+#team .ldr{display:inline-flex;align-items:center;white-space:nowrap;flex-shrink:0}

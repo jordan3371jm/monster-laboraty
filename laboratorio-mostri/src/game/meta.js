@@ -5,8 +5,8 @@ import {setCK,tAtk,tHp,elOf} from './combat.js';
 
 // ---- Progressione permanente (resta dopo l'Evocazione oscura): Campioni del Portale, equipaggiamento, Torre giornaliera,
 // pass stagionale, Invasione dei boss e album di figurine. Tutto in S.ch. Niente interfaccia qui: la usano ui/meta.js e i test.
-const HOUR=3600e3,LDMAX=2,FREE_CD=4*HOUR,AD_MAX=3;
-const defCh=()=>({t:0,own:{},ld:[],pr:0,pl:0,n:0,free:0,adD:-1,adN:0,gear:[],eq:{},nid:1,
+const HOUR=3600e3,LDMAX=2,FREE_CD=8*HOUR,AD_MAX=2;
+const defCh=()=>({t:0,own:{},cp:{},ld:[],pr:0,pl:0,n:0,free:0,adD:-1,adN:0,gear:[],eq:{},nid:1,
  tw:{d:-1,tries:3,run:0,f:1,best:0,rec:0,buf:[],ch:null},ps:{o:-1,s:-1,xp:0,cl:[],cp:[],prem:0,dd:-1,dm:0,dw:0},man:0,iv:{wk:-1,pts:0,cl:0,b:1},cards:Array(18).fill(0),alb:[0,0]});
 const C=()=>S.ch||(S.ch=defCh());   // stato nuovo o azzerato: si crea al primo uso
 
@@ -37,13 +37,17 @@ const POOL=CH.map((_,i)=>i).filter(i=>!CH[i].ex);
 function rollRar(){const c=C();c.pr++;c.pl++;if(c.pl>=PITY_L)return 3;
  const q=Math.random();let a=0,r=0;for(;r<3;r++){a+=ODDS[r];if(q<a)break}
  return r<1&&c.pr>=PITY_R?1:r}
-// Un campione in più: nuovo (★1), stella in più, o — già a ★5 — biglietti indietro
+// Un campione in più: nuovo (★1), una copia verso la stella successiva (★n → ★n+1 servono 3n copie: 30 doppioni in tutto fino a ★5),
+// oppure — già a ★5 — un po' di monete (e qualche biglietto per epici e leggendari). Il rimborso in biglietti deve restare
+// ben sotto 1 per evocazione: con 1,7 di media (vecchi valori) chi aveva tutto a ★5 otteneva evocazioni infinite.
+const needCp=i=>3*Math.max(1,star(i)),cps=i=>C().cp[i]||0;
 function giveCh(i){const c=C(),s=star(i);
- if(s>=MAXSTAR){const back=[1,2,4,8][CH[i].r];c.t+=back;return{i,s,back}}
- c.own[i]=s+1;
- if(!s){if(c.ld.length<LDMAX)c.ld.push(i);
+ if(s>=MAXSTAR){const back=[0,0,1,2][CH[i].r],co=Math.floor(rBase()*[.3,.6,1.2,2.5][CH[i].r]);c.t+=back;earn(co);return{i,s,back,co}}
+ if(s){const cp=cps(i)+1;if(cp>=needCp(i)){c.own[i]=s+1;delete c.cp[i];return{i,s:s+1,up:1}}c.cp[i]=cp;return{i,s,cp,need:needCp(i)}}
+ c.own[i]=1;
+ {if(c.ld.length<LDMAX)c.ld.push(i);
   else if(!c.man){const w=[...c.ld].sort((a,b)=>CH[a].r-CH[b].r)[0];if(CH[w].r<CH[i].r)c.ld[c.ld.indexOf(w)]=i}} // finché il giocatore non sceglie a mano, a capo vanno i più rari
- return{i,s:s+1,nw:!s}}
+ return{i,s:1,nw:1}}
 function pull1(){const c=C(),r=rollRar();if(r>=1)c.pr=0;if(r>=3)c.pl=0;c.n++;
  let pool=POOL.filter(i=>CH[i].r===r);if(r===3){const nw=pool.filter(i=>!star(i));if(nw.length)pool=nw}
  return giveCh(pool[Math.random()*pool.length|0])}
@@ -99,7 +103,7 @@ function twStart(){const c=C();twCheck();if(c.tw.run||c.tw.tries<1)return false;
 function twFight(){const c=C(),tw=c.tw;if(!tw.run||tw.ch)return null;const f=tw.f,res=twSim(f);
  if(!res.win){tw.run=0;tw.ch=null;return{...res,f}}
  const rw={f};if(f>tw.best){tw.best=f;tw.rec=Math.max(tw.rec,f);
-  rw.c=Math.floor(rBase()*.3*(1+.1*f)*(1+twBuf('gold')));earn(rw.c);rw.t=1+(twBoss(f)?2:0);addT(rw.t);
+  rw.c=Math.floor(rBase()*.3*(1+.1*f)*(1+twBuf('gold')));earn(rw.c);rw.t=(f%3===0?1:0)+(twBoss(f)?2:0);addT(rw.t); // biglietti ogni 3 piani (+2 ai boss)
   if(f%3===0)rw.g=addGear(gearRar(Math.min(.5,f*.03)));if(f%2===0)rw.card=addCard()}
  tw.f++;const pick=[...BUFS].sort(()=>Math.random()-.5).slice(0,3).map(b=>b.k);tw.ch=pick;
  return{...res,f,rw}}
@@ -107,7 +111,7 @@ function twPick(k){const tw=C().tw;if(!tw.ch||!tw.ch.includes(k))return false;tw
 function twQuit(){const tw=C().tw;tw.run=0;tw.ch=null}
 
 // ---- Pass stagionale: 28 giorni, 30 livelli. I PE arrivano giocando (con un tetto giornaliero per unioni e vittorie) ----
-const PS_LV=30,PS_XP=150,PS_LEN=28,PS_CAP=60;
+const PS_LV=30,PS_XP=230,PS_LEN=28,PS_CAP=60;
 // La stagione parte dal primo accesso di ogni giocatore (con un calendario uguale per tutti chi arriva all'ultimo giorno avrebbe una stagione di poche ore)
 const psO=()=>{const p=C().ps;if(!(p.o>=0))p.o=dayNum();return p.o};
 const psSeason=()=>Math.floor((dayNum()-psO())/PS_LEN),psLeft=()=>PS_LEN-(dayNum()-psO())%PS_LEN;
@@ -150,6 +154,7 @@ function sanCh(x){const d=defCh(),o=x&&typeof x==='object'&&!Array.isArray(x)?x:
  c.t=Math.floor(fin(o.t,0));c.pr=Math.floor(fin(o.pr,0,0,PITY_R));c.pl=Math.floor(fin(o.pl,0,0,PITY_L));c.n=Math.floor(fin(o.n,0));c.free=fin(o.free,0,0,Date.now());
  c.adD=Math.floor(fin(o.adD,-1,-1,1e9));c.adN=Math.floor(fin(o.adN,0,0,AD_MAX));c.nid=Math.floor(fin(o.nid,1,1));
  const own=o.own&&typeof o.own==='object'?o.own:{};c.own={};for(const k in own)if(okId(k)){const s=Math.floor(fin(own[k],0,0,MAXSTAR));if(s)c.own[k]=s}
+ const cp=o.cp&&typeof o.cp==='object'?o.cp:{};c.cp={};for(const k in cp)if(c.own[k]&&c.own[k]<MAXSTAR){const v=Math.floor(fin(cp[k],0,0,3*MAXSTAR));if(v)c.cp[k]=v}
  c.ld=(Array.isArray(o.ld)?o.ld:[]).filter(i=>Number.isInteger(i)&&c.own[i]).filter((i,j,a)=>a.indexOf(i)===j).slice(0,LDMAX);
  c.gear=(Array.isArray(o.gear)?o.gear:[]).filter(g=>g&&typeof g==='object'&&Number.isInteger(g.id)&&[0,1,2].includes(g.s)&&[0,1,2,3].includes(g.r)).map(g=>({id:g.id,s:g.s,r:g.r,v:Math.floor(fin(g.v,1,1,100))})).slice(0,GEARMAX+5);
  for(const g of c.gear)c.nid=Math.max(c.nid,g.id+1);
@@ -170,7 +175,7 @@ setCK('el',el=>1+sk('atkEl',el));setCK('atk',atkMul);setCK('hp',hpMul);
 setHook('inc',incMul);setHook('egg',()=>Math.max(.5,1-sk('egg')));
 setCK('ehp',()=>ivOn()?1.25:1);
 
-export {C as ch,expMulCh,defCh,sanCh,LDMAX,FREE_CD,AD_MAX,star,sMul,skVal,busy,leaders,sk,leadAtk,gearOf,atkMul,hpMul,incMul,goldMul,cdMul,luckAdd,bossStun,slamMul,bossMul,setLeader,
+export {needCp,cps,C as ch,expMulCh,defCh,sanCh,LDMAX,FREE_CD,AD_MAX,star,sMul,skVal,busy,leaders,sk,leadAtk,gearOf,atkMul,hpMul,incMul,goldMul,cdMul,luckAdd,bossStun,slamMul,bossMul,setLeader,
  rollRar,giveCh,pull1,pullT,pullFree,pullAd,freeLeft,adLeft,addT,gearRar,addGear,salvage,equip,unequip,autoEquip,SALV,
  addCard,albHave,albDone,albDup,albClaim,albTrade,ALB_T,
  TW_TRIES,BUFS,twCheck,twStage,twBoss,twSim,twStart,twFight,twPick,twQuit,twBuf,
