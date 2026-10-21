@@ -13,13 +13,17 @@ function squad(){const pool=S.g.filter(Boolean).sort((x,y)=>y-x),out=[];
  if(S.sq.length){for(const t of S.sq){const i=pool.indexOf(t);if(i>=0&&out.length<SQN){out.push(t);pool.splice(i,1)}}}
  if(!out.length)return pool.slice(0,SQN);
  return out}
-const tAtk=(st=S.st)=>squad().reduce((s,t)=>s+atkT(t)*advM(elOf(t),eEl(st)),0)*SQB*essMult(S.essT)*(1+.02*(S.pk.t||0))*(Date.now()<S.boost?2:1);
+// Ganci per la progressione permanente (game/meta.js li registra: campioni, equipaggiamento, album, invasione). Da soli valgono ×1.
+const CK={el:()=>1,atk:()=>1,hp:()=>1,ehp:()=>1},setCK=(k,f)=>{CK[k]=f};
+// Bonus elemento (come le fazioni): 3 mostri dello stesso elemento in squadra +20% attacco, 4 → +40%
+function faction(q=squad()){if(q.length<3)return 1;const n=[0,0,0];q.forEach(t=>n[elOf(t)]++);const m=Math.max(...n);return m>=4?1.4:m>=3?1.2:1}
+const tAtk=(st=S.st)=>{const q=squad();return q.reduce((s,t)=>s+atkT(t)*advM(elOf(t),eEl(st))*CK.el(elOf(t)),0)*SQB*faction(q)*CK.atk()*essMult(S.essT)*(1+.02*(S.pk.t||0))*(Date.now()<S.boost?2:1)};
 // La vita sale con la radice del bonus Essenze: l'attacco da solo non basterebbe contro nemici che colpiscono sempre più forte
-const tHp=()=>squad().reduce((s,t)=>s+hpT(t),0)*SQB*Math.sqrt(essMult(S.essT))*(1+.02*(S.pk.h||0));
+const tHp=()=>squad().reduce((s,t)=>s+hpT(t),0)*SQB*CK.hp()*Math.sqrt(essMult(S.essT))*(1+.02*(S.pk.h||0));
 const isBoss=s=>s%5===0;
 const TR=['fast','armor','n','heal','armor','fast','heal','n'];
 const trait=s=>isBoss(s)?'boss':s<3?'n':TR[(s-3)%8];
-const eHp=s=>Math.floor(30*Math.pow(1.45,s-1)*(isBoss(s)?4:1)*({fast:.75,heal:1.1}[trait(s)]||1));
+const eHp=s=>Math.floor(30*Math.pow(1.45,s-1)*(isBoss(s)?4:1)*({fast:.75,heal:1.1}[trait(s)]||1)*CK.ehp());
 const eAtk=s=>2*Math.pow(1.4,s-1)*(isBoss(s)?1.5:1)*(trait(s)==='fast'?1.5:1);
 const eEmo=s=>{const w=W[S.wd>1?1:0];return isBoss(s)?w.bm[(s/5-1)%w.bm.length]:w.en[trait(s)][s%3]};
 // Abilità attive: una per elemento, sbloccata da un mostro di quell'elemento (liv. 4+) in squadra
@@ -35,10 +39,10 @@ function fightTime(s){const a=tAtk(s),hp=tHp(),tt=trait(s),mx=eHp(s),dps=a*(tt==
  return dmg<hp?T:Infinity}
 // Combattimento mentre si è via: al 50% della velocità e con 3s di attesa tra un livello e l'altro, senza forzieri. Ritorna i livelli vinti e le monete.
 const OFF_SLOW=2,OFF_WAIT=3;
-function offBattle(secs){let n=0,coins=0,left=secs;
+function offBattle(secs){let n=0,coins=0,left=secs;const b0=S.boost;S.boost=0; // senza boost: i pochi secondi di x2 rimasti non valgono per ore di battaglia
  while(n<400){const s=S.st,T=fightTime(s);if(!isFinite(T))break;const c=(T+OFF_WAIT)*OFF_SLOW;if(c>left)break;left-=c;
   const rw=stageReward(s);earn(rw);coins+=rw;n++;S.ach.wn++;if(!S.fm){S.st++;if(S.st>S.bs)S.bs=S.st}}
- return {n,coins}}
+ S.boost=b0;return {n,coins}}
 // Premio in monete per aver battuto il livello s
 const stageReward=s=>Math.floor(40*Math.pow(1.5,s-1)*(isBoss(s)?5*(1+.25*S.pk.b):1));
-export {SLAM_T,SLAM_W,SLAM_D,RETREAT,fightTime,offBattle,ELM,atkT,hpT,SQN,SQB,EL,elOf,eEl,advM,squad,tAtk,tHp,isBoss,TR,trait,eHp,eAtk,eEmo,SK,SKMIN,AUTO_T,skOn,stageReward};
+export {setCK,faction,SLAM_T,SLAM_W,SLAM_D,RETREAT,fightTime,offBattle,ELM,atkT,hpT,SQN,SQB,EL,elOf,eEl,advM,squad,tAtk,tHp,isBoss,TR,trait,eHp,eAtk,eEmo,SK,SKMIN,AUTO_T,skOn,stageReward};

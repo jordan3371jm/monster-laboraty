@@ -1,7 +1,8 @@
 import {MAXT,E,EXCL_EMO} from '../data/config.js';
 import {R,S} from '../core/state.js';
-import {dayNum,freeCell,inc,pgain,rBase,setEvMul} from './economy.js';
+import {dayNum,freeCell,incBase,pgain,rBase,setEvMul} from './economy.js';
 import {elOf,squad} from './combat.js';
+import {busy,expMulCh} from './meta.js';
 
 // ---- Iniezione di dipendenza (lato timers) ----
 // economy.mult() deve applicare i bonus dei «motivi per tornare», ma non può importare questo modulo
@@ -31,13 +32,13 @@ const EXPN=1;                             // una sola spedizione alla volta: sce
 const wMul=()=>Math.max(.4,1-.02*(S.pk.w||0));
 const expDur=q=>Math.round(EXP[q].dur*wMul());
 const expPow=()=>{const q=squad();return q.length?q.reduce((s,t)=>s+t,0)/q.length:0};   // media dei mostri in squadra
-const incBase=()=>inc()/(Date.now()<S.boost?2:1);   // senza il boost x2: non si gonfia il premio lanciando la spedizione a boost attivo
 const expVal=(q,pw)=>{const full=incBase()*(expDur(q)/SEC);return Math.floor(Math.min(full*.05*(1+.3*pw)*EXP[q].mul,full*.4))};   // tetto: mai oltre il 40% del guadagno pieno del periodo (la forza della squadra è già dentro inc())   // inc() è per SECONDO: la durata va in secondi (in ms il premio era 1000 volte troppo alto)
 const expLeft=e=>Math.max(0,e.et-Date.now());
 const expReady=()=>S.exp.run.filter(e=>expLeft(e)<=0);
-function expStart(q){if(R.PZ)return false;if(!EXP[q]||S.exp.run.length>=EXPN)return false;
- const v=expVal(q,expPow());if(v<=0)return false;
- S.exp.run.push({q,st:Date.now(),et:Date.now()+expDur(q),v});return true}
+// c: campione che accompagna (-1 = nessuno), deve essere libero
+function expStart(q,c=-1){if(R.PZ)return false;if(!EXP[q]||S.exp.run.length>=EXPN)return false;
+ if(c>=0&&busy(c))c=-1;const v=Math.floor(expVal(q,expPow())*expMulCh(c));if(v<=0)return false;
+ S.exp.run.push({q,st:Date.now(),et:Date.now()+expDur(q),v,c:expMulCh(c)>1?c:-1});return true}
 const expGain=q=>Math.floor(pgain()*EXP[q].es),expCoins=v=>Math.floor(v*.8);
 function expClaim(i){const run=S.exp.run,e=run&&run[i];if(!e||expLeft(e)>0)return null;run.splice(i,1);
  const c=expCoins(e.v),es=expGain(e.q);addC(c);addE(es);S.ach.ex=(S.ach.ex||0)+1;
@@ -125,7 +126,7 @@ function evBuy(i){const it=SH[i];if(!evCan(i))return false;
  if(it.ess)addE(it.ess);
  if(it.hp)S.dl.hp=1;
  if(it.x)S.ev.x=Math.min(.6,frac(S.ev.x)+it.x);
- if(it.champ){S.g[freeCell()]=S.ev.m.t;S.ev.m.left=num(S.ev.m.left,0)+it.champ}   // UN mostro campione in una cella libera (non l'intero laboratorio)
+ if(it.champ){const fc=freeCell();S.g[fc]=S.ev.m.t;if(S.gv)S.gv[fc]=0;S.ev.m.left=num(S.ev.m.left,0)+it.champ}   // UN mostro campione in una cella libera (non l'intero laboratorio)
  if(it.egg)evEggGive();
  return true}
 // Il vantaggio dell'evento: +20% guadagni se almeno metà del laboratorio è dell'elemento in festa

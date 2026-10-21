@@ -55,4 +55,13 @@ fresh();S.g[0]=S.g[1]=S.g[2]=S.g[3]=12;const h0=tHp(),a0=tAtk(1);S.essT=1000;ok(
  ok(fmt(999949)==='999.9K'&&fmt(999950)==='1.00M'&&fmt(999999)==='1.00M'&&fmt(999999999)==='1.00B','fmt: i numeri a ridosso della soglia passano al suffisso successivo');
  let bad=[];for(let k=0;k<2000;k++){const n=Math.pow(10,Math.random()*36);const f=fmt(n);if(/^1000(\.\d)?[A-Za-z]/.test(f))bad.push(f)}
  ok(bad.length===0,'fmt: nessun «1000.x» su 2000 numeri casuali '+bad.slice(0,2))}
+// Boost x2: raddoppia il reddito attivo, ma non i premi «N minuti di guadagni» né la battaglia offline
+{const {inc,incBase,rBase,eggInt}=await import('../src/game/economy.js');
+ fresh();S.g=[8,8,7,0];const r0=rBase(),i0=inc(),b0=offBattle(3600).n;
+ fresh();S.g=[8,8,7,0];S.boost=Date.now()+60000;
+ ok(Math.abs(inc()/i0-2)<1e-9&&Math.abs(incBase()-i0)<1e-9,'il boost raddoppia inc() ma non incBase()');
+ ok(Math.abs(rBase()-r0)<1e-9,'premi in minuti di guadagni uguali con e senza boost');
+ const b1=offBattle(3600).n;ok(b1===b0&&S.boost>Date.now(),'battaglia offline senza boost ('+b0+' / '+b1+' livelli) e boost ripristinato dopo');
+ fresh();ok(eggInt()===0,'incubatrice spenta al livello 0');S.up.f=1;ok(eggInt()===30,'incubatrice liv. 1: un uovo ogni 30s');
+ S.up.f=UP.find(u=>u.k==='f').max;ok(eggInt()>4&&eggInt()<6,'incubatrice al massimo: un uovo ogni '+eggInt().toFixed(1)+'s')}
 process.exit(fails?1:0);

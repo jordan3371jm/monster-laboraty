@@ -11,6 +11,7 @@ import {adThen} from './ads.js';
 import {setT,toast} from './common.js';
 import {ui} from './hud.js';
 import {track} from '../analytics.js';
+import {addT,psAdd} from '../game/meta.js';
 
 // 3 missioni al giorno: una di unioni, una di battaglia e una di economia/eventi, a rotazione.
 function mkMissions(d){const k=d%3,mx=Math.max(0,...S.g);
@@ -24,13 +25,13 @@ const weekNum=()=>Math.floor((dayNum()+3)/7),weekLeft=()=>7-(dayNum()+3)%7;
 function mkWeekly(w){const mx=Math.max(0,...S.g);let i=w%WK.length;if(WK[i].t==='ability'&&mx<4)i=(i+1)%WK.length;return{...WK[i],p:0,c:0}}
 function dayCheck(){const d=dayNum();if(S.dl.d!==d){S.dl.d=d;S.dl.m=mkMissions(d)}
  const w=weekNum();if(S.dl.wk!==w||!S.dl.w){S.dl.wk=w;S.dl.w=mkWeekly(w)}}
-function prog(t,n,el){const f=m=>{if(m&&m.t===t&&m.p<m.n&&(m.el===undefined||m.el===el))m.p=Math.min(m.n,m.p+n)};S.dl.m.forEach(f);f(S.dl.w);onProg(t,n)} // anche i timer di ritorno (evento settimanale) avanzano con le missioni
+function prog(t,n,el){const f=m=>{if(m&&m.t===t&&m.p<m.n&&(m.el===undefined||m.el===el))m.p=Math.min(m.n,m.p+n)};S.dl.m.forEach(f);f(S.dl.w);onProg(t,n);if(t==='merge')psAdd(n,'m')} // anche i timer di ritorno (evento settimanale) avanzano con le missioni
 // Scudo serie: se salti esattamente un giorno e hai lo scudo, la serie continua (si ricarica riscuotendo il 7° giorno)
 const dailyInfo=()=>{const d=dayNum(),can=S.dl.last!==d,gap=d-S.dl.last,sv=can&&gap===2&&S.dl.sh>0&&S.dl.st>0,st=can?(gap===1||sv?S.dl.st:0):S.dl.st,done=can?st%7:(st-1)%7+1;return{can,st,done,sv,coins:Math.floor(rBase()*2*(1+.4*done))}};
 function claimD(){const i=dailyInfo();if(!i.can)return;const e=i.done===6?1:0;if(i.sv){S.dl.sh=0;track('shield_used')}S.dl.st=i.st+1;S.dl.last=dayNum();const got=claimLong(); // traguardi 7/14/28 giorni: arrivano da soli
- if(i.done===6)S.dl.sh=1;track('first_daily');track('daily_claim',{streak:S.dl.st});S.dl.lr={c:i.coins,e};S.dl.dbl=0;give(i.coins,e);toast('🎁 🪙 +'+fmt(i.coins)+(e?' 🔮 +1':''));sfx('claim');setTimeout(()=>got.forEach(g=>toast('🔥 '+tr('stkGot').replace('{d}',g.d).replace('{c}',fmt(g.c)).replace('{x}',(g.e?' · 🔮 +'+g.e:'')+(g.mon?' · 🐲':'')),1)),900);save(true)}
-function claimM(i,k){const m=S.dl.m[i];if(!m||m.c||m.p<m.n)return;m.c=1;const c=Math.floor(rBase()*k);give(c,0);toast('🪙 +'+fmt(c));sfx('claim');save()}
-function claimW(k){const m=S.dl.w;if(!m||m.c||m.p<m.n)return;m.c=1;const c=Math.floor(rBase()*8*k);give(c,1);toast('🪙 +'+fmt(c)+' · 🔮 +1');sfx('claim');save(true)}
+ if(i.done===6)S.dl.sh=1;track('first_daily');track('daily_claim',{streak:S.dl.st});S.dl.lr={c:i.coins,e};S.dl.dbl=0;give(i.coins,e);addT(e?2:1);psAdd(30);toast('🎁 🪙 +'+fmt(i.coins)+(e?' 🔮 +1':'')+' 🎫 +'+(e?2:1));sfx('claim');setTimeout(()=>got.forEach(g=>toast('🔥 '+tr('stkGot').replace('{d}',g.d).replace('{c}',fmt(g.c)).replace('{x}',(g.e?' · 🔮 +'+g.e:'')+(g.mon?' · 🐲':'')),1)),900);save(true)}
+function claimM(i,k){const m=S.dl.m[i];if(!m||m.c||m.p<m.n)return;m.c=1;const c=Math.floor(rBase()*k);give(c,0);addT(k);psAdd(40);toast('🪙 +'+fmt(c)+' · 🎫 +'+k);sfx('claim');save()}
+function claimW(k){const m=S.dl.w;if(!m||m.c||m.p<m.n)return;m.c=1;const c=Math.floor(rBase()*8*k);give(c,1);addT(3*k);psAdd(150);toast('🪙 +'+fmt(c)+' · 🔮 +1 · 🎫 +'+3*k);sfx('claim');save(true)}
 const mText=m=>tr('m_'+m.t).replace('{n}',m.n).replace('{e}',m.el===undefined?'':EL[m.el]);
 function renderDaily(){const i=dailyInfo();let h='<div class="dc">🔥 '+tr('streak')+': <b>'+i.st+'</b> '+tr('days')+'</div><div class="dc">'+(i.sv?tr('shieldUse'):S.dl.sh?tr('shieldOn'):tr('shieldOff'))+'</div><div class="pips">';
  for(let k=0;k<7;k++)h+='<div class="pip'+(k<i.done?' done':'')+(i.can&&k===i.done?' cur':'')+'">'+(k===6?'🔮':'')+'x'+(1+.4*k).toFixed(1)+'</div>';

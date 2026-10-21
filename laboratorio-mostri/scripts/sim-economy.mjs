@@ -11,7 +11,7 @@ import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {MAXT,WS} from '../src/data/config.js';
 import {S,setS,def} from '../src/core/state.js';
-import {inc,spCost,UP,PK,earn,pgain,mergePairs,prestigeState,spT,freeCell} from '../src/game/economy.js';
+import {eggInt,inc,spCost,UP,PK,earn,pgain,mergePairs,prestigeState,spT,freeCell} from '../src/game/economy.js';
 import {fightTime,stageReward} from '../src/game/combat.js';
 
 const HOURS=+(process.env.SIM_HOURS||48),TOL=+(process.env.SIM_TOL||0.2);
@@ -24,11 +24,13 @@ function run(){
   setS(def());S.tut=3;
   const ev={}; // traguardo -> secondi di gioco
   const mark=(k,t)=>{if(ev[k]===undefined)ev[k]=t};
-  let fightProg=0,fightFor=0,prestiges=0,sinceP=0;
+  let eggT=0,fightProg=0,fightFor=0,prestiges=0,sinceP=0;
   for(let t=1;t<=HOURS*3600;t++){
     earn(inc());sinceP++;
     // unioni: tutte le coppie, ogni secondo
     mergePairs(S.g);
+    // incubatrice automatica: un uovo gratis ogni eggInt() secondi se c'è una cella libera
+    if(eggInt()&&++eggT>=eggInt()){const f=freeCell();if(f>=0){S.g[f]=spT();eggT=0}}
     // evocazioni finché c'è spazio e monete
     for(let free=freeCell();free>=0&&S.c>=spCost();free=freeCell()){S.c-=spCost();S.sp++;S.g[free]=spT()}
     // potenziamenti: i più utili per primi, solo se non tolgono l'evocazione di quel momento

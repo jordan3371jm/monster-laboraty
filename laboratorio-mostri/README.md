@@ -5,14 +5,15 @@ Gioco idle/merge per Playgama (Playgama Bridge v2).
 ## Struttura
 - `index.html` – pagina e script del Playgama Bridge
 - `src/main.js` – avvio (Bridge, lingua, pausa) e collegamento dei moduli
-- `src/data/` – `config.js` (costanti, mondi `W`, mostri `E`), `text.js` (testi it/en e varianti dei messaggi) e `lore.js` (nome e storia di ogni mostro)
+- `src/data/` – `config.js` (costanti, mondi `W`, mostri `E`), `text.js` (testi it/en e varianti dei messaggi), `lore.js` (nome e storia di ogni mostro) e `i18n/` (spagnolo, francese e cinese: testi, varianti, storie e nomi dei campioni)
 - `src/core/` – `state.js` (stato `S` e variabili di runtime `R`), `util.js` (formato numeri), `dom.js`
-- `src/game/` – logica **senza interfaccia**: `economy.js` (guadagni, costi, potenziamenti, Essenze, unioni) e `combat.js` (statistiche, nemici, elementi, abilità). Sono i file che usa la simulazione
-- `src/ui/` – schermate: `lab`, `battle`, `hud` (barra, potenziamenti, Evocazione oscura), `missions`, `collection`, `trophies`, `tree`, `rewards` (bentornato e forzieri), `events`, `ads`, `tutorial`, `settings`, `stats`, `common`
+- `src/game/` – logica **senza interfaccia**: `economy.js` (guadagni, costi, potenziamenti, Essenze, unioni), `combat.js` (statistiche, nemici, elementi, abilità), `timers.js` (motivi per tornare) e `meta.js` (progressione permanente: campioni, equipaggiamento, Torre, Pass, Invasione, album). `economy` e `combat` sono i file che usa la simulazione
+- `src/data/champs.js` – i 18 Campioni del Portale, probabilità, equipaggiamento e album
+- `src/ui/` – schermate: `lab`, `battle`, `hud` (barra, potenziamenti, Evocazione oscura), `missions`, `collection`, `trophies`, `tree`, `rewards` (bentornato e forzieri), `events`, `ads`, `tutorial`, `settings`, `stats`, `common`, `meta` (Portale, Torre, Pass, Invasione, Album), `juice` (solo grafica: sfondo animato, scia delle fusioni, onde d'urto, proiettili della squadra, monete che volano al contatore)
 - `src/audio.js`, `src/save.js`, `src/loop.js` – suoni, salvataggio, ciclo di gioco
 - `scripts/sim-economy.mjs` – simulazione dell'economia (vedi «Test dell'economia»)
 - `src/style.css` – stile
-- `public/playgama-bridge-config.json` – posizioni delle pubblicità: `prestige` e `world` (interstitial: solo alla Evocazione oscura e alla chiusura del messaggio «Nuovo mondo», mai durante la partita); `boost`, `bonus`, `daily`, `offline`, `chest` (rewarded). Finisce nella radice di `dist`
+- `public/playgama-bridge-config.json` – posizioni delle pubblicità: `prestige` e `world` (interstitial: solo alla Evocazione oscura e alla chiusura del messaggio «Nuovo mondo», mai durante la partita); `boost`, `bonus`, `daily`, `offline`, `chest`, `speed`, `pull` (evocazione del Portale), `pass` (Premium del pass) (rewarded). Finisce nella radice di `dist`
 - `dist/` – build pronta da caricare
 
 ## Comandi
@@ -32,7 +33,7 @@ Comprimi il **contenuto** di `dist` in uno zip, con `index.html` nella radice de
 
 ## Funzioni
 - **Bonus e missioni giornaliere** (🎁): premio che cresce su una serie di 7 giorni (il 7° dà anche 🔮), 3 missioni al giorno, «▶ Raddoppia» con pubblicità rewarded (`daily`). Il giorno cambia a mezzanotte locale.
-- **Impostazioni** (⚙️): lingua (Italiano/English, scelta salvata), effetti e musica accesi/spenti separatamente, accesso alle statistiche e «Azzera il salvataggio» con conferma (restano lingua e audio, il tutorial riparte). L'audio è generato con WebAudio, nessun file: parte dopo il primo tocco e si spegne quando la piattaforma lo disattiva, durante le pubblicità e con la scheda in background.
+- **Impostazioni** (⚙️): lingua (English, Italiano, Español, Français, 中文; scelta salvata), effetti e musica accesi/spenti separatamente, accesso alle statistiche e «Azzera il salvataggio» con conferma (restano lingua e audio, il tutorial riparte). L'audio è generato con WebAudio, nessun file: parte dopo il primo tocco e si spegne quando la piattaforma lo disattiva, durante le pubblicità e con la scheda in background.
 - **Statistiche** (da ⚙️): tempo giocato, unioni, uova, livelli vinti, mostro più alto, monete, Essenze, forzieri, eventi, abilità, serie, trofei.
 - **Collezione**: toccando un mostro scoperto si vede nome e una breve storia (`src/data/lore.js`).
 - **Missioni**: 3 al giorno (una di unioni, una di battaglia — livelli, livelli contro un elemento o abilità —, una di uova/potenziamenti/eventi) più una **missione settimanale** più lunga (da lunedì) con premio maggiore e 🔮1. I messaggi di vittoria, sconfitta, laboratorio pieno ecc. hanno più varianti (`VAR` in `text.js`).
@@ -61,6 +62,43 @@ Comprimi il **contenuto** di `dist` in uno zip, con `index.html` nella radice de
 - **Juice**: particelle sulle unioni (più numerose per i mostri alti) e sulle vittorie (boss: pioggia di monete), scheda di festeggiamento per ogni mostro nuovo dal livello 3 (non blocca i tocchi), tutto disattivato con «riduci animazioni».
 
 I salvataggi esistenti restano compatibili (stessa chiave `ml_save_v1`): i campi nuovi vengono aggiunti con valori di default, le Essenze già possedute diventano spendibili e restano valide per il +10%, e chi ha già giocato salta il tutorial.
+
+## Lingue
+Inglese (predefinito), italiano, spagnolo, francese e cinese semplificato. All'avvio si usa la lingua della piattaforma (Playgama Bridge) o del browser se è una di queste, altrimenti l'**inglese**; la scelta nelle impostazioni ha la precedenza. Ogni testo mancante in una lingua ricade sull'inglese (`tr()` in `text.js`). Anche la schermata d'errore iniziale (`index.html`) è nelle 5 lingue.
+- Per aggiungere una lingua: un file in `src/data/i18n/` con `tx` (testi), `vr` (varianti dei messaggi), `lore` (26 mostri) e `ch` (18 campioni), poi registrarlo in `text.js` (`MORE`, `LANGS`, `LANGN`) e `lore.js`.
+- `npm test` → `check-text.mjs` controlla tutte le lingue: chiavi uguali all'inglese, stessi segnaposto (`{n}`, `{e}`…), varianti, storie e nomi completi, ed elenca le frasi rimaste identiche all'inglese.
+
+## Bilanciamento e nuove meccaniche (ottobre 2026)
+Giocando e simulando, dopo ~3 ore (giocatore ottimale) la progressione si fermava: il prezzo delle uova cresce del 7% a uovo e ogni livello richiede il doppio delle uova, quindi in una partita non si andava oltre il mostro 15. Il Mondo 2 (mostri 14-26) era quasi irraggiungibile e dopo il livello 40 non si avanzava più per giorni.
+- **Incubatrice automatica** (potenziamento `f`, 8 livelli, `eggInt` in `economy.js`): un uovo gratis ogni 30s → 5s in una cella libera. Le uova gratis non alzano il prezzo di quelle comprate e non contano per missioni e statistiche. Riempie il laboratorio anche quando le uova costano molto e toglie il muro della progressione.
+- **Uova antiche** nell'albero: 12 livelli invece di 6 (costi 128…4096 🔮), uova fino al livello 13. Con le Essenze dei prestigi avanzati serve per arrivare in fondo al Mondo 2.
+- **Combo**: unioni fatte a mano a meno di 2,5s l'una dall'altra danno monete crescenti (½ secondo di guadagni × combo, fino a x10).
+- **Fusione perfetta**: 6% di probabilità che un'unione fatta a mano salti un livello (non durante il tutorial). Il mostro intermedio viene segnato come scoperto.
+- **Forzieri dei boss**: la finestra si apre solo se si sta guardando la battaglia; nel laboratorio basta un messaggio (il premio è già accreditato). Prima a ogni boss un popup interrompeva le unioni.
+- Simulazione (48h): mostro 20 a ~3,2h, livello 50 a ~3,4h, alla fine livello ~65 e mostro 24 (prima: livello 40 a 23,7h, mostro 15 come tetto).
+
+### Correzioni
+- **Guadagni offline col boost**: il guadagno offline usava il reddito con il boost x2 per tutte le ore di assenza, anche se al boost restavano pochi secondi. Ora usa `incBase()` (senza boost); lo stesso vale per la battaglia offline.
+- **Premi «N minuti di guadagni» col boost**: forzieri, missioni, collezione, fantasmi 👻, bonus pubblicitario e costo dei nidi raddoppiavano se il boost era attivo al momento della riscossione. Ora `rBase()` usa `incBase()`.
+
+## Progressione permanente (`src/game/meta.js`, `src/ui/meta.js`)
+Tutto in `S.ch` (in `KEEP`: resta dopo l'Evocazione oscura). Il laboratorio resta il motore; i nuovi sistemi si collegano con dei ganci (`setCK` in `combat.js`, `setHook` in `economy.js`), così da soli valgono ×1 e la simulazione non cambia.
+- **Portale dei Campioni** (🌀): 39 campioni disegnati (immagini in `public/m/`, copiate in `dist/m/`): 9 comuni, 12 rari, 10 epici, 5 leggendari e 3 **speciali** fuori dal Portale (Dullaghan dall'Invasione, Conte Mezzanotte dal Pass, Ombriel al primo arrivo al piano 20 della Torre). Molti hanno una **famiglia evolutiva**: con 3 forme cambiano nome e immagine a ★3 e ★5, con 2 forme a ★4 (scritta «Evoluzione!»; nella scheda si vede la catena). I nomi sono nomi propri, uguali in tutte le lingue. L'ordine di `CH` in `src/data/champs.js` non va cambiato (il salvataggio usa l'indice). Probabilità 60/28/10/2%, **un raro garantito ogni 10** evocazioni e **un leggendario entro 50** (prima quelli che non hai). Doppioni = stelle (★1 → ★5, l'abilità raddoppia): da ★n a ★n+1 servono 3n copie (30 in tutto). Oltre ★5 si ricevono monete (e 1-2 🎫 per epici e leggendari: il rimborso medio resta sotto 1 biglietto per evocazione, altrimenti con tutto a ★5 le evocazioni diventerebbero infinite). 1 evocazione costa 1 🎫; **una gratis ogni 8 ore** e **2 al giorno con video** (`pull`).
+- **Capi squadra**: fino a 2. Danno attacco alla squadra (5/10/18/30% per rarità) e la loro abilità (attacco a un elemento, attacco, vita, guadagni, monete dei livelli, spedizioni, ricariche, fusione perfetta, incubatrice, boss stordito, colpo a terra ridotto, danno ai boss, tutto insieme). Finché il giocatore non sceglie a mano, a capo vanno i più rari.
+- **Biglietti 🎫**: forzieri dei boss (1/2/3), missioni (1, settimanale 3), bonus giornaliero (1, il 7° giorno 2), ogni mostro nuovo dal livello 5, Torre (ogni 3 piani, +2 ai boss), Pass, Invasione, album completi.
+- **Equipaggiamento** (🎒): ⚔️ attacco, 🛡️ vita, 📿 guadagni, 4 rarità. Dai forzieri, dalla Torre (ogni 3 piani) e dal Pass. 3 slot per campione, conta solo sui capi; i pezzi nuovi si montano da soli negli slot vuoti dei capi, «Equipaggia i migliori», «Smonta» dà monete. Inventario massimo 24 (oltre si smonta il peggiore).
+- **Bonus elemento** (come le fazioni): 3 mostri dello stesso elemento in squadra +20% attacco, 4 → +40%.
+- **Torre giornaliera** (🗼, in Battaglia): 3 tentativi al giorno, piani dal 60% del record in su (+2 livelli a piano, boss ogni 5). Dopo ogni vittoria si sceglie 1 potenziamento su 3 per la scalata. Premi (monete, 🎫, equipaggiamento, figurine) solo la prima volta che un piano viene superato nella giornata.
+- **Pass stagionale** (🎟️): 28 giorni dal primo accesso del giocatore, 30 livelli da 230 PE. PE da unioni e vittorie (massimo 60 al giorno ciascuna), boss nuovi (15), missioni (40, settimanale 150), bonus giornaliero (30), piani della Torre (15). Gratis: biglietti, figurine, equipaggiamento e al 30 il campione Conte Mezzanotte; Premium sbloccato con un video (`pass`).
+- **Nemici e boss disegnati**: in `W` (`config.js`) un nemico può essere un'emoji o `'@nome'` (immagine `m/nome.webp`, vedi `ico()` in `core/util.js`). Mondo 1: 12 nemici (normali, veloci, corazzati, rigeneranti) e 4 boss; Mondo 2: 4 boss; Torre: boss propri (`tw`).
+- **Invasione dei boss** (⚔️, sabato e domenica): nemici +25% vita, monete x2, punti per ogni livello vinto (`ceil(livello/5)`, boss ×5). Classifica locale con 9 rivali che salgono durante il fine settimana in proporzione al livello che avevi all'inizio. A fine evento: 1° 30 🎫 + Dullaghan, 2°-3° 20 🎫 + Dullaghan, 4°-6° 10 🎫, gli altri 4 🎫 (se non riscosso, si riscuote da solo all'invasione successiva).
+- **Spedizioni con campione**: si può mandare un campione libero (premio ×1,15…×1,8 secondo rarità e stelle, più la sua abilità «spedizione»); mentre è via non guida la squadra.
+- **Album di figurine** (dentro 📖 Collezione): 2 album da 9 (Laboratorio +5% guadagni, Spazio +5% attacco), l'ultima carta è rara. 3 doppioni si scambiano con una carta mancante; album completo = 25 🎫 e il bonus.
+- **Varianti dorate**: ogni uovo ha il 3% di uscire dorato e ogni unione a mano il 4% (×3 guadagni). Unendo due dorati il risultato resta dorato (`S.gv`, parallelo a `S.g`).
+- **Prima Evocazione oscura**: la prima Essenza arriva a 50.000 monete (`PG1`) invece di 200.000; dalle successive la soglia torna `PG`. Nella simulazione la prima arriva a ~13 minuti (prima ~30). Il pulsante mostra l'anteprima: «Ripartirai con guadagni ×A (ora ×B)».
+- **Sistemi sbloccati a tappe**: dopo il tutorial si vedono solo Missioni e Impostazioni; Collezione (3 mostri), Trofei (primo trofeo), Portale (livello 8), Spedizioni (7 mostri), Pass (livello 12), Torre (livello 16), con un avviso «🔓 Nuovo». Chi ha già fatto un'Evocazione oscura o è oltre il livello 15 trova tutto aperto.
+- Bilanciamento: `npm run sim:meta` simula 28 giorni di un giocatore occasionale e di uno attivo (biglietti, campioni, stelle, Pass, Torre). Con i valori attuali dopo 28 giorni l'attivo ha ~17/18 campioni a ★4 di media (leggendari ancora da far crescere) e chiude il Pass verso il giorno 20; l'occasionale ha ~★3,4 di media e chiude il Pass a fine stagione. La prima versione regalava troppo (quasi tutto a ★5 in due settimane) e aveva il bug delle evocazioni infinite.
+- Test: `scripts/meta.mjs` (in `npm test`): garanzie del Portale su 500 evocazioni, stelle, capi, bonus elemento, equipaggiamento, Torre, Pass, Invasione con data simulata, album, varianti dorate, salvataggi rovinati.
 
 ## Avvio robusto (correzioni «pagina bianca»)
 - **Doppio clic**: aprire l'`index.html` della radice (sorgente) reindirizza a `dist/index.html`. Il blocco `<!--DEV-ONLY-->` viene tolto dal build da `vite.config.js`, quindi non finisce nello zip per Playgama.

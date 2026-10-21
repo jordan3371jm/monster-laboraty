@@ -1,3 +1,6 @@
+import ES from './i18n/es.js';
+import FR from './i18n/fr.js';
+import ZH from './i18n/zh.js';
 // Storia e umorismo: nome e una riga per ognuno dei 26 mostri (indice = livello - 1).
 const LORE={it:[
 ['Uovo Sospetto','Nessuno ricorda chi l\'abbia deposto. Il laboratorio fa finta di niente.'],
@@ -53,4 +56,6 @@ en:[
 ['Absent-minded Vortex','Forgot why it spins. Won\'t stop out of pride.'],
 ['Spiral Galaxy','Four hundred billion stars and not one washing machine.'],
 ['Shooting Star','Grants wishes, on one condition: make it quick.']]};
+// Altre lingue: in src/data/i18n (l'inglese fa da riserva)
+LORE.es=ES.lore;LORE.fr=FR.lore;LORE.zh=ZH.lore;
 export {LORE};
