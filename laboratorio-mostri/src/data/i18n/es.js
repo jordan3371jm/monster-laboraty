@@ -1,4 +1,4 @@
-// Español: textos de la interfaz (tx), variantes de mensajes (vr), historias de los 26 monstruos (lore) y nombres de los campeones (ch).
+// Español: textos de la interfaz (tx), variantes de mensajes (vr), historias de los 26 monstruos (lore).
 export default {
 tx:{
  n0:"🧪 Laboratorio",n1:"⚔️ Batalla",n2:"⚙️ Mejoras",stage:"Nivel",boss:"JEFE",atk:"ATQ",win:"¡Victoria! ",lose:"Derrotados, reintentando el nivel",stb:"ganancias",noteam:"¡Invoca monstruos para luchar!",sec:"/s",
@@ -51,7 +51,7 @@ tx:{
  porT:"🌀 Portal de Campeones",porTk:"Billetes",porX1:"Invocar ×1",porX10:"Invocar ×10",porFree:"🎁 Invocación gratis",porFreeIn:"Gratis en",porAd:"▶ Invocar con vídeo",porAdN:"hoy",
  porPity:"Raro garantizado en {n} · Legendario en máximo {m}",porOdds:"Probabilidades: ⚪ 60% · 🔵 28% · 🟣 10% · 🟡 2%",porLd:"👑 Líderes de la escuadra",porLdD:"Guían la escuadra: ataque extra y su habilidad. Máximo 2. Se quedan tras la Invocación oscura.",
  porAll:"Colección de campeones",porNone:"Aún no tienes campeones: ¡invoca uno!",porEmpty:"Hueco libre",chLead:"👑 Hacer líder",chUnlead:"Quitar de líderes",chBusy:"🧭 De expedición",
- rar0:"Común",rar1:"Raro",rar2:"Épico",rar3:"Legendario",
+ rar0:"Común",rar1:"Raro",rar2:"Épico",rar3:"Legendario",rar4:"Especial",pullEvo:"¡EVOLUCIÓN!",exTw:"Exclusivo: llega al piso 20 de la Torre",
  sk_atkEl:"+{v} ataque a los monstruos {e}",sk_atk:"+{v} ataque de la escuadra",sk_hp:"+{v} vida de la escuadra",sk_inc:"+{v} ganancias",sk_gold:"+{v} monedas de los niveles",sk_exp:"+{v} recompensa de la expedición a la que va",
  sk_cd:"-{v} recarga de las habilidades",sk_luck:"+{v} probabilidad de fusión perfecta",sk_egg:"-{v} espera de la incubadora",sk_stun:"Los jefes empiezan aturdidos {v}s",sk_slam:"-{v} daño del golpe al suelo",sk_boss:"+{v} daño a los jefes",sk_all:"+{v} ataque, vida y ganancias",
  chLeadB:"Como líder: +{v} ataque de la escuadra",exIv:"Exclusivo: solo de la Invasión de jefes",exPs:"Exclusivo: solo del Pase de temporada",
@@ -62,10 +62,10 @@ tx:{
  twTries:"Intentos",twBest:"Récord de hoy",twRec:"Récord absoluto",twStart:"⚔️ Empezar la subida",twFloor:"Piso",twFight:"⚔️ Luchar en el piso {n}",twQuit:"Retirarse",twWin:"¡Piso {n} superado!",twLose:"Derrotado en el piso {n}",
  twPick:"Elige una mejora",twNoTry:"Sin intentos: ¡vuelve mañana!",twBoss:"Jefe",twBufs:"Mejoras activas",twNext:"Próximo enemigo",
  buf_a:"+20% ataque",buf_h:"+25% vida",buf_b:"+10% ataque y vida",buf_r:"+40% ataque, -15% vida",buf_g:"+50% monedas de la Torre",
- psT:"🎟️ Pase de temporada",psD:"Se llena jugando: misiones, jefes, Torre, fusiones y victorias. El nivel 30 da el campeón exclusivo 🦚.",psLv:"Nivel",psLeft:"días para el final de la temporada",
+ psT:"🎟️ Pase de temporada",psD:"Se llena jugando: misiones, jefes, Torre, fusiones y victorias. El nivel 30 da el campeón exclusivo Conte Mezzanotte.",psLv:"Nivel",psLeft:"días para el final de la temporada",
  psFree:"Gratis",psPrem:"Premium",psUnl:"▶ Desbloquea el Premium con un vídeo",psAll:"Reclamar todo",psDone:"✓",
  ivT:"⚔️ Invasión de jefes",ivD:"Cada sábado y domingo: enemigos +25% de vida, monedas x2 y puntos por cada nivel ganado (los jefes valen 5 veces). ¡Sube en la clasificación!",ivOff:"La próxima invasión empieza el sábado.",
- ivPts:"Puntos",ivRank:"Posición",ivYou:"Tú",ivRewT:"Premios finales",ivR1:"1.º: 30 🎫 + 🦍",ivR3:"2.º-3.º: 20 🎫 + 🦍",ivR6:"4.º-6.º: 10 🎫",ivR10:"7.º-10.º: 4 🎫",ivClaim:"Reclamar el premio",ivOn:"¡Invasión en curso!",ivEnd:"Invasión terminada: ¡reclama tu premio!",ivGot:"Invasión: puesto {n}",
+ ivPts:"Puntos",ivRank:"Posición",ivYou:"Tú",ivRewT:"Premios finales",ivR1:"1.º: 30 🎫 + Dullaghan",ivR3:"2.º-3.º: 20 🎫 + Dullaghan",ivR6:"4.º-6.º: 10 🎫",ivR10:"7.º-10.º: 4 🎫",ivClaim:"Reclamar el premio",ivOn:"¡Invasión en curso!",ivEnd:"Invasión terminada: ¡reclama tu premio!",ivGot:"Invasión: puesto {n}",
  albT:"🃏 Álbum de cromos",albD:"Los cromos salen de cofres, la Torre y el Pase. Un álbum completo da 25 🎫 y un bonus permanente.",alb0:"Laboratorio · +5% ganancias",alb1:"Espacio · +5% ataque",albTrade:"Cambiar 3 repetidos",albClaim:"Reclamar 25 🎫",albDone:"✓ Completado",cardGot:"Cromo nuevo",
  prPrev:"Reiniciarás con ganancias ×{a} (ahora ×{b})",ulNew:"🔓 Nuevo: {n}",ul_por:"Portal de Campeones",ul_pas:"Pase de temporada",ul_tow:"Torre diaria",ul_exp:"Expediciones y huevos",ul_tr:"Trofeos",ul_col:"Colección",
  gold:"✨ ¡Monstruo dorado! Rinde ×3",expCh:"Acompañante",expNoCh:"Ninguno",expChD:"Un campeón hace la expedición más rica, pero mientras está fuera no guía la escuadra.",
@@ -103,6 +103,4 @@ lore:[
  ["Ballena Estelar","Canta canciones tan lentas como las galaxias. Solo las escucha quien tiene tiempo."],
  ["Vórtice Despistado","Olvidó por qué gira. No para por orgullo."],
  ["Galaxia Espiral","Cuatrocientos mil millones de estrellas y ni una lavadora."],
- ["Estrella Fugaz","Concede deseos con una condición: que sean rápidos."]],
-ch:["Erizo Punzante","Pingüino Glacial","Zorro de Brasas","Mariquita de la Suerte","Nutria Exploradora","Ardilla Relámpago","Búho Sabio","Oso Guardián","Tigre Ardiente","Mariposa Onírica","Abeja Obrera",
- "León Real","Sirena de las Mareas","Hada del Bosque","Unicornio Celeste","Genio de la Lámpara","Gorila Invasor","Pavo Real de las Estaciones"]};
+ ["Estrella Fugaz","Concede deseos con una condición: que sean rápidos."]]};

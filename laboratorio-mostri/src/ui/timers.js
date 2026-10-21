@@ -14,6 +14,7 @@ import {ui} from './hud.js';
 import {draw} from './lab.js';
 import {CH} from '../data/champs.js';
 import {busy,ch,expMulCh} from '../game/meta.js';
+import {ci} from './meta.js';
 
 // ---- Pannello «Motivi per tornare»: spedizioni, nidi d'uovo, ordini di unione, evento settimanale ----
 const bar=p=>'<div class="bar"><i style="width:'+Math.max(0,Math.min(1,p))*100+'%"></i></div>';
@@ -28,12 +29,12 @@ const gain=(c,e)=>'🪙 '+fmt(c)+(e?' · 🔮 '+e:'');
 
 function secExp(){let h='<div class="dh">'+tr('expT')+'</div>';const run=S.exp.run;
  run.forEach((e,i)=>{const l=expLeft(e),x=EXP[e.q];
-  h+='<div class="xc"><div class="xh">'+x.ic+(e.c>=0&&CH[e.c]?' '+CH[e.c].e:'')+' '+(l>0?tr('expBack')+' '+tt(e.et):'<b class="rdy">'+tr('expRdy')+'</b>')+'</div>'+barT(e.st,e.et)
+  h+='<div class="xc"><div class="xh">'+x.ic+(e.c>=0&&CH[e.c]?' '+ci(e.c,'sm'):'')+' '+(l>0?tr('expBack')+' '+tt(e.et):'<b class="rdy">'+tr('expRdy')+'</b>')+'</div>'+barT(e.st,e.et)
    +'<div class="xr">'+tr('expRew')+': '+gain(expCoins(e.v),expGain(e.q))+'</div><div class="xb">'
    +(l>0?'<button class="b o" data-a="xp" data-i="'+i+'">'+tr('tmSpeed')+'</button>':'<button class="b g" data-a="xc" data-i="'+i+'">'+tr('claim')+'</button>')+'</div></div>'});
  if(run.length<EXPN){const pw=expPow(),fc=Object.keys(ch().own).map(Number).filter(i=>!busy(i));if(R.expCh>=0&&!fc.includes(R.expCh))R.expCh=-1;const cm=expMulCh(R.expCh);
   h+='<div class="xc"><div class="xh">'+tr('expGo')+' · '+tr('expPow')+' <b>'+pw.toFixed(1)+'</b></div>'+(pw?'':'<div class="xr">'+tr('tmNoSquad')+'</div>')
-   +(fc.length?'<div class="xr">'+tr('expCh')+':</div><div class="ecs"><button class="ech'+(R.expCh<0?' sl':'')+'" data-a="ec" data-c="-1">'+tr('expNoCh')+'</button>'+fc.map(i=>'<button class="ech'+(R.expCh===i?' sl':'')+'" data-a="ec" data-c="'+i+'">'+CH[i].e+'</button>').join('')+'</div><small class="d">'+tr('expChD')+'</small>':'')+'<div class="xb">'
+   +(fc.length?'<div class="xr">'+tr('expCh')+':</div><div class="ecs"><button class="ech'+(R.expCh<0?' sl':'')+'" data-a="ec" data-c="-1">'+tr('expNoCh')+'</button>'+fc.map(i=>'<button class="ech'+(R.expCh===i?' sl':'')+'" data-a="ec" data-c="'+i+'">'+ci(i)+'</button>').join('')+'</div><small class="d">'+tr('expChD')+'</small>':'')+'<div class="xb">'
    +EXP.map((x,q)=>'<button class="b" data-a="xs" data-q="'+q+'"'+(pw?'':' disabled')+'><b>'+x.ic+' '+fmtT(expDur(q))+'</b><br><small>'+gain(expCoins(Math.floor(expVal(q,pw)*cm)),expGain(q))+'</small></button>').join('')+'</div></div>'}
  return h}
 

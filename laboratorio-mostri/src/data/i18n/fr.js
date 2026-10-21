@@ -1,4 +1,4 @@
-// Français : textes de l'interface (tx), variantes des messages (vr), histoires des 26 monstres (lore) et noms des champions (ch).
+// Français : textes de l'interface (tx), variantes des messages (vr), histoires des 26 monstres (lore).
 export default {
 tx:{
  n0:"🧪 Laboratoire",n1:"⚔️ Combat",n2:"⚙️ Améliorations",stage:"Niveau",boss:"BOSS",atk:"ATQ",win:"Victoire ! ",lose:"Vaincus, on retente le niveau",stb:"gains",noteam:"Invoque des monstres pour combattre !",sec:"/s",
@@ -51,7 +51,7 @@ tx:{
  porT:"🌀 Portail des Champions",porTk:"Tickets",porX1:"Invoquer ×1",porX10:"Invoquer ×10",porFree:"🎁 Invocation gratuite",porFreeIn:"Gratuit dans",porAd:"▶ Invoquer avec une vidéo",porAdN:"aujourd'hui",
  porPity:"Rare garanti dans {n} · Légendaire en {m} maximum",porOdds:"Chances : ⚪ 60 % · 🔵 28 % · 🟣 10 % · 🟡 2 %",porLd:"👑 Chefs d'équipe",porLdD:"Ils mènent l'équipe : attaque en plus et leur capacité. 2 au maximum. Ils restent après l'Invocation obscure.",
  porAll:"Collection de champions",porNone:"Aucun champion pour l'instant : invoques-en un !",porEmpty:"Place libre",chLead:"👑 Nommer chef",chUnlead:"Retirer des chefs",chBusy:"🧭 En expédition",
- rar0:"Commun",rar1:"Rare",rar2:"Épique",rar3:"Légendaire",
+ rar0:"Commun",rar1:"Rare",rar2:"Épique",rar3:"Légendaire",rar4:"Spécial",pullEvo:"ÉVOLUTION !",exTw:"Exclusif : atteins l'étage 20 de la Tour",
  sk_atkEl:"+{v} d'attaque aux monstres {e}",sk_atk:"+{v} d'attaque de l'équipe",sk_hp:"+{v} de vie de l'équipe",sk_inc:"+{v} de gains",sk_gold:"+{v} de pièces des niveaux",sk_exp:"+{v} de récompense de l'expédition qu'il accompagne",
  sk_cd:"-{v} de recharge des capacités",sk_luck:"+{v} de chance de fusion parfaite",sk_egg:"-{v} d'attente de la couveuse",sk_stun:"Les boss commencent étourdis {v} s",sk_slam:"-{v} de dégâts du coup au sol",sk_boss:"+{v} de dégâts aux boss",sk_all:"+{v} d'attaque, de vie et de gains",
  chLeadB:"En chef : +{v} d'attaque de l'équipe",exIv:"Exclusif : uniquement via l'Invasion des boss",exPs:"Exclusif : uniquement via le Pass saisonnier",
@@ -62,10 +62,10 @@ tx:{
  twTries:"Tentatives",twBest:"Record du jour",twRec:"Record absolu",twStart:"⚔️ Commencer l'ascension",twFloor:"Étage",twFight:"⚔️ Combattre l'étage {n}",twQuit:"Abandonner",twWin:"Étage {n} réussi !",twLose:"Vaincu à l'étage {n}",
  twPick:"Choisis un bonus",twNoTry:"Plus de tentatives : reviens demain !",twBoss:"Boss",twBufs:"Bonus actifs",twNext:"Prochain ennemi",
  buf_a:"+20 % d'attaque",buf_h:"+25 % de vie",buf_b:"+10 % d'attaque et de vie",buf_r:"+40 % d'attaque, -15 % de vie",buf_g:"+50 % de pièces de la Tour",
- psT:"🎟️ Pass saisonnier",psD:"Se remplit en jouant : missions, boss, Tour, fusions et victoires. Le niveau 30 donne le champion exclusif 🦚.",psLv:"Niveau",psLeft:"jours avant la fin de la saison",
+ psT:"🎟️ Pass saisonnier",psD:"Se remplit en jouant : missions, boss, Tour, fusions et victoires. Le niveau 30 donne le champion exclusif Conte Mezzanotte.",psLv:"Niveau",psLeft:"jours avant la fin de la saison",
  psFree:"Gratuit",psPrem:"Premium",psUnl:"▶ Débloque le Premium avec une vidéo",psAll:"Tout récupérer",psDone:"✓",
  ivT:"⚔️ Invasion des boss",ivD:"Chaque samedi et dimanche : ennemis +25 % de vie, pièces x2 et des points pour chaque niveau gagné (les boss valent 5 fois plus). Grimpe au classement !",ivOff:"La prochaine invasion commence samedi.",
- ivPts:"Points",ivRank:"Rang",ivYou:"Toi",ivRewT:"Récompenses finales",ivR1:"1er : 30 🎫 + 🦍",ivR3:"2e-3e : 20 🎫 + 🦍",ivR6:"4e-6e : 10 🎫",ivR10:"7e-10e : 4 🎫",ivClaim:"Récupérer la récompense",ivOn:"Invasion en cours !",ivEnd:"Invasion terminée : récupère ta récompense !",ivGot:"Invasion : {n}e place",
+ ivPts:"Points",ivRank:"Rang",ivYou:"Toi",ivRewT:"Récompenses finales",ivR1:"1er : 30 🎫 + Dullaghan",ivR3:"2e-3e : 20 🎫 + Dullaghan",ivR6:"4e-6e : 10 🎫",ivR10:"7e-10e : 4 🎫",ivClaim:"Récupérer la récompense",ivOn:"Invasion en cours !",ivEnd:"Invasion terminée : récupère ta récompense !",ivGot:"Invasion : {n}e place",
  albT:"🃏 Album d'autocollants",albD:"Les autocollants viennent des coffres, de la Tour et du Pass. Un album complet donne 25 🎫 et un bonus permanent.",alb0:"Laboratoire · +5 % de gains",alb1:"Espace · +5 % d'attaque",albTrade:"Échanger 3 doubles",albClaim:"Récupérer 25 🎫",albDone:"✓ Complet",cardGot:"Nouvel autocollant",
  prPrev:"Tu recommenceras avec des gains ×{a} (maintenant ×{b})",ulNew:"🔓 Nouveau : {n}",ul_por:"Portail des Champions",ul_pas:"Pass saisonnier",ul_tow:"Tour quotidienne",ul_exp:"Expéditions et œufs",ul_tr:"Trophées",ul_col:"Collection",
  gold:"✨ Monstre doré ! Rapporte ×3",expCh:"Accompagnateur",expNoCh:"Aucun",expChD:"Un champion rend l'expédition plus riche, mais pendant son absence il ne mène pas l'équipe.",
@@ -103,6 +103,4 @@ lore:[
  ["Baleine Stellaire","Elle chante des chansons aussi lentes que les galaxies. Seuls ceux qui ont le temps l'écoutent."],
  ["Vortex Distrait","Il a oublié pourquoi il tourne. Il ne s'arrête pas par fierté."],
  ["Galaxie Spirale","Quatre cents milliards d'étoiles et pas une seule machine à laver."],
- ["Étoile Filante","Elle exauce les vœux, à une condition : faire vite."]],
-ch:["Hérisson Piquant","Manchot Glacial","Renard de Braise","Coccinelle Porte-bonheur","Loutre Exploratrice","Écureuil Éclair","Hibou Sage","Ours Gardien","Tigre Ardent","Papillon Onirique","Abeille Ouvrière",
- "Lion Royal","Sirène des Marées","Fée de la Forêt","Licorne Céleste","Génie de la Lampe","Gorille Envahisseur","Paon des Saisons"]};
+ ["Étoile Filante","Elle exauce les vœux, à une condition : faire vite."]]};

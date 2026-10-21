@@ -327,3 +327,18 @@ nav button.on{background:linear-gradient(#8a4ff0,#4b1fa0);box-shadow:0 0 16px #7
 /* Lingue: selettore a griglia e caratteri per il cinese */
 .lgs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.lgs .b{padding:10px 4px;font-size:13px}
 html:lang(zh),html:lang(zh) body{font-family:ui-rounded,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC","Noto Sans CJK SC",system-ui,sans-serif}
+/* ---- Mostri disegnati (Portale, nemici, boss) ---- */
+.mimg{width:1em;height:1em;object-fit:contain;vertical-align:middle;pointer-events:none;-webkit-user-drag:none}
+.mimg.sm{width:1.4em;height:1.4em}
+.chc i .mimg{width:1.25em;height:1.25em;filter:drop-shadow(0 2px 3px #000a)}.chc i.u .mimg{filter:brightness(0)}.chc i.u{filter:none;opacity:.35}
+.lds .chc i .mimg{width:1.6em;height:1.6em}
+.chh>i .mimg{width:1.7em;height:1.7em}
+.pc i .mimg{width:1.6em;height:1.6em;filter:drop-shadow(0 4px 8px #000c)}.pg.many .pc i .mimg{width:1.7em;height:1.7em}
+#en i .mimg{width:1.15em;height:1.15em}#en.big i .mimg{width:1.25em;height:1.25em}
+#team .ldr .mimg{width:1.25em;height:1.25em}
+.twv .mimg{width:1.6em;height:1.6em}.twe .mimg{width:2em;height:2em}
+.ech .mimg{width:1.6em;height:1.6em}
+.evl{display:flex;align-items:center;justify-content:center;gap:6px;font-size:40px}.evl span{display:flex;flex-direction:column;align-items:center;opacity:.35;filter:grayscale(.8)}
+.evl span.on{opacity:1;filter:none}.evl small{font-size:11px;color:#ffd36b}.evl b{font-size:18px;color:#c79bff}
+.chc.r4.f{border-color:#ff4d6d;background:radial-gradient(circle at 50% 30%,#9a1f3a,#2e0510);box-shadow:0 0 16px #ff4d6daa;animation:leg 1.4s ease-in-out infinite alternate}
+.chd.r4{border-color:#ff4d6d}.pc.r4{border-color:#ff4d6d;background:radial-gradient(circle at 50% 30%,#9a1f3a,#2e0510);box-shadow:0 0 30px #ff4d6d}

@@ -1,7 +1,7 @@
 import {sfx} from '../audio.js';
 import {$} from '../core/dom.js';
 import {S} from '../core/state.js';
-import {fmt,hueOf} from '../core/util.js';
+import {fmt,hueOf,ico} from '../core/util.js';
 import {E} from '../data/config.js';
 import {tr,trv} from '../data/text.js';
 import {faction,AUTO_T,EL,RETREAT,SK,SLAM_D,SLAM_T,SLAM_W,SQN,advM,eAtk,eEl,eEmo,eHp,elOf,isBoss,skOn,squad,stageReward,tAtk,tHp,trait} from '../game/combat.js';
@@ -13,7 +13,7 @@ import {ui} from './hud.js';
 import {prog} from './missions.js';
 import {chest} from './rewards.js';
 import {attack,coinFly} from './juice.js';
-import {CH} from '../data/champs.js';
+import {ci} from './meta.js';
 import {bossMul,bossStun,cdMul,goldMul,ivAdd,ivOn,leaders,psAdd,slamMul} from '../game/meta.js';
 
 const F={eh:0,th:0,wait:0,st:0,dm:0,stun:0,sl:0,wn:false,dd:false,lose:0,cd:[0,0,0],rd:[0,0,0]};
@@ -58,7 +58,7 @@ function drawB(){const s=S.st,b=isBoss(s),tt=trait(s);$('stg').textContent=(ivOn
  if(!onB())return;
  en0.classList.toggle('warn',F.wn&&b);
  setT('fmB',S.fm?tr('fmOn'):tr('fmOff'));$('fmB').classList.toggle('g',!!S.fm);$('stPrev').disabled=s<=1;$('stNext').disabled=s>=S.bs;
- setT('en','<i>'+eEmo(s)+'</i>');const en=$('en');en.classList.toggle('big',b);
+ setT('en','<i>'+ico(eEmo(s))+'</i>');const en=$('en');en.classList.toggle('big',b);
  en.classList.toggle('enraged',b&&F.eh<eHp(s)*.5);['fast','armor','heal'].forEach(c=>en.classList.toggle(c,tt===c));
  $('arena').classList.toggle('bossA',b);
  $('tag').textContent=(b?'👑 '+tr('boss')+(F.eh<eHp(s)*.5?' · '+tr('enr'):''):(tt!=='n'?tr('t_'+tt):''))+' '+EL[eEl(s)];
@@ -69,7 +69,7 @@ function drawB(){const s=S.st,b=isBoss(s),tt=trait(s);$('stg').textContent=(ivOn
   k.classList.toggle('lock',!on);k.classList.toggle('rdy',rdy);k.firstChild.style.width=on?(F.cd[i]>0?(1-F.cd[i]/(SK[i].cd*(1-.08*S.pk.a)*cdMul()))*100:100)+'%':'0%';
   setT('skl'+i,on?SK[i].ic+' '+tr('sk'+i)+(F.cd[i]>0?' · '+Math.ceil(F.cd[i])+'s':''):'🔒 '+EL[i])}
  setT('skh',lk?tr('skLock'):tr('skHint'));
- setT('team',(leaders().length?'<span class="ldr">'+leaders().map(i=>CH[i].e).join('')+'<sup>👑</sup></span>':'')+(squad().map(t=>{const m=advM(elOf(t),eEl(s));return'<span class="'+(m>1?'up':m<1?'dn':'')+'">'+E[t-1]+'<sup>'+EL[elOf(t)]+'</sup></span>'}).join('')||tr('noteam'))+'<small class="ed">✏️ '+(S.sq.length?tr('sqMan'):tr('sqAutoL'))+'</small>');
+ setT('team',(leaders().length?'<span class="ldr">'+leaders().map(i=>ci(i)).join('')+'<sup>👑</sup></span>':'')+(squad().map(t=>{const m=advM(elOf(t),eEl(s));return'<span class="'+(m>1?'up':m<1?'dn':'')+'">'+E[t-1]+'<sup>'+EL[elOf(t)]+'</sup></span>'}).join('')||tr('noteam'))+'<small class="ed">✏️ '+(S.sq.length?tr('sqMan'):tr('sqAutoL'))+'</small>');
  $('ts').textContent='⚔️ '+tr('atk')+' '+fmt(tAtk(),1)+'/s  ·  ❤️ '+fmt(Math.max(F.th,0))+' / '+fmt(h)+'  ·  +'+Math.round(3*(S.bs-1))+'% '+tr('stb')+(faction()>1?'  ·  🔰 '+tr('facB')+' +'+Math.round((faction()-1)*100)+'%':'')}
 function renderSq(){const sq=squad(),cnt={};S.g.filter(Boolean).forEach(t=>cnt[t]=(cnt[t]||0)+1);sq.forEach(t=>cnt[t]--);
  const chip=(t,a,x,sm)=>'<button class="sqc f" data-a="'+a+'" '+x+' style="--h:'+hueOf(t)+'"><i>'+E[t-1]+'</i><small>'+sm+'</small></button>';

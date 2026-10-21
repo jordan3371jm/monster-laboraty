@@ -1,5 +1,5 @@
 import {S} from '../core/state.js';
-import {CH,ODDS,PITY_R,PITY_L,MAXSTAR,GEAR,GEARV,GEARMAX,ALB,CARDW} from '../data/champs.js';
+import {evoIdx,CH,ODDS,PITY_R,PITY_L,MAXSTAR,GEAR,GEARV,GEARMAX,ALB,CARDW} from '../data/champs.js';
 import {dayNum,earn,rBase,setHook} from './economy.js';
 import {setCK,tAtk,tHp,elOf} from './combat.js';
 
@@ -12,12 +12,13 @@ const C=()=>S.ch||(S.ch=defCh());   // stato nuovo o azzerato: si crea al primo 
 
 // ---- Campioni ----
 const star=i=>C().own[i]||0;
+const form=i=>CH[i].f[evoIdx(CH[i],Math.max(1,star(i)))]; // nome dell'immagine della forma attuale
 const sMul=i=>1+.25*(Math.max(1,star(i))-1);                 // ★1 → ×1, ★5 → ×2
 const skVal=i=>CH[i].v*sMul(i);
 const busy=i=>Array.isArray(S.exp&&S.exp.run)&&S.exp.run.some(e=>e&&e.c===i);   // in spedizione: non guida la squadra
 const leaders=()=>C().ld.filter(i=>star(i)>0&&!busy(i));
 const sk=(k,el)=>leaders().reduce((s,i)=>s+(CH[i].sk===k&&(el===undefined||CH[i].el===el)?skVal(i):0),0);
-const LEADB=[.05,.1,.18,.3];                                 // forza base che un capo dà alla squadra, per rarità
+const LEADB=[.05,.1,.18,.3,.35];                                 // forza base che un capo dà alla squadra, per rarità
 const leadAtk=()=>leaders().reduce((s,i)=>s+LEADB[CH[i].r]*sMul(i),0);
 const gearOf=i=>(C().eq[i]||[]).map(id=>C().gear.find(g=>g.id===id)).filter(Boolean);
 const gearB=k=>leaders().reduce((s,i)=>s+gearOf(i).reduce((a,g)=>a+(GEAR[g.s].k===k?g.v/100:0),0),0);
@@ -28,7 +29,7 @@ const hpMul=()=>1+sk('hp')+sk('all')+gearB('hp');
 const incMul=()=>1+sk('inc')+sk('all')+gearB('inc')+albB('inc');
 const goldMul=()=>1+sk('gold'),cdMul=()=>Math.max(.5,1-sk('cd')),luckAdd=()=>sk('luck'),bossStun=()=>sk('stun'),slamMul=()=>Math.max(0,1-sk('slam')),bossMul=()=>1+sk('boss');
 // Campione che accompagna una spedizione: premio più ricco secondo rarità e stelle (e la sua abilità «exp»). Mentre è via non guida la squadra.
-const EXPB=[.15,.3,.5,.8];
+const EXPB=[.15,.3,.5,.8,.9];
 const expMulCh=i=>Number.isInteger(i)&&i>=0&&star(i)>0?1+EXPB[CH[i].r]*sMul(i)+(CH[i].sk==='exp'?skVal(i):0):1;
 function setLeader(i,on){const c=C();c.man=1;if(on){if(star(i)<1||c.ld.includes(i))return false;if(c.ld.length>=LDMAX)c.ld.shift();c.ld.push(i)}else c.ld=c.ld.filter(x=>x!==i);return true}
 
@@ -42,8 +43,8 @@ function rollRar(){const c=C();c.pr++;c.pl++;if(c.pl>=PITY_L)return 3;
 // ben sotto 1 per evocazione: con 1,7 di media (vecchi valori) chi aveva tutto a ★5 otteneva evocazioni infinite.
 const needCp=i=>3*Math.max(1,star(i)),cps=i=>C().cp[i]||0;
 function giveCh(i){const c=C(),s=star(i);
- if(s>=MAXSTAR){const back=[0,0,1,2][CH[i].r],co=Math.floor(rBase()*[.3,.6,1.2,2.5][CH[i].r]);c.t+=back;earn(co);return{i,s,back,co}}
- if(s){const cp=cps(i)+1;if(cp>=needCp(i)){c.own[i]=s+1;delete c.cp[i];return{i,s:s+1,up:1}}c.cp[i]=cp;return{i,s,cp,need:needCp(i)}}
+ if(s>=MAXSTAR){const back=[0,0,1,2,3][CH[i].r],co=Math.floor(rBase()*[.3,.6,1.2,2.5,3][CH[i].r]);c.t+=back;earn(co);return{i,s,back,co}}
+ if(s){const cp=cps(i)+1;if(cp>=needCp(i)){c.own[i]=s+1;delete c.cp[i];return{i,s:s+1,up:1,evo:evoIdx(CH[i],s+1)>evoIdx(CH[i],s)}}c.cp[i]=cp;return{i,s,cp,need:needCp(i)}} // evo: ha cambiato forma
  c.own[i]=1;
  {if(c.ld.length<LDMAX)c.ld.push(i);
   else if(!c.man){const w=[...c.ld].sort((a,b)=>CH[a].r-CH[b].r)[0];if(CH[w].r<CH[i].r)c.ld[c.ld.indexOf(w)]=i}} // finché il giocatore non sceglie a mano, a capo vanno i più rari
@@ -105,6 +106,7 @@ function twFight(){const c=C(),tw=c.tw;if(!tw.run||tw.ch)return null;const f=tw.
  const rw={f};if(f>tw.best){tw.best=f;tw.rec=Math.max(tw.rec,f);
   rw.c=Math.floor(rBase()*.3*(1+.1*f)*(1+twBuf('gold')));earn(rw.c);rw.t=(f%3===0?1:0)+(twBoss(f)?2:0);addT(rw.t); // biglietti ogni 3 piani (+2 ai boss)
   if(f%3===0)rw.g=addGear(gearRar(Math.min(.5,f*.03)));if(f%2===0)rw.card=addCard()}
+ const TWX=CH.findIndex(x=>x.ex==='tw');if(tw.rec>=20&&TWX>=0&&!star(TWX))rw.chr=giveCh(TWX); // campione speciale della Torre
  tw.f++;const pick=[...BUFS].sort(()=>Math.random()-.5).slice(0,3).map(b=>b.k);tw.ch=pick;
  return{...res,f,rw}}
 function twPick(k){const tw=C().tw;if(!tw.ch||!tw.ch.includes(k))return false;tw.buf.push(k);tw.ch=null;return true}
@@ -175,7 +177,7 @@ setCK('el',el=>1+sk('atkEl',el));setCK('atk',atkMul);setCK('hp',hpMul);
 setHook('inc',incMul);setHook('egg',()=>Math.max(.5,1-sk('egg')));
 setCK('ehp',()=>ivOn()?1.25:1);
 
-export {needCp,cps,C as ch,expMulCh,defCh,sanCh,LDMAX,FREE_CD,AD_MAX,star,sMul,skVal,busy,leaders,sk,leadAtk,gearOf,atkMul,hpMul,incMul,goldMul,cdMul,luckAdd,bossStun,slamMul,bossMul,setLeader,
+export {form,needCp,cps,C as ch,expMulCh,defCh,sanCh,LDMAX,FREE_CD,AD_MAX,star,sMul,skVal,busy,leaders,sk,leadAtk,gearOf,atkMul,hpMul,incMul,goldMul,cdMul,luckAdd,bossStun,slamMul,bossMul,setLeader,
  rollRar,giveCh,pull1,pullT,pullFree,pullAd,freeLeft,adLeft,addT,gearRar,addGear,salvage,equip,unequip,autoEquip,SALV,
  addCard,albHave,albDone,albDup,albClaim,albTrade,ALB_T,
  TW_TRIES,BUFS,twCheck,twStage,twBoss,twSim,twStart,twFight,twPick,twQuit,twBuf,
