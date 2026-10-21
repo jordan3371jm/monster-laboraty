@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Laboratorio di Mostri</title>
+
+<script>
+// Schermata di caricamento ed errore: la pagina non resta mai bianca. Se qualcosa si rompe all'avvio compare un messaggio con il pulsante per azzerare il salvataggio.
+window.__fatal=function(e){
+ var b=document.getElementById('boot');if(!b||window.__ready)return;
+ var it=String(navigator.language||'').slice(0,2)==='it';
+ b.innerHTML='<div style="padding:24px;max-width:420px;text-align:center"><div style="font-size:48px">🧪</div><p style="font-size:16px">'+(it?'Il gioco non è partito.':'The game could not start.')+'</p><p style="font-size:12px;opacity:.7;word-break:break-word">'+String(e&&e.message||e||'').slice(0,160)+'</p><button id="bootRs" style="font:inherit;padding:12px 18px;border:0;border-radius:12px;background:#6cc22a;color:#fff">'+(it?'Azzera il salvataggio e riprova':'Reset save and retry')+'</button></div>';
+ document.getElementById('bootRs').onclick=function(){try{localStorage.removeItem('ml_save_v1')}catch(x){}location.reload()}};
+addEventListener('error',function(ev){var t=ev.target;if(t&&t.tagName==='SCRIPT'&&t.src&&t.src.indexOf('playgama')<0)window.__fatal('script: '+t.src.split('/').pop());else if((!t||t===window)&&String(ev.filename||'').indexOf('playgama')<0)window.__fatal(ev.error||ev.message)},true);
+</script>
+<!-- Il Bridge si carica senza bloccare la pagina: se la rete è lenta o assente il gioco parte comunque (main.js attende al massimo 2,5s). -->
+<script async src="https://bridge.playgama.com/v2/stable/playgama-bridge.js" onerror="window.__bridgeFail=1"></script>
+  <script defer src="./assets/index-UIq7ms14.js"></script>
+</head>
+<body>
+<div id="boot" style="position:fixed;inset:0;z-index:99;display:flex;align-items:center;justify-content:center;background:#0a0614;color:#f2e9ff;font:600 15px system-ui,sans-serif">🧪 …</div>
+<div id="app">
+ <div id="top"><div><div id="coins"></div><div id="inc"></div></div><div id="stg"></div><div id="ess"></div></div>
+ <div id="tools"><button class="tb" id="tDaily"><span></span><i class="dot"></i></button><button class="tb" id="tCol"><span></span><i class="dot"></i></button><button class="tb" id="tTr"></button><button class="tb ic" id="tExp" aria-label="Timers">🧭<i class="dot"></i></button><button class="tb ic" id="tSet" aria-label="Settings">⚙️</button></div>
+ <div id="goal"><i></i><span id="goalT"></span></div>
+ <div id="tut"><b id="tutT"></b><button id="tutX">✕</button></div>
+ <div id="labV" class="view on">
+  <div id="grid"></div>
+  <div class="row"><button class="b g" id="spawn"></button><button class="b" id="mall"></button></div>
+  <div class="row"><button class="b o" id="a1"></button><button class="b o" id="a2"></button></div>
+ </div>
+ <div id="batV" class="view">
+  <div id="arena"><div id="tag"></div><div id="en"></div><div id="eh"><i id="ehb"></i></div><div id="enm"></div></div>
+  <div id="team"></div>
+  <div id="th"><i id="thb"></i></div>
+  <div id="sks"><button class="sk" id="sk0"><i></i><b id="skl0"></b></button><button class="sk" id="sk1"><i></i><b id="skl1"></b></button><button class="sk" id="sk2"><i></i><b id="skl2"></b></button></div>
+  <div id="skh"></div>
+  <div id="ts"></div>
+  <div id="fmr"><button class="b" id="stPrev">◀</button><button class="b" id="fmB"></button><button class="b" id="stNext">▶</button></div>
+ </div>
+ <nav><button id="n0" class="on"></button><button id="n1"></button><button id="n2"></button></nav>
+ <div id="ups">
+  <h2 id="upsT"></h2>
+  <button class="b" id="u0"></button><button class="b" id="u1"></button><button class="b" id="u2"></button><button class="b" id="u3"></button><button class="b" id="u4"></button>
+  <button class="b" id="treeB"></button>
+  <button class="b o" id="pr"></button>
+  <button class="b" id="closeUps"></button>
+ </div>
+ <div id="daily" class="ov"><h2 id="dT"></h2><div id="dBody"></div><button class="b" id="dClose"></button></div>
+ <div id="tm" class="ov"><h2 id="tmT"></h2><div id="tmB"></div><button class="b" id="tmClose"></button></div>
+ <div id="intro" class="ov"><div id="introB"></div></div>
+ <div id="col" class="ov"><h2 id="cT"></h2><div id="colB"></div><button class="b" id="cClose"></button></div>
+ <div id="trop" class="ov"><h2 id="trT"></h2><div id="trB"></div><button class="b" id="trClose"></button></div>
+ <div id="tree" class="ov"><h2 id="tT"></h2><div id="tBody"></div><button class="b" id="tClose"></button></div>
+ <div id="sqp" class="ov"><h2 id="sqT"></h2><div id="sqB"></div><button class="b" id="sqClose"></button></div>
+ <div id="set" class="ov"><h2 id="setT"></h2><div id="setB"></div><button class="b" id="setClose"></button></div>
+ <div id="stat" class="ov"><h2 id="statT"></h2><div id="statB"></div><button class="b" id="statClose"></button></div>
+ <div id="ev"></div>
+ <div id="wb" class="ov"><div id="wbB"></div></div>
+ <div id="cele"></div>
+ <div id="toast"></div>
+</div>
+</body>
+</html>

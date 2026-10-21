@@ -1,0 +1,40 @@
+{
+    "platforms": {
+        "playgama": {}
+    },
+    "advertisement": {
+        "minimumDelayBetweenInterstitial": 60,
+        "interstitial": {
+            "placements": [
+                {
+                    "id": "prestige"
+                },
+                {
+                    "id": "world"
+                }
+            ]
+        },
+        "rewarded": {
+            "placements": [
+                {
+                    "id": "boost"
+                },
+                {
+                    "id": "bonus"
+                },
+                {
+                    "id": "daily"
+                },
+                {
+                    "id": "offline"
+                },
+                {
+                    "id": "chest"
+                },
+                {
+                    "id": "speed"
+                }
+            ]
+        }
+    }
+}
