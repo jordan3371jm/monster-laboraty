@@ -1,7 +1,7 @@
 # Scheda del gioco per Playgama
 
-Immagini in questa cartella: `cover-1x1.png` (800×800), `cover-9x16.png` (1080×1920), `cover-16x9.png` (1920×1080).
-Rigenerabili da `cover.html` (vedi README, «Copertine»).
+Immagini in questa cartella: `cover-1x1.png` (800×800), `cover-9x16.png` (1080×1920), `cover-16x9.png` (1920×1080); versioni 4K in `hd/` (3840×2160, 4096×4096, 2160×3840).
+Rigenerabili da `cover.html` (sfondi AI in `ai/`); alternative disegnate col codice in `alt/` (vedi README, «Copertine»).
 
 ---
 

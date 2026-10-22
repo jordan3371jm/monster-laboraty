@@ -1,61 +1,47 @@
 <!doctype html><html><head><meta charset="utf-8"><style>
-*{box-sizing:border-box;margin:0}
-html,body{width:100%;height:100%;overflow:hidden;background:#0c0718;font-family:"Nunito","Varela Round",ui-rounded,system-ui,sans-serif}
-#c{position:relative;width:100%;height:100%;overflow:hidden;
- background:radial-gradient(ellipse 70% 55% at 50% 52%,#7a3fe0 0,#3b1c70 38%,transparent 72%),radial-gradient(circle at 12% 95%,#1d6b3f88 0,transparent 40%),radial-gradient(circle at 92% 8%,#ff7a1a55 0,transparent 35%),linear-gradient(#1a0f33,#0a0614)}
-/* raggi */
-#c::before{content:'';position:absolute;left:50%;top:52%;width:240vmax;height:240vmax;translate:-50% -50%;background:repeating-conic-gradient(#ffffff10 0 7deg,transparent 7deg 16deg);-webkit-mask:radial-gradient(circle,#000 8%,transparent 42%)}
-/* piastrelle */
-#c::after{content:'';position:absolute;inset:0;background:linear-gradient(#ffffff08 1px,transparent 1px) 0 0/var(--t) var(--t),linear-gradient(90deg,#ffffff08 1px,transparent 1px) 0 0/var(--t) var(--t);-webkit-mask:linear-gradient(transparent 50%,#000)}
-.m{position:absolute;filter:drop-shadow(0 calc(var(--u)*.6) calc(var(--u)*1.2) #000c)}
-.m img{width:100%;display:block}
-.tank{position:absolute;border-radius:18% 18% 14% 14%;border:calc(var(--u)*.35) solid hsl(var(--h) 75% 62%);
- background:linear-gradient(100deg,transparent 12%,#ffffff30 16%,#ffffff08 24%,transparent 27%),radial-gradient(ellipse at 50% 120%,hsl(var(--h) 85% 55% / .7),transparent 65%),linear-gradient(hsl(var(--h) 45% 20%),hsl(var(--h) 55% 9%));
- box-shadow:0 0 calc(var(--u)*3) hsl(var(--h) 90% 55% / .6),inset 0 calc(var(--u)*-1.5) calc(var(--u)*3) hsl(var(--h) 90% 50% / .5),0 calc(var(--u)*.8) 0 hsl(var(--h) 50% 10%);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.tank img{width:84%;filter:drop-shadow(0 calc(var(--u)*.5) calc(var(--u)*.6) #000b)}
-.tank b{position:absolute;right:7%;bottom:6%;font-size:calc(var(--u)*2.4);color:#fff;font-weight:900;padding:0 calc(var(--u)*.9);border-radius:calc(var(--u)*1.2);background:linear-gradient(hsl(var(--h) 60% 45%),hsl(var(--h) 60% 22%));border:2px solid #fff6}
-.title{position:absolute;left:50%;translate:-50% 0;text-align:center;white-space:nowrap}
-.title h1{font-size:calc(var(--u)*var(--ts));font-weight:900;line-height:.95;letter-spacing:calc(var(--u)*.1);color:transparent;background:linear-gradient(#fff6c8,#ffd36b 45%,#ff8a1a);-webkit-background-clip:text;background-clip:text;
- filter:drop-shadow(0 calc(var(--u)*.55) 0 #6a2a00) drop-shadow(0 0 calc(var(--u)*2.5) #ffb02eaa);-webkit-text-stroke:calc(var(--u)*.12) #fff3}
-.title h1 span{display:block;font-size:.62em;color:transparent;background:linear-gradient(#e9d6ff,#b77bff);-webkit-background-clip:text;background-clip:text;filter:drop-shadow(0 calc(var(--u)*.4) 0 #2a0f55)}
-.tag{display:inline-block;margin-top:calc(var(--u)*1.4);font-size:calc(var(--u)*2.5);font-weight:900;color:#fff;padding:calc(var(--u)*.7) calc(var(--u)*2.4);border-radius:calc(var(--u)*5);background:linear-gradient(#6cc22a,#3f8a14);box-shadow:0 calc(var(--u)*.5) 0 #1f4a08,0 0 calc(var(--u)*2) #6cc22a88}
-.plus{position:absolute;font-size:calc(var(--u)*7);font-weight:900;color:#fff;text-shadow:0 0 calc(var(--u)*2) #c06bff,0 calc(var(--u)*.4) 0 #3a0f6a;translate:-50% -50%}
-.spark{position:absolute;width:calc(var(--u)*1.2);height:calc(var(--u)*1.2);border-radius:50%;background:radial-gradient(#fff,#ffd36b 40%,transparent 70%);box-shadow:0 0 calc(var(--u)*1.5) #ffd36b}
-.coin{position:absolute;width:calc(var(--u)*4.4);height:calc(var(--u)*4.4);border-radius:50%;translate:-50% -50%;background:radial-gradient(circle at 35% 30%,#fff6c8,#ffd36b 35%,#e08a10 70%,#9a5a00);border:calc(var(--u)*.35) solid #ffe9a0;box-shadow:0 0 calc(var(--u)*2) #ffb02ecc,inset 0 calc(var(--u)*-.5) 0 #b8700a}
-</style></head><body><div id="c"></div>
-<script>
-const r=new URLSearchParams(location.search).get('r')||'sq',c=document.getElementById('c');
-const W=innerWidth,H=innerHeight,u=Math.min(W,H)/100;c.style.setProperty('--u',u+'px');c.style.setProperty('--t',u*7+'px');
-const add=h=>c.insertAdjacentHTML('beforeend',h);
-// x,y = centro in % di larghezza/altezza; s = lato in u
-const mon=(n,x,y,s,rot=0,z=1)=>add(`<div class="m" style="left:${x}%;top:${y}%;width:${s*u}px;translate:-50% -50%;rotate:${rot}deg;z-index:${z}"><img src="../public/m/${n}.webp"></div>`);
-const tank=(n,x,y,s,h,l,z=2)=>add(`<div class="tank" style="--h:${h};left:${x}%;top:${y}%;width:${s*u}px;height:${s*u*1.08}px;translate:-50% -50%;z-index:${z}"><img src="../public/m/${n}.webp"><b>${l}</b></div>`);
-const spark=(x,y,k=1)=>add(`<div class="spark" style="left:${x}%;top:${y}%;scale:${k}"></div>`);
-const coin=(x,y,k=1)=>add(`<div class="coin" style="left:${x}%;top:${y}%;scale:${k}"></div>`);
-const title=(y,ts)=>add(`<div class="title" style="top:${y}%;--ts:${ts};z-index:5"><h1>MONSTER<span>LABORATORY</span></h1><div class="tag">MERGE · EVOLVE · BATTLE</div></div>`);
-if(r==='sq'){
- title(5,13);
- tank('fanghiglia',22,58,24,90,3);tank('fanghiglia',22,86,24,90,3);
- add(`<div class="plus" style="left:22%;top:72.5%;z-index:3">+</div>`);
- mon('lumizucca',56,66,52,0,3);
- tank('candelino',86,42,19,30,5);tank('fantesmina',86,63,19,270,7);tank('criopinguo',86,84,19,200,9);
- mon('infernax',10,30,22,-8,1);mon('grifospettrale',90,24,22,6,1);
- coin(40,40,1);coin(70,38,.8);coin(36,86,.9);spark(30,45);spark(75,55,1.4);spark(48,90);spark(64,32,.8);
-}else if(r==='h'){
- title(6,15);
- tank('fanghiglia',12,52,15,90,3);tank('fanghiglia',12,82,15,90,3);add(`<div class="plus" style="left:12%;top:67%;z-index:3">+</div>`);
- mon('lumizucca',50,70,48,0,3);
- mon('conte_mezzanotte',27,68,30,-4,2);mon('grifospettrale',73,66,32,4,2);
- tank('candelino',89,45,14,30,5);tank('fantesmina',89,68,14,270,7);tank('boccettina',89,91,14,300,9);
- mon('infernax',11,20,17,-10,1);mon('krakentuscolo',89,15,15,8,1);
- coin(40,50,1);coin(62,48,.8);coin(20,40,.9);coin(80,85,.9);spark(36,40);spark(64,58,1.4);spark(54,92);spark(24,90,.8);
-}else{ // verticale 9:16
- title(4,15);
- mon('lumizucca',50,50,74,0,3);
- tank('fanghiglia',20,77,22,90,3);tank('fanghiglia',50,77,22,90,3);add(`<div class="plus" style="left:35%;top:77%;z-index:3">+</div>`);
- add(`<div class="plus" style="left:65%;top:77%;z-index:3">=</div>`);tank('melmostro',80,77,22,100,4);
- tank('candelino',20,92,19,30,5);tank('fantesmina',50,92,19,270,7);tank('criopinguo',80,92,19,200,9);
- mon('infernax',14,34,26,-8,1);mon('grifospettrale',86,32,26,6,1);
- coin(30,58,1.2);coin(72,56,1);coin(18,48,.9);spark(28,40,1.3);spark(76,44,1.5);spark(58,63);spark(40,30,.8);
-}
+@font-face{font-family:Lilita;src:url(fonts/lilita.woff2) format('woff2')}
+@font-face{font-family:Fredoka;src:url(fonts/fredoka.woff2) format('woff2');font-weight:300 700}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#07040f}
+.abs{position:absolute}
+.merge{display:flex;align-items:center;gap:calc(var(--u)*1.4);padding:calc(var(--u)*1.6);border-radius:calc(var(--u)*3);background:linear-gradient(#2a1a55e8,#160c33e8);border:calc(var(--u)*.3) solid #b77bff88;box-shadow:0 calc(var(--u)*1) calc(var(--u)*3) #000a,0 0 calc(var(--u)*4) #8b43ff55}
+.card{position:relative;width:var(--k);aspect-ratio:1;border-radius:calc(var(--k)*.18);display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,hsl(var(--h) 60% 40%),hsl(var(--h) 60% 12%));border:calc(var(--u)*.35) solid hsl(var(--h) 80% 65%);box-shadow:0 0 calc(var(--u)*2) hsl(var(--h) 90% 55% / .7)}
+.card img{width:86%}
+.card b{position:absolute;right:-8%;bottom:-8%;font:calc(var(--k)*.22)/1 Lilita;padding:calc(var(--k)*.05) calc(var(--k)*.1);border-radius:calc(var(--k)*.1);background:linear-gradient(hsl(var(--h) 70% 50%),hsl(var(--h) 70% 25%));border:2px solid #fff8}
+.op{font:calc(var(--u)*4.4)/1 Lilita;color:#fff;text-shadow:0 0 calc(var(--u)*1.5) #b77bff}
+.arrow{font:calc(var(--u)*4.4)/1 Lilita;color:#8be04a;text-shadow:0 0 calc(var(--u)*1.5) #8be04a}
+.card.big{--k:calc(var(--kk)*1.35);box-shadow:0 0 calc(var(--u)*4) #ffd36b,0 0 0 calc(var(--u)*.4) #ffd36b}
+.logo{left:50%;translate:-50% 0;top:var(--ly);text-align:center;white-space:nowrap;z-index:8}
+.logo h1{font:var(--ls)/.86 Lilita;letter-spacing:.02em;position:relative}
+.l1{display:block;color:#ffd84a;background:linear-gradient(#fffbe0 5%,#ffe066 30%,#ffb31a 62%,#ff7a00 95%);-webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 calc(var(--ls)*.012) 0 #c25a00) drop-shadow(0 calc(var(--ls)*.012) 0 #a24600) drop-shadow(0 calc(var(--ls)*.012) 0 #7a3200) drop-shadow(0 calc(var(--ls)*.012) 0 #5a2200) drop-shadow(0 calc(var(--ls)*.04) calc(var(--ls)*.04) #000c) drop-shadow(0 0 calc(var(--ls)*.12) #ffb02e88)}
+.l2{display:block;font-size:.6em;margin-top:.06em;background:linear-gradient(#f6ecff 5%,#d3a8ff 40%,#9b55ff 75%,#6a22d8);-webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 calc(var(--ls)*.01) 0 #4a1a9a) drop-shadow(0 calc(var(--ls)*.01) 0 #3a1080) drop-shadow(0 calc(var(--ls)*.01) 0 #2a0a60) drop-shadow(0 calc(var(--ls)*.04) calc(var(--ls)*.04) #000c) drop-shadow(0 0 calc(var(--ls)*.12) #b77bff88)}
+.tag{display:inline-block;margin-top:calc(var(--ls)*.12);font:700 calc(var(--ls)*.2)/1 Fredoka;letter-spacing:.08em;padding:.45em 1.2em;border-radius:3em;background:linear-gradient(#7be04a,#2f8a14);border:calc(var(--u)*.3) solid #d6ffb0aa;box-shadow:0 calc(var(--u)*.6) 0 #1a4a08,0 0 calc(var(--u)*3) #6cc22a99;text-shadow:0 2px 0 #1a4a08}
+.cta{z-index:9;font:calc(var(--u)*var(--cs))/1 Lilita;letter-spacing:.04em;padding:.55em 1.6em .6em;border-radius:1em;color:#fff;background:linear-gradient(#ffd36b 0,#ff9d2e 48%,#ff6a00 52%,#e04a00);border:calc(var(--u)*.45) solid #fff3c0;box-shadow:0 .14em 0 #8a2a00,0 .3em .5em #000a,0 0 1em #ff9d2e;text-shadow:0 .06em 0 #8a2a00;white-space:nowrap}
+.cta::before{content:'';position:absolute;left:8%;right:8%;top:6%;height:40%;border-radius:1em;background:linear-gradient(#ffffffaa,#fff0)}
+.hand{font-size:calc(var(--u)*var(--cs)*1.3);z-index:10;filter:drop-shadow(0 4px 4px #000a);rotate:-15deg}
+.vig{inset:0;background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 55%,#000c);z-index:20;pointer-events:none}
+.grain{inset:0;z-index:21;opacity:.07;mix-blend-mode:overlay;pointer-events:none}
+#c{position:relative;width:100vw;height:100vh;overflow:hidden;--u:1vmin;font-family:Fredoka,sans-serif;color:#fff}
+.bg{inset:0;background-size:cover;background-position:center}
+.shade{inset:0;background:linear-gradient(#0d0626e6 0%,#0d062688 var(--sh),transparent calc(var(--sh) + 12%)),linear-gradient(transparent 70%,#0d0626cc)}
+.h{--ly:3vh;--ls:15vh;--cs:5;--kk:8vh;--sh:22%}
+.q{--ly:3vh;--ls:13vh;--cs:4.8;--kk:8vw;--sh:24%}
+.v{--ly:5vh;--ls:20vw;--cs:6.6;--kk:12vw;--sh:22%}
+</style></head><body><div id="c">
+<div class="abs bg" id="bg"></div><div class="abs shade"></div>
+<div class="abs logo"><h1><span class="l1">MONSTER</span><span class="l2">LABORATORY</span></h1><div class="tag">MERGE · EVOLVE · BATTLE</div></div>
+<div id="x"></div>
+<div class="abs vig"></div>
+<svg class="abs grain" width="100%" height="100%"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+</div><script>
+const q=new URLSearchParams(location.search),F=q.get('f')||'h';document.getElementById('c').classList.add(F);
+document.getElementById('bg').style.backgroundImage='url('+(q.get('bg')||'ai/sfondo-'+{h:'16x9',q:'1x1',v:'9x16'}[F]+'.jpg')+')';
+const L={h:{cta:[84,86],hand:[92,89],merge:[2,78]},q:{cta:[73,90],hand:[87,93],merge:[2,83]},v:{cta:[50,93.5],hand:[77,95.5],merge:[50,75.5,'c']}}[F];
+document.getElementById('x').innerHTML=`<div class="abs merge" style="left:${L.merge[0]}vw;top:${L.merge[1]}vh;--k:var(--kk);${L.merge[2]?'translate:-50% 0;':''}">
+ <div class="card" style="--h:85"><img src="../public/m/fanghiglia.webp"><b>3</b></div><span class="op">+</span>
+ <div class="card" style="--h:85"><img src="../public/m/fanghiglia.webp"><b>3</b></div><span class="arrow">➜</span>
+ <div class="card big" style="--h:280"><img src="../public/m/melmostro.webp"><b>4</b></div></div>
+ <div class="abs cta" style="left:${L.cta[0]}vw;top:${L.cta[1]}vh;translate:-50% -50%">▶ PLAY NOW</div><div class="abs hand" style="left:${L.hand[0]}vw;top:${L.hand[1]}vh">👆</div>`;
 </script></body></html>
