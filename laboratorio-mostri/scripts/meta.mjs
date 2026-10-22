@@ -79,4 +79,34 @@ const D0=Date.now;const at=ms=>{Date.now=()=>ms};const back=()=>{Date.now=D0};
 // Ogni rarità (compresa la Speciale) ha i suoi valori: niente NaN nei testi e nei bonus
 {for(let r=0;r<=4;r++)ok(isFinite(M.LEADB[r]),'bonus da capo definito per la rarità '+r);
  fresh();for(let i=0;i<CH.length;i++){M.ch().own[i]=1;M.ch().ld=[i];ok(isFinite(M.atkMul())&&isFinite(M.expMulCh(i))&&isFinite(M.skVal(i)),'valori finiti: '+M.form(i))}}
+// Livelli dei campioni: le stelle sbloccano il limite (★1 → 20 … ★5 → 100), i rari salgono più piano ma valgono di più
+{fresh();const C0=CH.findIndex(c=>c.r===0&&!c.ex);M.giveCh(C0);M.giveCh(LEG);
+ ok(M.lvl(C0)===1&&M.lvCap(C0)===20,'nuovo campione: livello 1, limite 20 con ★1');
+ ok(M.xpNeed(LEG,10)>M.xpNeed(C0,10),'i leggendari chiedono più esperienza per livello');
+ M.giveXp(C0,1e9);ok(M.lvl(C0)===20&&M.xpOf(C0)===0,'al limite delle stelle si ferma (livello 20) e l\'esperienza in più si perde');
+ M.ch().own[C0]=3;ok(M.lvCap(C0)===60,'★3: limite 60');
+ M.ch().tm=5;const n=M.useTomes(C0,10);ok(n===5&&M.ch().tm===0&&M.lvl(C0)>20,'i Tomi 📘 danno esperienza ('+n+' usati → livello '+M.lvl(C0)+')');
+ ok(M.useTomes(C0,1)===0,'senza Tomi non si sale');
+ M.ch().tm=1e6;M.useTomes(C0,1e9);ok(M.lvl(C0)===60&&M.tomesToCap(C0)===0&&M.ch().tm<1e6,'«Max» porta al limite e non spreca Tomi');
+ M.ch().own[LEG]=5;M.ch().lv[LEG]=100;M.ch().own[C0]=5;M.ch().lv[C0]=100;ok(M.lMul(LEG)>M.lMul(C0)&&M.lMul(C0)>2.9,'al livello 100: comune ×'+M.lMul(C0).toFixed(2)+', leggendario ×'+M.lMul(LEG).toFixed(2));
+ const pw=M.cPow(LEG);M.ch().lv[LEG]=50;ok(M.cPow(LEG)<pw,'il livello fa crescere la potenza')}
+// Palestra: esperienza all'ora anche a gioco chiuso
+{fresh();const C0=CH.findIndex(c=>c.r===0&&!c.ex);M.giveCh(C0);const t0=Date.now();at(t0);ok(M.gymSet(0,C0)&&!M.gymSet(1,C0),'in Palestra (una volta sola per campione)');
+ at(t0+10*3600e3);M.gymTick();back();ok(M.lvl(C0)>1,'dopo 10 ore di Palestra il campione è salito (livello '+M.lvl(C0)+')')}
+// Doppioni a ★5: Tomi
+{fresh();const C0=CH.findIndex(c=>c.r===0&&!c.ex);M.giveCh(C0);M.ch().own[C0]=5;const r=M.giveCh(C0);ok(r.tm>0&&M.ch().tm===r.tm,'doppione a ★5: +'+r.tm+' 📘')}
+// Prove dei Campioni: si vince con abbastanza potenza, premi solo alla prima vittoria
+{fresh();ok(M.triFight()===null,'senza campioni niente prova');const ids=CH.map((_,i)=>i).filter(i=>!CH[i].ex).slice(0,3);ids.forEach(i=>M.giveCh(i));
+ let r=M.triFight();ok(r&&r.win&&r.rw&&r.rw.tm>0&&M.ch().tri.best===1,'prova 1 vinta: Tomi in premio');
+ let lost=null;for(let k=0;k<200&&!lost;k++){const x=M.triFight();if(!x.win)lost=x}ok(lost&&lost.p<lost.need&&M.ch().tri.best<200,'più avanti serve più potenza (fermo alla prova '+(M.ch().tri.best+1)+')');
+ const b=M.ch().tri.best;ids.forEach(i=>{M.ch().own[i]=5;M.ch().lv[i]=100});const w=M.triFight();ok(w.win&&M.ch().tri.best===b+1,'campioni più forti: si va avanti');
+ ok(M.triNeed(10)>M.triNeed(9)*1.3,'le prove dei boss (ogni 5) sono più dure');
+ M.triSet(ids[0]);ok(M.triTeam().length===2,'squadra scelta a mano: si toglie un campione')}
+// Collezioni dei campioni: metà e completa, +3% di potenza per ogni collezione completa
+{fresh();const s=M.CSETS.find(x=>x.k==='l');ok(M.CSETS.length===7&&s.ids.length>0,'7 collezioni');
+ s.ids.slice(0,M.csTier(s,0)).forEach(i=>M.giveCh(i));ok(M.csOk(s,0)&&!M.csOk(s,1),'metà collezione: premio pronto');const t0=M.ch().tm;M.csClaim('l',0);ok(M.ch().tm>t0&&!M.csOk(s,0),'premio della metà (una volta)');
+ s.ids.forEach(i=>M.giveCh(i));const p0=M.csMul();ok(M.csClaim('l',1)&&M.csMul()>p0,'collezione completa: +3% potenza ai campioni')}
+// Salvataggi rovinati dei nuovi campi
+{const c=M.sanCh({own:{0:2},lv:{0:999,5:7},xp:{0:-5},tm:'x',gym:{s:[0,0],t:['a']},tri:{best:-3,team:[0,0,99]},cs:['l1','zz',5]});
+ ok(c.lv[0]===40&&!c.lv[5]&&!c.xp[0]&&c.tm===0&&c.gym.s[0]===0&&c.gym.s[1]===-1&&c.tri.best===0&&c.tri.team.length===1&&c.cs.length===1,'campi nuovi dei campioni ripuliti (livello nel limite delle stelle, Palestra senza doppioni)')}
 process.exit(fails?1:0);

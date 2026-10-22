@@ -14,8 +14,8 @@ import {RAR,ALB} from '../data/champs.js';
 
 // ---- Finestra «bentornato» / avvisi (raddoppio offline con pubblicità) ----
 function openWB(h){setT('wbB',h);$('wb').classList.add('on')}
-function showOff(o,secs,nb,nc){R.offA=o;const m=Math.floor(secs/60),t=m>=60?Math.floor(m/60)+'h '+m%60+'m':m+'m';
- openWB('<div class="wbi">🌙</div><div class="wbh">'+tr('wbT')+'</div><div class="dc">'+tr('wbAway')+' '+t+'</div><div class="wbc">🪙 +'+fmt(o)+'</div>'+(nb?'<div class="dc">⚔️ '+tr('wbBat')+': +'+nb+' · 🪙 +'+fmt(nc)+'</div>':'')
+function showOff(o,secs,nb,nc,nm,ne){R.offA=o;const m=Math.floor(secs/60),t=m>=60?Math.floor(m/60)+'h '+m%60+'m':m+'m';
+ openWB('<div class="wbi">🌙</div><div class="wbh">'+tr('wbT')+'</div><div class="dc">'+tr('wbAway')+' '+t+'</div><div class="wbc">🪙 +'+fmt(o)+'</div>'+(nb?'<div class="dc">⚔️ '+tr('wbBat')+': +'+nb+' · 🪙 +'+fmt(nc)+'</div>':'')+(nm||ne?'<div class="dc">'+[nm?'🔄 '+tr('wbMrg').replace('{n}',nm):'',ne?'🐣 '+tr('wbEgg').replace('{n}',ne):''].filter(Boolean).join(' · ')+'</div>':'')
  +'<button class="b o" data-a="wd">'+tr('wbDbl')+' · 🪙 +'+fmt(o)+'</button><button class="b g" data-a="wc">'+tr('wbOk')+'</button>')}
 $('wb').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;
  if(b.dataset.a==='wc'){$('wb').classList.remove('on');R.chR=null;if(R.wbInter){const p=R.wbInter;R.wbInter='';inter(p)}} // interstitial solo alla chiusura del cambio mondo

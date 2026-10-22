@@ -24,7 +24,7 @@ async function boot(save,{bridge=false,lang='it',bx=null}={}){
  const S=()=>{w.dispatchEvent(new w.Event('pagehide'));return JSON.parse(w.localStorage.getItem('ml_save_v1'))};
  return {jump:ms=>{clock+=ms;timers.forEach(x=>x.t+=ms)},w,$,click,adv,errs,calls,S,flush,q:(s)=>w.document.querySelector(s),qa:s=>[...w.document.querySelectorAll(s)]};
 }
-const base={c:5e5,g:[3,3,4,2,2,1,0,5,0,6,1,1,0,0,2,4,0,0,0,0],sp:30,up:{l:3,d:2,o:1,a:2},ess:4,run:3e6,boost:0,st:8,disc:[1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],tut:3,dl:{d:-1,m:[],last:-1,st:2,dbl:1,lr:null},essT:4,lt:2e7,wd:1,pk:{s:1,a:1,o:0,g:1,b:1},ach:{mg:60,sp:120,ev:3,pr:1,wn:3,ch:2},sq:[]};
+const CH0F=13;const base={c:5e5,g:[3,3,4,2,2,1,0,5,0,6,1,1,0,0,2,4,0,0,0,0],sp:30,up:{l:3,d:2,o:1,a:2},ess:4,run:3e6,boost:0,st:8,disc:[1,1,1,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],tut:3,dl:{d:-1,m:[],last:-1,st:2,dbl:1,lr:null},essT:4,lt:2e7,wd:1,pk:{s:1,a:1,o:0,g:1,b:1},ach:{mg:60,sp:120,ev:3,pr:1,wn:3,ch:2},sq:[]};
 
 // --- impostazioni, lingua, audio, statistiche, reset
 {const t=await boot({...base,snd:0});
@@ -49,10 +49,11 @@ const base={c:5e5,g:[3,3,4,2,2,1,0,5,0,6,1,1,0,0,2,4,0,0,0,0],sp:30,up:{l:3,d:2,
  t.click(t.$('tCol'));const cell=t.q('.cm[data-a=mon]');ok(!!cell,'i mostri scoperti sono toccabili');t.click(cell);
  const card=t.q('#colB .mi');ok(!!card&&card.textContent.length>40,'scheda del mostro: '+(card&&card.textContent.slice(0,70)));
  t.click(t.q('.cm[data-a=mon][data-t="2"]'));ok(/Microbo|Germ/.test(t.q('#colB .mi').textContent),'cambio scheda sul mostro 2');
- t.click(t.qa('#colTabs .b')[1]);ok(!t.q('#colB .cm')&&!!t.q('#colB .ag'),'collezione: scheda Album separata dai mostri');t.click(t.qa('#colTabs .b')[0]);
+ t.click(t.qa('#colTabs .b')[1]);ok(t.qa('#colB .css').length===7&&!t.q('#colB .cm[data-a=mon]'),'collezione: scheda Campioni con 7 collezioni');t.click(t.qa('#colTabs .b')[2]);ok(!t.q('#colB .cm')&&!!t.q('#colB .ag'),'collezione: scheda Album separata dai mostri');t.click(t.qa('#colTabs .b')[0]);
  t.click(t.$('cClose'));
  t.click(t.$('n2'));ok(t.$('upsTabs').style.display!=='none'&&t.$('ups').dataset.t==='0'&&t.w.getComputedStyle(t.$('pr')).display==='none','potenziamenti: scheda Laboratorio, l\'Evocazione oscura è nell\'altra scheda');
- t.click(t.qa('#upsTabs .b')[1]);ok(t.$('ups').dataset.t==='1'&&t.w.getComputedStyle(t.$('pr')).display!=='none'&&t.w.getComputedStyle(t.$('u0')).display==='none','potenziamenti: scheda Essenze con l\'Evocazione oscura');t.click(t.$('closeUps'));
+ t.click(t.qa('#upsTabs .b')[1]);ok(t.$('ups').dataset.t==='1'&&t.qa('#upsBat .b').length===6&&t.w.getComputedStyle(t.$('upsBat')).display!=='none'&&t.w.getComputedStyle(t.$('u0')).display==='none','potenziamenti: scheda Battaglia con 6 potenziamenti');
+ t.click(t.qa('#upsTabs .b')[2]);ok(t.$('ups').dataset.t==='2'&&t.w.getComputedStyle(t.$('pr')).display!=='none'&&t.qa('#tBody [data-a=pr]').length===6&&t.w.getComputedStyle(t.$('u0')).display==='none','potenziamenti: scheda Essenze con l\'Evocazione oscura');t.click(t.$('closeUps'));
  t.click(t.$('tPor'));ok(!!t.q('#porB [data-a=x1]')&&!t.q('#porB .chg'),'portale: scheda Evoca');t.click(t.qa('#porTabs .b')[1]);ok(!!t.q('#porB .chg')&&!t.q('#porB [data-a=x1]'),'portale: scheda Campioni');t.click(t.qa('#porTabs .b')[2]);ok(!t.q('#porB .chg')&&/🎒|gear|equip/i.test(t.$('porB').textContent+t.$('porTabs').textContent),'portale: scheda Equipaggiamento');t.click(t.$('porClose'));
  const s=t.S();ok(s.dl.m.length===5&&s.dl.m[0].t==='merge'&&s.dl.wl.length===5&&s.dl.ml.length===5,'5 missioni giornaliere, 5 settimanali, 5 mensili: '+s.dl.m.map(m=>m.t).join(',')+' / '+s.dl.wl.map(m=>m.t+m.n).join(',')+' / '+s.dl.ml.map(m=>m.t+m.n).join(','));
  ok(s.dl.wl.some(m=>m.t==='days'&&m.p===1)&&s.dl.ml.some(m=>m.t==='days'&&m.p===1),'settimanali e mensili: «gioca in N giorni» conta già oggi');
@@ -155,7 +156,7 @@ const dl0=o=>({d:-1,m:[],last:-1,st:0,dbl:1,lr:null,wk:-1,w:null,...o});
 {const t=await boot({...base,tut:1},{});
  ok(!t.$('goal').classList.contains('on'),'durante il tutorial la barra obiettivo è nascosta');}
 {const t=await boot({...base,ess:500,essT:500,dl:dl0({last:dn})},{});
- t.click(t.$('ess'));ok(t.$('tree').classList.contains('on')&&t.qa('#tBody [data-a=pr]').length===6,'albero: 6 rami infiniti visibili');
+ t.click(t.$('ess'));ok(t.$('ups').classList.contains('on')&&t.$('ups').dataset.t==='2'&&t.qa('#tBody [data-a=pr]').length===6,'albero (scheda Essenze dei Potenziamenti): 6 rami infiniti visibili');
  t.click(t.q('[data-a=pr][data-k=x]'));ok(t.S().pk.x===1&&t.S().ess===497,'un livello di Alchimia costa 3 🔮');
  t.click(t.q('[data-a=prm][data-k=t]'));const l=t.S().pk.t,cost=n=>Math.ceil(3*Math.pow(1.22,n));let sp=0;for(let i=0;i<l;i++)sp+=cost(i);
  ok(l>8&&t.S().ess===497-sp&&t.S().ess<cost(l),'«Max» compra finché bastano le Essenze: Furia livello '+l+', restano '+t.S().ess);
@@ -191,7 +192,7 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  ok(t.errs.length===0,'ordini: «Unisci tutto» non genera errori');}
 {const t=await boot({...base,introSeen:1,dl:{d:-1,m:[],last:dn2,st:2,dbl:1,lr:null},ev:{wk:Math.floor((dn2+3)/7),el:0,p:500,tot:120,b:0,ok:1,x:0,m:null,got:0,cl:[],sp:{}}},{});
  t.click(t.$('tExp'));await t.adv(300);t.click(t.qa('#tmTabs .b')[3]);const n0=t.qa('#grid .c.f').length;
- ok(!!t.q('#tmB .evh')&&t.qa('#tmB .evst').length===4&&t.qa('#tmB .evmi').length===6&&t.qa('#tmB .evsi').length===6&&!/NaN|undefined/.test(t.$('tmB').textContent),'evento: festa, 4 modi per guadagnare 💠, 6 traguardi e negozio');
+ ok(!!t.q('#tmB .evh')&&t.qa('#tmB .evst').length===4&&t.qa('#tmB .evmi').length===6&&t.qa('#tmB .evsi').length===7&&!/NaN|undefined/.test(t.$('tmB').textContent),'evento: festa, 4 modi per guadagnare 💠, 6 traguardi e negozio');
  ok(t.qa('#tmB [data-a=em]').length===2&&/Avventure|Adventures/.test(t.$('tmT').textContent),'evento: 2 traguardi pronti con 120 💠 guadagnati; il pannello si chiama Avventure');
  {const tk=t.S().ch?t.S().ch.t:0;t.click(t.q('#tmB [data-a=em]'));await t.adv(300);ok(t.S().ev.cl.includes(0)&&t.S().ch.t===tk+2&&t.qa('#tmB [data-a=em]').length===1,'evento: traguardo riscosso (🎫 +2)')}
  t.click(t.q('#tmB [data-a=eb][data-i="5"]'));await t.adv(300);ok(t.qa('#grid .c.f').length===n0+1,'evento: il campione è UN mostro in più (non riempie il laboratorio)');
@@ -260,6 +261,22 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  t.click(t.qa('#tmTabs .b')[1]);t.click(t.q('#tmB [data-a=nb2]'));await t.adv(300);ok(t.S().ev.fn&&!!t.q('#tmB [data-a=np2]'),'uovo della festa nel nido');
  t.jump(3*3600e3);await t.adv(800);t.click(t.q('#tmB [data-a=nc2]'));await t.adv(300);const p1=t.S().ev.p;t.click(t.qa('#tmTabs .b')[0]);t.click(t.q('#tmB [data-a=fc]'));await t.adv(300);
  ok(t.S().ev.fn===null&&t.S().ev.fx===null&&t.S().ev.p>p1&&p1>0,'riscossi: 💠 per l\'evento ('+t.S().ev.p+')');ok(t.errs.length===0,'festa: nessun errore JS '+t.errs.slice(0,2));}
+// --- Unione e incubatrice automatiche a gioco chiuso: un'azione ogni 5 minuti
+{const t=await boot({...base,am:1,ae:1,g:[1,1,1,1,2,2,...z(14)],ach:{...base.ach,mg:0},introSeen:1,dl:dl0({last:dn}),ls:1.8e12-3600e3},{});await t.adv(1500);
+ const s=t.S();ok(s.ach.mg>=3&&s.g.filter(Boolean).length>6-3,'a gioco chiuso (1 ora): unioni ('+s.ach.mg+') e uova automatiche');ok(/🔄|🐣/.test(t.$('wbB').textContent),'bentornato: quante unioni e uova automatiche');}
+// --- Potenziamenti della battaglia
+{const t=await boot({...base,c:1e9,introSeen:1,dl:dl0({last:dn})},{});await t.adv(600);t.click(t.$('n2'));t.click(t.qa('#upsTabs .b')[1]);
+ t.click(t.q('#upsBat [data-k=a]'));t.click(t.q('#upsBat [data-k=c]'));ok(t.S().ub.a===1&&t.S().ub.c===1&&/6%/.test(t.q('#upsBat [data-k=c]').textContent),'battaglia: attacco e critico comprati (critico 6%)');t.click(t.$('closeUps'));
+ t.click(t.$('n1'));await t.adv(3000);ok(/🎯 6%/.test(t.$('ts').textContent)&&/👑/.test(t.$('tag').textContent),'battaglia: critico e livelli al boss mostrati');ok(t.errs.length===0,'battaglia: nessun errore JS '+t.errs.slice(0,2));}
+// --- Campioni: livelli con i Tomi, Palestra, Prove dei Campioni (Mondo 2)
+{const t=await boot({...base,wd:2,introSeen:1,dl:dl0({last:dn}),ch:{t:0,own:{0:1,9:2,21:1},tm:30,ld:[9]}},{});await t.adv(600);
+ t.click(t.$('tPor'));t.click(t.qa('#porTabs .b')[1]);ok(t.qa('#porB .gys').length===2&&/30/.test(t.q('#porB .tmc').textContent)&&t.qa('#porB .chc .lvb').length>=3,'campioni: Tomi, 2 posti in Palestra, livello sulle carte');
+ t.click(t.q('#porB .chg [data-a=sel][data-i="9"]'));ok(!!t.q('#porB [data-a=lv1]'),'scheda del campione con il livello');t.click(t.q('#porB [data-a=lv10]'));const s1=t.S();ok(s1.ch.tm===20&&s1.ch.lv[9]>1,'10 Tomi usati: livello '+s1.ch.lv[9]);
+ t.click(t.q('#porB [data-a=gym]'));ok(t.S().ch.gym.s.includes(9),'campione messo in Palestra');
+ t.click(t.q('#porB [data-a=cf][data-v="0"]'));ok(t.qa('#porB .chg .chc').length===CH0F,'filtro elemento 🔥');t.click(t.$('porClose'));
+ ok(t.$('bTri').style.display!=='none','Mondo 2: compaiono le Prove dei Campioni');t.click(t.$('bTri'));ok(t.qa('#triB .trt .chc').length===3&&!!t.q('#triB [data-a=fight]'),'prove: squadra di 3 e pulsante per combattere');
+ t.click(t.q('#triB [data-a=fight]'));await t.adv(300);ok(t.S().ch.tri.best>=1,'prova 1 superata');ok(t.errs.length===0,'campioni: nessun errore JS '+t.errs.slice(0,2));}
+{const t=await boot({...base,wd:1,introSeen:1,dl:dl0({last:dn})},{});ok(t.$('bTri').style.display==='none','Mondo 1: niente Prove dei Campioni');}
 // --- Pass: premio 👑 con 5 video (senza acquisto)
 {const rw={};const adv=calls=>({advertisement:{on:(e,cb)=>{if(e==='rewarded_state_changed')rw.cb=cb},showInterstitial:()=>Promise.resolve(),showRewarded:p=>{calls.push('rw:'+p);Promise.resolve().then(()=>{rw.cb('opened');rw.cb('rewarded');rw.cb('closed')})}}});
  const t=await boot({...base,introSeen:1,dl:dl0({last:dn}),ch:{ps:{o:dn,s:0,xp:2*230+10,cl:[],cp:[],prem:0,dd:-1,dm:0,dw:0}}},{bridge:true,bx:adv});await t.adv(600);

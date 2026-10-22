@@ -44,7 +44,7 @@ function misCheck(prog){const d=dayNum(),dl=S.dl,fresh=[];let newDay=false;
  if(newDay&&prog)prog('days',1);
  else fresh.forEach(l=>l.forEach(m=>{if(m.t==='days')m.p=Math.min(m.n,m.p+1)}))}
 // Ricompense: giornaliere piccole, settimanali con 🔮, mensili grandi
-const REW=[{c:1,e:0,t:1,pe:25},{c:6,e:1,t:2,pe:80},{c:30,e:4,t:6,pe:200}];
+const REW=[{c:1,e:0,t:1,pe:25,tm:0},{c:6,e:1,t:2,pe:80,tm:5},{c:30,e:4,t:6,pe:200,tm:20}]; // tm: Tomi 📘 per i campioni
 const lists=()=>[S.dl.m,S.dl.wl,S.dl.ml];
 const claimable=k=>(lists()[k]||[]).filter(m=>m.p>=m.n&&!m.c).length;
 export {MT,NDAY,NWEEK,NMONTH,mkDaily,mkWeekly,mkMonthly,weekNum,weekLeft,monthNum,monthInfo,msLeft,misCheck,REW,lists,claimable};

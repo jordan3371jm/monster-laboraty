@@ -275,9 +275,9 @@ nav button.on{background:linear-gradient(#8a4ff0,#4b1fa0);box-shadow:0 0 16px #7
 @keyframes rainbow{to{background-position:200% 0}}
 
 /* ---- Portale dei Campioni, Torre, Pass, Invasione, Album, varianti dorate ---- */
-#por,#tow,#pas,#inv,#pull{display:none;position:absolute;inset:0;background:#0f081cf7;flex-direction:column;padding:14px;gap:10px;overflow-y:auto;overscroll-behavior:contain;z-index:5}
-#por.on,#tow.on,#pas.on,#inv.on,#pull.on{display:flex}#por h2,#tow h2,#pas h2,#inv h2{margin:0;text-align:center;color:#ffd36b}
-#porB,#towB,#pasB,#invB{display:flex;flex-direction:column;gap:10px}
+#por,#tow,#pas,#inv,#tri,#pull{display:none;position:absolute;inset:0;background:#0f081cf7;flex-direction:column;padding:14px;gap:10px;overflow-y:auto;overscroll-behavior:contain;z-index:5}
+#por.on,#tow.on,#pas.on,#inv.on,#tri.on,#pull.on{display:flex}#por h2,#tow h2,#pas h2,#inv h2,#tri h2{margin:0;text-align:center;color:#ffd36b}
+#porB,#towB,#pasB,#invB,#triB{display:flex;flex-direction:column;gap:10px}
 #pull{z-index:8;justify-content:center;background:radial-gradient(circle at 50% 40%,#3b1c70f5,#0a0614fa)}#pullB{display:flex;flex-direction:column;gap:14px;text-align:center}
 .chg{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}.lds{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .chc{position:relative;aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;background:#ffffff08;border:2px dashed #ffffff1f;color:#fff;font:inherit;padding:0;font-size:min(7vw,30px)}
@@ -388,19 +388,19 @@ nav button.lk::after{content:'🔒';position:absolute;top:3px;right:8px;font-siz
 /* Pannelli: titolo in alto e «Chiudi» in basso restano sempre visibili */
 .ov>h2,#ups>h2{position:sticky;top:-14px;z-index:2;margin:-14px -14px 0!important;padding:14px;background:#140b26;border-bottom:1px solid var(--line);font-size:19px}
 .ov>button.b:last-child,#ups>button.b:last-child{position:sticky;bottom:-14px;z-index:2;flex-shrink:0;margin-top:auto;box-shadow:0 -10px 20px #0f081c,0 4px 0 #1a0f33}
-#ups,#daily,#mis,#col,#trop,#tree,#set,#stat,#tm,#intro,#por,#tow,#pas,#inv,#sqp{background:#0f081cfa}
+#ups,#daily,#mis,#col,#trop,#set,#stat,#tm,#intro,#por,#tow,#pas,#inv,#tri,#sqp{background:#0f081cfa}
 /* Potenziamenti: scheda con icona, testo e prezzo a destra */
-:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh){display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:10px;text-align:left;padding:10px 12px;background:linear-gradient(#3d2770,#2c1b52);flex-shrink:0}
-:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) i{font-style:normal;font-size:26px;text-align:center}
-:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) span{display:flex;flex-direction:column;gap:2px;min-width:0}
-:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) b{font-size:14.5px}:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) em{font-style:normal;font-size:11px;padding:1px 6px;margin-left:4px;border-radius:8px;background:#0005;color:var(--txt2)}
-:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) small{font-size:11.5px;font-weight:600;color:var(--txt2);text-shadow:none}
-:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) strong{padding:7px 10px;border-radius:10px;background:#6cc22a;box-shadow:0 2px 0 #1f4a08;font-size:13px;white-space:nowrap}
-:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh):disabled{opacity:1}:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh):disabled strong{background:#ffffff1a;box-shadow:none;color:#ffffffaa}
-:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh):disabled i,:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh):disabled span{opacity:.6}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh){display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:10px;text-align:left;padding:10px 12px;background:linear-gradient(#3d2770,#2c1b52);flex-shrink:0}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh) i{font-style:normal;font-size:26px;text-align:center}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh) span{display:flex;flex-direction:column;gap:2px;min-width:0}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh) b{font-size:14.5px}:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh) em{font-style:normal;font-size:11px;padding:1px 6px;margin-left:4px;border-radius:8px;background:#0005;color:var(--txt2)}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh) small{font-size:11.5px;font-weight:600;color:var(--txt2);text-shadow:none}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh) strong{padding:7px 10px;border-radius:10px;background:#6cc22a;box-shadow:0 2px 0 #1f4a08;font-size:13px;white-space:nowrap}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh):disabled{opacity:1}:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh):disabled strong{background:#ffffff1a;box-shadow:none;color:#ffffffaa}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh):disabled i,:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh):disabled span{opacity:.6}
 .ulk{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;border:1px dashed #ffffff2a;color:var(--txt2);flex-shrink:0}
 .ulk>i{font-style:normal;font-size:22px;width:40px;text-align:center}.ulk span{display:flex;flex-direction:column;gap:2px}.ulk small{font-size:11.5px;color:var(--gold)}
-#treeB,#pr{flex-shrink:0}
+#pr,#tBody{flex-shrink:0}
 /* Battaglia: meno testo, più spazio all'arena */
 #team{padding:6px 50px 6px 8px;border-radius:14px;background:var(--card);border:1px solid var(--line)}
 #ts{font-size:11.5px;color:var(--txt2);opacity:1}#skh{font-size:10.5px}
@@ -431,8 +431,8 @@ nav button.lk::after{content:'🔒';position:absolute;top:3px;right:8px;font-siz
  #grid{gap:10px}.c::after{font-size:13px}
  #spawn{font-size:19px;padding:18px 8px}#mall{font-size:16px}#adr .b{font-size:14.5px;padding:12px 6px}
  nav button{font-size:14px;padding:9px 2px}nav button b{font-size:28px}
- #ups,.ov{padding:20px}:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh){grid-template-columns:52px 1fr auto;padding:14px 16px}:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) i{font-size:32px}
- :is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) b{font-size:17px}:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) small{font-size:13.5px}:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) strong{font-size:15px;padding:9px 14px}
+ #ups,.ov{padding:20px}:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh){grid-template-columns:52px 1fr auto;padding:14px 16px}:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh) i{font-size:32px}
+ :is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh) b{font-size:17px}:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh) small{font-size:13.5px}:is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh) strong{font-size:15px;padding:9px 14px}
  #team{font-size:min(9vw,6dvh)}#ts{font-size:13.5px}.sk{font-size:14px;padding:12px 2px}
  .ulc{max-width:420px}.ulc i{font-size:96px}.ulc b{font-size:28px}.ulc p{font-size:17px}
 }
@@ -536,7 +536,8 @@ em.mon{display:inline-block;width:1.3em;height:1.3em;vertical-align:-.3em;font-s
 #misB{display:flex;flex-direction:column;gap:8px}
 .tabs .b small{display:block;font-size:10.5px;font-weight:700;margin-top:1px}
 .tabs .b b{display:block;font-size:17px;line-height:1.1}
-#ups[data-t="0"] :is(#treeB,#pr),#ups[data-t="1"] :is([id^=u]:not(#upsT):not(#upsTabs),#amB,#aeB){display:none!important}
+#ups[data-t="0"] :is(#upsBat,#pr,#tBody),#ups[data-t="1"] :is([id^=u]:not(#upsT):not(#upsTabs):not(#upsBat),#amB,#aeB,#pr,#tBody),#ups[data-t="2"] :is([id^=u]:not(#upsT):not(#upsTabs),#amB,#aeB,#upsBat){display:none!important}
+#upsBat{display:flex;flex-direction:column;gap:10px}
 #ups .tabs{top:0}
 /* ---- Evento della settimana (scheda 🎪 delle Avventure) ---- */
 .evh{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:14px;border-radius:18px;border:2px solid #ffffff2a;box-shadow:0 6px 18px #0007;position:relative;overflow:hidden}
@@ -567,3 +568,30 @@ em.mon{display:inline-block;width:1.3em;height:1.3em;vertical-align:-.3em;font-s
 /* Spedizione e uovo della festa (schede Spedizioni e Nidi delle Avventure) */
 .xc.evx{border-color:#ffd36b66;background:linear-gradient(135deg,#ffd36b14,#ff7a1a10)}
 .ecs3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.ecs3 .b{padding:8px 4px;font-size:12.5px}
+/* colpo critico in battaglia */
+.dm.crit{color:#ffd36b;font-size:26px;text-shadow:0 0 10px #ff9d2e,0 2px 0 #7a3a00;z-index:3}
+/* ---- Campioni: livello, elemento, Palestra, filtri ---- */
+.chc .lvb{position:absolute;left:3px;top:3px;font-style:normal;font-size:9.5px;font-weight:900;padding:0 4px;border-radius:6px;background:#000a;color:#fff;letter-spacing:0;line-height:1.5}
+.chc .elb{position:absolute;right:2px;bottom:1px;text-decoration:none;font-size:10px}.chc .cr.gy{left:-4px;right:auto}
+.chc .dot.on{position:absolute;top:-3px;right:-3px;width:10px;height:10px;border-radius:50%;background:#ff4d5e;box-shadow:0 0 0 2px #0f081c}
+.clv{display:flex;flex-direction:column;gap:6px;padding:10px;border-radius:12px;background:#0004;border:1px solid #ffffff1a}
+.clh{display:flex;justify-content:space-between;align-items:center}.clh b{font-size:16px}.clh b small{opacity:.6;font-size:12px}.clh span{font-weight:900;color:#ffd36b}
+.row3{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:6px}.row3 .b{padding:8px 4px;font-size:12.5px}
+.gymr{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;align-items:stretch}
+.tmc{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:6px 12px;border-radius:12px;background:linear-gradient(#2f6fd1,#1a3f80);border:1px solid #7fb6ff66}.tmc b{font-size:17px}.tmc small{font-size:10.5px;opacity:.85}
+.gys{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px;border-radius:12px;background:#ffffff08;border:2px dashed #ffffff26;color:#fff;font:inherit}
+.gys.f{border-style:solid;border-color:#8be04a88;background:#3f8a1422}.gys i{font-style:normal;font-size:26px}.gys small{font-size:10.5px;opacity:.85;text-align:center}
+.chf{display:flex;gap:5px;flex-wrap:wrap;align-items:center}.chf span{flex:1}.chf .b{padding:6px 9px;font-size:12px;background:#2c1b52;box-shadow:0 2px 0 #160c2c}.chf .b.on{background:linear-gradient(#8a5cf0,#5b34b8)}
+@media (max-width:420px){.chg{grid-template-columns:repeat(5,1fr)}}
+/* ---- Prove dei Campioni ---- */
+.trh{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px;padding:12px;border-radius:16px;text-align:center;border:2px solid #ffffff2a}
+.trh.e0{background:linear-gradient(135deg,#ff7a1a55,#4a0f2a)}.trh.e1{background:linear-gradient(135deg,#2ec5ff55,#1a1450)}.trh.e2{background:linear-gradient(135deg,#7be04a55,#0f3a2a)}
+.trh small{display:block;font-size:11px;opacity:.8;text-transform:uppercase}.trh b{font-size:20px}.tre{font-size:40px}
+.trt{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.trt .chc{aspect-ratio:auto;min-height:92px;font-size:38px}
+.chc .adv{position:absolute;bottom:-1px;left:0;right:0;font-size:10px;color:#fff;letter-spacing:0}.chc .adv.up{color:#8be04a}.chc .adv.dn{color:#ff8a8a}
+.bar.big{height:12px}
+/* ---- Collezioni dei campioni ---- */
+.css{display:flex;flex-direction:column;gap:8px;padding:10px;border-radius:14px;background:#ffffff0a;border:1px solid #ffffff14}
+.css .xh{display:flex;justify-content:space-between}.csg{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:4px}
+.csg .chc{font-size:24px;border-width:1px}.csr{display:grid;grid-template-columns:1fr 1fr;gap:6px}.csr .b{padding:7px 4px;font-size:12px}
+.chf .b{flex:0 0 auto;width:auto!important;margin:0!important;min-width:40px}

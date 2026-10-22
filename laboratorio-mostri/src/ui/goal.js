@@ -18,12 +18,12 @@ function nextGoal(){
  if(has('day')&&misNew())return{t:tr('g_mis'),p:1,go:'tMis'};
  const tg=has('exp')&&timersGoal();if(tg&&tg.p>=1)return{t:tr(tg.gk),p:1,go:'tExp'}; // spedizione, uovo, ordine o 💠 pronti
  if(has('col'))for(let r=0;r<NR;r++)if(rowOk(r)&&!S.col[r])return{t:tr('g_col'),p:1,go:'tCol'};
- if(PK.some(p=>S.pk[p.k]<p.max&&S.ess>=p.cost[S.pk[p.k]])||PKR.some(p=>(S.pk[p.k]||0)<p.max&&S.ess>=pkrCost(S.pk[p.k]||0)))return{t:tr('g_tree'),p:1,go:'treeB'};
+ if(PK.some(p=>S.pk[p.k]<p.max&&S.ess>=p.cost[S.pk[p.k]])||PKR.some(p=>(S.pk[p.k]||0)<p.max&&S.ess>=pkrCost(S.pk[p.k]||0)))return{t:tr('g_tree'),p:1,go:'n2:2'};
  if(!S.am&&S.ess>=AM_COST&&has('ups'))return{t:tr('g_am'),p:1,go:'n2:0'}; // unione automatica acquistabile
  if(S.am&&!S.ae&&S.ess>=AE_COST&&has('u5'))return{t:tr('g_ae'),p:1,go:'n2:0'}; // poi l'incubatrice automatica
- const pg=pgain();if(has('pr')&&!S.ach.pr&&pg>=1)return{t:tr('g_prA').replace('{n}',pg),p:1,go:'n2:1'};
+ const pg=pgain();if(has('pr')&&!S.ach.pr&&pg>=1)return{t:tr('g_prA').replace('{n}',pg),p:1,go:'n2:2'};
  const nu=ulNext();if(nu)return{t:ulName(nu.k)+' · '+rqTxt(nu),p:rqP(nu),go:nu.s?'n1':nu.p?'n2':'n0',ul:1};
- if(!S.ach.pr)return{t:tr('g_pr1')+' · '+fmt(S.run)+'/'+fmt(pgN()),p:Math.min(1,S.run/pgN()),go:'n2:1'};
+ if(!S.ach.pr)return{t:tr('g_pr1')+' · '+fmt(S.run)+'/'+fmt(pgN()),p:Math.min(1,S.run/pgN()),go:'n2:2'};
  const m=Math.max(0,...S.g),u=S.disc.indexOf(0)+1; // primo mostro non ancora scoperto
  if(m>0&&u>=2&&u<=MAXT){const b=u-1,have=S.g.filter(t=>t===b).length;
   return{t:tr('g_mon').replace('{e}',E[u-1]).replace('{l}',b),p:m>=b?Math.min(have,2)/2:m/b/2,go:'n0'}}

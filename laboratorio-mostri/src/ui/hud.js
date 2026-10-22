@@ -4,10 +4,11 @@ import {R,S,setS} from '../core/state.js';
 import {fmt} from '../core/util.js';
 import {E} from '../data/config.js';
 import {tr} from '../data/text.js';
-import {give,rBase,AE_COST,LAB_UP,DISC_UP,offRate,AM_COST,amInt,amMax,essMult,pgN,PK,PKR,UP,eggInt,inc,pgain,pkrCost,prestigeState,spCost} from '../game/economy.js';
+import {give,rBase,offAutoInt,AE_COST,LAB_UP,DISC_UP,offRate,AM_COST,amInt,amMax,essMult,pgN,PK,PKR,UP,eggInt,inc,pgain,pkrCost,prestigeState,spCost} from '../game/economy.js';
 import {save} from '../save.js';
 import {inter} from './ads.js';
 import {drawB,startFight} from './battle.js';
+import {UB,ub,critC,critD,regen} from '../game/combat.js';
 import {colNew,renderCol} from './collection.js';
 import {onTab,pickTab,setT,tabs,toast} from './common.js';
 import {draw} from './lab.js';
@@ -29,7 +30,7 @@ import {offerCheck} from './shop.js';
 // ---- Sblocchi a obiettivi (game/unlocks.js): all'inizio c'è solo il laboratorio, il resto si apre raggiungendo dei traguardi.
 // Ogni sblocco ha una finestra «Nuova funzione!»; le schede ancora chiuse restano visibili con il lucchetto e dicono cosa serve.
 const UIC={day:['tDaily','tMis'],col:['tCol'],tr:['tTr'],exp:['tExp'],por:['tPor'],pas:['tPas'],ads:['adr'],fm:['fmr'],bat:['stg'],pr:['pr']};
-const NAVK={1:'bat',2:'ups'},UPI=['🧪','🏷️','😴','⏱️','➕','🐣','🆙'];
+const NAVK={1:'bat',2:'ups'},UPI=['🧪','🏷️','😴','⏱️','➕','🐣','🆙','🌙'];
 const rqTxt=r=>r.m?tr('rq_m').replace('{n}',r.m+' '+E[r.m-1]):r.s?tr('rq_s').replace('{n}',r.s):r.c?tr('rq_c').replace('{n}',fmt(r.c)):tr('rq_p');
 const ulName=k=>k[0]==='u'&&k.length===2?tr(k):tr('ul_'+k);
 function gate(){Ul.ulMigrate();const tut=S.tut>=3,on=k=>tut&&Ul.has(k);
@@ -39,17 +40,18 @@ function gate(){Ul.ulMigrate();const tut=S.tut>=3,on=k=>tut&&Ul.has(k);
  const shop=tut&&Ul.has('ups');$('tShop').style.display=shop?'':'none'; // negozio sempre visibile dopo lo sblocco dei Potenziamenti
  $('tools').style.display=shop||['day','col','tr','exp','por','pas'].some(on)?'':'none';$('nav').style.display=tut?'':'none';
  for(const i in NAVK)$('n'+i).classList.toggle('lk',!on(NAVK[i]));
- UP.forEach((u,i)=>{$('u'+i).style.display=Ul.upOpen(i)&&(!u.am||S.am)&&(!u.ae||S.ae)?'':'none'});$('amB').style.display=S.am?'none':'';
+ UP.forEach((u,i)=>{$('u'+i).style.display=Ul.upOpen(i)&&(!u.am||S.am)&&(!u.ae||S.ae)&&(!u.off||S.am||S.ae)?'':'none'});$('amB').style.display=S.am?'none':'';
  $('aeB').style.display=!S.ae&&Ul.upOpen(UP.findIndex(u=>u.ae))?'':'none'; // Incubatrice automatica: prima si sblocca con le Essenze
  const nl=Ul.UPL.findIndex((r,i)=>r&&!Ul.upOpen(i));$('uLk').style.display=nl<0?'none':'';
  if(nl>=0)setT('uLk','<i>🔒</i><span><b>'+tr('u'+nl)+'</b><small>'+rqTxt(Ul.UPL[nl])+'</small></span>');
- $('treeB').style.display=S.essT>0?'':'none';
  const ivc=Mt.ch().iv,inv=on('inv')&&(Mt.ivOn()||(ivc.pts>0&&!ivc.cl&&Mt.ivEnded()));$('bInv').style.display=inv?'':'none';$('bTow').style.display=on('tow')?'':'none';
- $('mrow').style.display=$('bTow').style.display==='none'&&!inv?'none':'';
+ const tri=on('bat')&&S.wd>=2;$('bTri').style.display=tri?'':'none'; // Prove dei Campioni: dal Mondo 2
+ $('mrow').style.display=$('bTow').style.display==='none'&&!inv&&!tri?'none':'';
+ $('bTri').classList.toggle('n',tri&&Mt.triPow((Mt.ch().tri.best||0)+1)>=Mt.triNeed((Mt.ch().tri.best||0)+1));
  Mt.twCheck();const c=Mt.ch();$('tPor').classList.toggle('n',Mt.freeLeft()<=0||c.t>=1);$('tPas').classList.toggle('n',Mt.psCan());
  $('bTow').classList.toggle('n',c.tw.tries>0&&!c.tw.run);$('bInv').classList.toggle('n',Mt.ivEnded()&&ivc.pts>0&&!ivc.cl)}
 // Finestra «Nuova funzione sbloccata!»: una alla volta, «Andiamo!» porta subito alla funzione
-const UGO={ups:()=>{R.tabGo=0;openUps()},pr:()=>{R.tabGo=1;openUps()},bat:()=>show(1),fm:()=>show(1),tow:()=>show(1),inv:()=>show(1),
+const UGO={ups:()=>{R.tabGo=0;openUps()},pr:()=>{R.tabGo=2;openUps()},bat:()=>show(1),fm:()=>show(1),tow:()=>show(1),inv:()=>show(1),
  day:()=>$('tDaily').click(),col:()=>$('tCol').click(),tr:()=>$('tTr').click(),por:()=>$('tPor').click(),pas:()=>$('tPas').click(),
  exp:()=>{if(!S.introSeen){S.introSeen=1;openIntro()}else $('tExp').click()}};
 // ogni sblocco dà anche un premio: 10 minuti di guadagni e 1 biglietto (consegnati subito)
@@ -60,7 +62,7 @@ $('ulp').onclick=e=>{const b=e.target.closest('[data-a=go]');if(!b&&e.target.id!
  if(b&&UGO[b.dataset.k])UGO[b.dataset.k]();if(R.ulq.length)R.ulT=setTimeout(openUl,500)};
 const xf=v=>v<100?v.toFixed(2):fmt(v);
 // Valore attuale accanto alla descrizione dei potenziamenti (così si vede quanto danno)
-const upNow=(k,l)=>k==='l'?' · ×'+(1+LAB_UP*l).toFixed(2):k==='d'?' · -'+Math.round((1-Math.pow(1-DISC_UP,l))*100)+'%':k==='o'?' · '+Math.round(offRate()*100)+'% offline':k==='f'&&S.ae?' · '+eggInt().toFixed(1)+'s':'';
+const upNow=(k,l)=>k==='l'?' · ×'+(1+LAB_UP*l).toFixed(2):k==='d'?' · -'+Math.round((1-Math.pow(1-DISC_UP,l))*100)+'%':k==='o'?' · '+Math.round(offRate()*100)+'% offline':k==='f'&&S.ae?' · '+eggInt().toFixed(1)+'s':k==='n'?' · '+Math.round(offAutoInt()/6)/10+' min':'';
 
 function ui(){const b=Date.now()<S.boost;
  $('coins').textContent='🪙 '+fmt(S.c);
@@ -79,7 +81,7 @@ function ui(){const b=Date.now()<S.boost;
  const di=dailyInfo();$('tDaily').classList.toggle('n',di.can);$('tMis').classList.toggle('n',misNew());
  $('tCol').classList.toggle('n',colNew());
  if($('daily').classList.contains('on'))renderDaily();if($('mis').classList.contains('on'))renderMis();if($('col').classList.contains('on'))renderCol();
- if($('trop').classList.contains('on'))renderTr();if($('tree').classList.contains('on'))renderTree();
+ if($('trop').classList.contains('on'))renderTr();if($('ups').classList.contains('on')&&upTab===2)renderTree();if($('ups').classList.contains('on')&&upTab===1)renderUb();
  if($('set').classList.contains('on'))renderSet();if($('stat').classList.contains('on'))renderStats();
  if($('ups').classList.contains('on'))upsTabs();
  $('tMute').textContent=S.sfxOn||S.musOn?'🔊':'🔇';
@@ -89,7 +91,7 @@ function ui(){const b=Date.now()<S.boost;
 const lbl=(id,t)=>{$(id).querySelector('span').textContent=String(t).replace(/^\S+\s/,'')};
 function applyLang(){document.documentElement.lang=R.lang;document.title=tr('gameT');$('a1').textContent=tr('a1');$('a2').textContent=tr('a2');lbl('n0',tr('n0'));lbl('n1',tr('n1'));lbl('n2',tr('n2'));
  lbl('tPor',tr('lb_por'));lbl('tShop',tr('lb_shop'));$('shopT').textContent='🛒 '+tr('shopT');$('shopClose').textContent=tr('close');lbl('tPas',tr('lb_pas'));lbl('tExp',tr('lb_exp'));$('upsT').textContent=tr('ups');$('closeUps').textContent=tr('close');
- $('sqT').textContent=tr('sqT');$('sqClose').textContent=tr('close');lbl('tTr',tr('trb'));$('trT').textContent=tr('trT');$('trClose').textContent=tr('close');$('tT').textContent=tr('treeT');$('tClose').textContent=tr('close');$('treeB').textContent=tr('treeB');
+ $('sqT').textContent=tr('sqT');$('sqClose').textContent=tr('close');lbl('tTr',tr('trb'));$('trT').textContent=tr('trT');$('trClose').textContent=tr('close');
  lbl('tDaily',tr('dly'));lbl('tMis',tr('lb_mis'));$('misT').textContent='📋 '+tr('misT');$('misClose').textContent=tr('close');lbl('tCol',tr('colb'));$('dT').textContent=tr('dT');$('cT').textContent=tr('colT');$('dClose').textContent=tr('close');$('cClose').textContent=tr('close');
  $('tmT').textContent=tr('introT');$('tmClose').textContent=tr('close');$('tExp').title=tr('expT');
  $('setT').textContent=tr('setT');$('setClose').textContent=tr('close');$('statT').textContent=tr('statT');$('statClose').textContent=tr('close');metaLang()}
@@ -97,16 +99,24 @@ UP.forEach((u,i)=>$('u'+i).onclick=()=>{const l=S.up[u.k],c=u.cost(l);if(l>=u.ma
 $('aeB').onclick=()=>{if(S.ae||S.ess<AE_COST)return;S.ess-=AE_COST;S.ae=1;R.eggT=0;sfx('new');toast('🐣 '+tr('aeOn'),1);track('autoegg');save(true);ui()};
 $('amB').onclick=()=>{if(S.am||S.ess<AM_COST)return;S.ess-=AM_COST;S.am=1;R.autoT=0;sfx('new');toast('🔄 '+tr('amOn'),1);track('automerge');save(true);ui()};
 $('pr').onclick=()=>{const p=pgain();if(p<1)return;setS(prestigeState(S,p));prog('pr',1);track('prestige',{n:S.ach.pr,p});R.sel=-1;R.pB=0;R.pC=0;startFight();save(true);draw();ui();toast('🔮 +'+p);sfx('win');$('ups').classList.remove('on');inter('prestige')};
-// Potenziamenti in due schede: Laboratorio (potenziamenti con le monete, unione automatica) ed Essenze (albero e Evocazione oscura).
-// La seconda compare solo quando c'è qualcosa (Essenze o Evocazione oscura sbloccata); le nasconde il CSS con #ups[data-t].
+// Potenziamenti in tre schede: Laboratorio (monete, unione e incubatrice automatiche), Battaglia (monete: attacco, vita, bottino,
+// critici, rigenerazione) ed Essenze (albero delle Essenze ed Evocazione oscura). Battaglia ed Essenze compaiono quando servono.
+// upTab = id della scheda (0, 1, 2); la barra mostra solo quelle disponibili. Il CSS nasconde il resto con #ups[data-t].
 let upTab=0;
-const upTwo=()=>S.essT>0||Ul.has('pr');
+const upAvail=()=>[0,...(Ul.has('bat')?[1]:[]),...(S.essT>0||Ul.has('pr')?[2]:[])];
+const ubCan=()=>Ul.has('bat')&&UB.some(u=>ub(u.k)<u.max&&S.c>=u.cost(ub(u.k)));
 const upDots=()=>[UP.some(u=>S.up[u.k]<u.max&&S.c>=u.cost(S.up[u.k])&&$('u'+UP.indexOf(u)).style.display!=='none')||(!S.am&&S.ess>=AM_COST)||(!S.ae&&S.ess>=AE_COST&&$('aeB').style.display!=='none'),
- pgain()>=1||PK.some(p=>S.pk[p.k]<p.max&&S.ess>=p.cost[S.pk[p.k]])||PKR.some(p=>(S.pk[p.k]||0)<p.max&&S.ess>=pkrCost(S.pk[p.k]||0))];
-function upsTabs(){const two=upTwo();if(!two)upTab=0;$('upsTabs').style.display=two?'':'none';$('ups').dataset.t=upTab;
- if(two)tabs('upsTabs',['🧪','🔮'].map((ic,k)=>'<b>'+ic+'</b><small>'+tr(['tbLab','tbEss'][k])+'</small>'),upTab,upDots())}
-function openUps(){if(R.tabGo!==undefined){upTab=R.tabGo;R.tabGo=undefined}else upTab=pickTab(upTab,upDots());upsTabs();$('ups').classList.add('on')}
-onTab('upsTabs',k=>{upTab=k;sfx('tap');upsTabs()});
+ ubCan(),pgain()>=1||PK.some(p=>S.pk[p.k]<p.max&&S.ess>=p.cost[S.pk[p.k]])||PKR.some(p=>(S.pk[p.k]||0)<p.max&&S.ess>=pkrCost(S.pk[p.k]||0))];
+function upsTabs(){const av=upAvail();if(!av.includes(upTab))upTab=0;$('upsTabs').style.display=av.length>1?'':'none';$('ups').dataset.t=upTab;
+ const d=upDots();if(av.length>1)tabs('upsTabs',av.map(k=>'<b>'+['🧪','⚔️','🔮'][k]+'</b><small>'+tr(['tbLab','tbBat','tbEss'][k])+'</small>'),av.indexOf(upTab),av.map(k=>d[k]));
+ if(upTab===1)renderUb();if(upTab===2)renderTree()}
+function openUps(){const av=upAvail();if(R.tabGo!==undefined){upTab=av.includes(R.tabGo)?R.tabGo:0;R.tabGo=undefined}else{const d=upDots();upTab=av[pickTab(Math.max(0,av.indexOf(upTab)),av.map(k=>d[k]))]}upsTabs();$('ups').classList.add('on')}
+onTab('upsTabs',k=>{upTab=upAvail()[k]??0;sfx('tap');upsTabs()});
+// Scheda Battaglia: valore attuale accanto a ogni potenziamento
+const ubNow=k=>{const l=ub(k);return k==='a'||k==='h'||k==='g'?'+'+10*l+'%':k==='c'?Math.round(critC()*100)+'%':k==='d'?'×'+critD().toFixed(1):(regen()*100).toFixed(1)+'%/s'};
+function renderUb(){setT('upsBat',UB.map(u=>{const l=ub(u.k),m=l>=u.max,c=u.cost(l);return '<button class="b" data-k="'+u.k+'"'+(m||S.c<c?' disabled':'')+'><i>'+u.ic+'</i><span><b>'+tr('ub_'+u.k)+' <em>'+tr('lvl')+' '+l+'</em></b><small>'+tr('ub_'+u.k+'d')+' · '+ubNow(u.k)+'</small></span><strong>'+(m?tr('max'):'🪙 '+fmt(c))+'</strong></button>'}).join(''))}
+$('upsBat').onclick=e=>{const b=e.target.closest('[data-k]');if(!b||b.disabled)return;const u=UB.find(x=>x.k===b.dataset.k);if(!u)return;const l=ub(u.k),c=u.cost(l);if(l>=u.max||S.c<c)return;
+ S.c-=c;S.ub[u.k]=l+1;prog('upg',1);sfx('claim');track('ub_'+u.k);save();renderUb();ui()};
 function show(v){['labV','batV'].forEach((id,i)=>{$(id).classList.toggle('on',i===v);$('n'+i).classList.toggle('on',i===v)});if(v===1){tutNext(3);track('first_battle')}ui()}
 // Scheda ancora chiusa: dice cosa serve per aprirla
 const navGo=(i,f)=>()=>{const k=NAVK[i];if(k&&!Ul.has(k)){sfx('err');toast('🔒 '+ulName(k)+' · '+rqTxt(Ul.UL.find(u=>u.k===k)),1);return}f()};
