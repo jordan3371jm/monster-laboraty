@@ -1,4 +1,4 @@
-// Controllo statico dei testi in tutte le lingue (en, it, es, fr, zh):
+// Controllo statico dei testi in tutte le lingue (en, it, es, fr, ru, zh):
 // - ogni chiave usata con tr()/trv() esiste in inglese (la lingua di riserva);
 // - ogni lingua ha esattamente le chiavi dell'inglese, con gli stessi segnaposto ({n}, {e}, {v}…);
 // - varianti dei messaggi e storie dei 26 mostri sono complete (i nomi dei campioni sono nomi propri, uguali in tutte le lingue);

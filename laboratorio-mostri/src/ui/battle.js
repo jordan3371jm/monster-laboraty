@@ -56,7 +56,7 @@ function fight(dt){
  S.ach.wn++;toast(trv('win')+'🪙 +'+fmt(rw));sfx('win');prog('win',1);if(onB()){burst($('arena'),isBoss(s)?['🪙','✨','⭐']:['✨'],isBoss(s)?16:5);$('en').classList.add('die');coinFly($('en'),isBoss(s)?10:4)}if(S.ach.wn===1)track('first_win');if([5,10,20,30,40].includes(s))track('stage_'+s);prog('winEl',1,eEl(s));const first=s>=S.bs&&!S.fm;if(first)levelDone(s);F.lose=0;if(!S.fm){S.st++;if(S.st>S.bs)S.bs=S.st}save();F.wait=1;if(isBoss(s)&&first)chest()}
  else if(F.th<=0){if(s>=S.bs&&!S.fm)levelFail(s);toast(trv('lose'));sfx('lose');if(onB())fx($('team'),'hurt');F.wait=2.5;
   if(++F.lose>=RETREAT&&S.st>1){F.lose=0;S.st--;toast(tr('retreat'),1)}}} // dopo RETREAT sconfitte di fila si torna al livello prima, poi si risale da soli
-function drawB(){const s=S.st,b=isBoss(s),tt=trait(s);$('stg').textContent=(ivOn()?'🔥 ':'⚔️ ')+tr('stage')+' '+s+(S.bs>s?' · 🏁'+S.bs:'');
+function drawB(){const s=S.st,b=isBoss(s),tt=trait(s);$('stg').textContent=(ivOn()?'🔥 ':'⚔️ ')+(innerWidth<420?'':tr('stage')+' ')+s+(S.bs>s?' · 🏁'+S.bs:''); // schermi stretti: solo il numero
  if(!onB())return;
  en0.classList.toggle('warn',F.wn&&b);
  setT('fmB',S.fm?tr('fmOn'):tr('fmOff'));$('fmB').classList.toggle('g',!!S.fm);$('stPrev').disabled=s<=1;$('stNext').disabled=s>=S.bs;

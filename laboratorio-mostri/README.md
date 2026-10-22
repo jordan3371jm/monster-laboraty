@@ -64,7 +64,7 @@ Comprimi il **contenuto** di `dist` in uno zip, con `index.html` nella radice de
 I salvataggi esistenti restano compatibili (stessa chiave `ml_save_v1`): i campi nuovi vengono aggiunti con valori di default, le Essenze già possedute diventano spendibili e restano valide per il +10%, e chi ha già giocato salta il tutorial.
 
 ## Lingue
-Inglese (predefinito), italiano, spagnolo, francese e cinese semplificato. All'avvio si usa la lingua della piattaforma (Playgama Bridge) o del browser se è una di queste, altrimenti l'**inglese**; la scelta nelle impostazioni ha la precedenza. Ogni testo mancante in una lingua ricade sull'inglese (`tr()` in `text.js`). Anche la schermata d'errore iniziale (`index.html`) è nelle 5 lingue.
+Inglese (predefinito), italiano, spagnolo, francese, russo e cinese semplificato. All'avvio si usa la lingua della piattaforma (Playgama Bridge) o del browser se è una di queste, altrimenti l'**inglese**; la scelta nelle impostazioni ha la precedenza. Ogni testo mancante in una lingua ricade sull'inglese (`tr()` in `text.js`). Anche la schermata d'errore iniziale (`index.html`) è nelle 5 lingue.
 - Per aggiungere una lingua: un file in `src/data/i18n/` con `tx` (testi), `vr` (varianti dei messaggi), `lore` (26 mostri) e `ch` (18 campioni), poi registrarlo in `text.js` (`MORE`, `LANGS`, `LANGN`) e `lore.js`.
 - `npm test` → `check-text.mjs` controlla tutte le lingue: chiavi uguali all'inglese, stessi segnaposto (`{n}`, `{e}`…), varianti, storie e nomi completi, ed elenca le frasi rimaste identiche all'inglese.
 
@@ -194,3 +194,14 @@ Controllato sulla documentazione ufficiale (wiki.playgama.com: requisiti, checkl
 ## Schermata di caricamento e moneta
 - **Caricamento** (`#boot` in `index.html`, `src/preload.js`): nome del gioco nella lingua del dispositivo, la zucca che saltella e una barra «Caricamento dei mostri… 45%». Mentre l'SDK si avvia e il salvataggio si carica, si scaricano e decodificano tutte le 99 immagini dei mostri (`public/m`, ~3,3 MB, elenco preso da `CH` e `W`); solo alla fine la schermata sfuma e parte `game_ready` (la wiki vuole `game_ready` quando il gioco è davvero giocabile). Tetto di 25s con una rete lentissima. Il logo di Playgama compare prima e sparisce da solo dopo l'avvio dell'SDK.
 - **Moneta disegnata** (`src/assets/coin.svg`, inclusa nel bundle): al posto dell'emoji 🪙, brutta o mancante su molti dispositivi. `src/ui/coin.js` sostituisce ogni 🪙 che entra nella pagina con `<i class="ico-coin">`, quindi testi e traduzioni restano uguali.
+
+## Novità: trascinamento, mostri disegnati, Mondo 3, russo, suoni, premi
+- **Trascinare per unire** (`ui/lab.js`): si prende un mostro e lo si lascia su uno uguale (unione), su una cella vuota (spostamento) o su uno diverso (scambio). La cella sotto il dito si illumina (verde = unione). Il tocco su due celle funziona ancora.
+- **Mostri del laboratorio disegnati** (`data/monart.js`): 39 illustrazioni vettoriali scritte a mano nel codice (nessuna immagine generata), una per mostro e ispirata alla sua storia. Nel gioco ogni mostro è un carattere privato (`E` in `config.js`, U+E001…) che `ui/coin.js` sostituisce con `<em class="mon m{t}">`; `ui/monsters.js` crea le immagini (SVG in data URI). Anche i nemici del Mondo 2 ora sono disegni invece di emoji.
+- **Mondo 3 · Fucina del Vulcano** (`MAXT=39`, `NR=12`): 13 mostri nuovi con storie in 6 lingue, nemici e boss disegnati, sfondo e arena a tema, finestra «Nuovo mondo», 4 righe di collezione con premi, trofeo per i mostri 33 e 39. I salvataggi esistenti si allungano da soli.
+- **Russo** (`data/i18n/ru.js`): tutti i testi, i messaggi e le 39 storie (serve per Yandex/Playhop). Le lingue sono 6.
+- **Evoluzione animata**: nella scheda del mostro nuovo quello di prima si illumina, lampo, e appare il nuovo con i raggi dietro.
+- **Suoni**: effetti CC0 di Kenney (`public/sfx`, licenza inclusa, 116 KB in MP3); se un file non si carica si usa il suono generato. L'unione suona più acuta per i mostri più alti. **Vibrazione** leggera sul telefono (unione, mostro nuovo, colpo del boss), legata all'interruttore degli effetti.
+- **Premio a ogni sblocco**: 10 minuti di guadagni e 🎫 1, mostrati nella finestra «Nuova funzione».
+- **Offerta a tempo**: il Pacchetto iniziale si compra per 72 ore dopo la prima Evocazione oscura (`S.iap.os`); in quel momento compare una volta «Offerta speciale!» (solo se la piattaforma ha il prodotto in vendita) e nel negozio c'è il conto alla rovescia.
+- `#app{overflow:clip}`: il browser non può più «spostare» il gioco portando in vista un elemento.

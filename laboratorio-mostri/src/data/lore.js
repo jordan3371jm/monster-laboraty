@@ -1,6 +1,7 @@
 import ES from './i18n/es.js';
 import FR from './i18n/fr.js';
 import ZH from './i18n/zh.js';
+import RU from './i18n/ru.js';
 // Storia e umorismo: nome e una riga per ognuno dei 26 mostri (indice = livello - 1).
 const LORE={it:[
 ['Uovo Sospetto','Nessuno ricorda chi l\'abbia deposto. Il laboratorio fa finta di niente.'],
@@ -83,5 +84,5 @@ en:[
 ['Sun Titan','So bright he wears sunglasses at night. Indoors, too.'],
 ['Heart of the Volcano','The warmest heart in the lab. Literally: 3000 degrees.']]};
 // Altre lingue: in src/data/i18n (l'inglese fa da riserva)
-LORE.es=ES.lore;LORE.fr=FR.lore;LORE.zh=ZH.lore;
+LORE.es=ES.lore;LORE.fr=FR.lore;LORE.zh=ZH.lore;LORE.ru=RU.lore;
 export {LORE};
