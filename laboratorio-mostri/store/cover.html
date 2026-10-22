@@ -1,74 +1,9 @@
-<!doctype html><html><head><meta charset="utf-8">
-<style>
+<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face{font-family:Lilita;src:url(fonts/lilita.woff2) format('woff2')}
 @font-face{font-family:Fredoka;src:url(fonts/fredoka.woff2) format('woff2');font-weight:300 700}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{width:100%;height:100%;overflow:hidden;background:#07040f}
-/* u = unità di base: 1% del lato corto. Ogni formato sposta i blocchi con le variabili sotto */
-#c{position:relative;width:100vw;height:100vh;overflow:hidden;--u:1vmin;font-family:Fredoka,sans-serif;color:#fff}
 .abs{position:absolute}
-/* ---------- cielo e parete ---------- */
-.sky{inset:0;background:
- radial-gradient(ellipse 60% 45% at 50% 58%,#8b43ff99 0,transparent 70%),
- radial-gradient(ellipse 40% 30% at 15% 85%,#14b87a55 0,transparent 70%),
- radial-gradient(ellipse 40% 30% at 85% 85%,#ff5a1a44 0,transparent 70%),
- radial-gradient(ellipse 90% 60% at 50% 0%,#3a1f8a 0,transparent 70%),
- linear-gradient(#1b0d3d,#0d0620 55%,#070310)}
-/* finestra rotonda con luna, stelle e fulmine */
-.win{left:50%;top:var(--wy);width:var(--ww);aspect-ratio:1;translate:-50% 0;border-radius:50%;overflow:hidden;
- background:radial-gradient(circle at 70% 30%,#fff8d8 0 6%,#ffe9a0 7%,#ffd36b44 13%,transparent 30%),radial-gradient(circle at 50% 120%,#6a2cd8 0,#2a1170 45%,#0d0730 80%);
- box-shadow:0 0 0 calc(var(--u)*1.4) #2a1a4a,0 0 0 calc(var(--u)*2.2) #120a24,0 0 calc(var(--u)*10) #8b43ff66,inset 0 0 calc(var(--u)*6) #000a}
-.win svg{position:absolute;inset:0;width:100%;height:100%}
-.win::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent 48.6%,#120a24 48.6% 51.4%,transparent 51.4%),linear-gradient(transparent 48.6%,#120a24 48.6% 51.4%,transparent 51.4%)}
-/* raggi di luce volumetrici */
-.rays{left:50%;top:var(--wy);width:calc(var(--ww)*3.2);height:150%;translate:-50% 0;background:conic-gradient(from 160deg at 50% 0%,transparent 0deg,#b98bff22 8deg,transparent 14deg,#ffe9a018 20deg,transparent 26deg,#b98bff1c 32deg,transparent 40deg);filter:blur(calc(var(--u)*1.2));mix-blend-mode:screen}
-/* scaffali con ampolle */
-.shelf{top:var(--sy);width:var(--sw)}
-.shelf.L{left:var(--sx)}.shelf.R{right:var(--sx);transform:scaleX(-1)}
-/* nebbia */
-.fog{border-radius:50%;filter:blur(calc(var(--u)*5));mix-blend-mode:screen}
-/* pavimento in prospettiva */
-.floor{left:-20%;right:-20%;bottom:0;height:var(--fh);background:
- linear-gradient(#0000,#000a),
- repeating-linear-gradient(90deg,#8b5cff22 0 2px,transparent 2px calc(var(--u)*9)),
- repeating-linear-gradient(#8b5cff22 0 2px,transparent 2px calc(var(--u)*6)),
- linear-gradient(#2a1460,#120830);transform:perspective(calc(var(--u)*60)) rotateX(58deg);transform-origin:50% 100%;
- -webkit-mask:linear-gradient(transparent,#000 30%)}
-/* cerchio magico sotto l'eroe */
-.circle{left:50%;bottom:var(--cb);width:var(--cw);translate:-50% 0;transform:perspective(calc(var(--u)*60)) rotateX(68deg);filter:drop-shadow(0 0 calc(var(--u)*1.5) #ffb02e) drop-shadow(0 0 calc(var(--u)*4) #ff7a1a)}
-/* vasche */
-.tank{width:var(--tw);aspect-ratio:.52;border-radius:calc(var(--u)*3) calc(var(--u)*3) calc(var(--u)*2) calc(var(--u)*2);
- background:linear-gradient(100deg,transparent 10%,#ffffff40 14%,#ffffff10 22%,transparent 26%,transparent 78%,#ffffff22 82%,transparent 86%),
- linear-gradient(hsl(var(--h) 80% 55% / .15),hsl(var(--h) 85% 50% / .55) 45%,hsl(var(--h) 90% 40% / .85));
- border:calc(var(--u)*.4) solid hsl(var(--h) 80% 70% / .7);box-shadow:0 0 calc(var(--u)*4) hsl(var(--h) 90% 55% / .55),inset 0 0 calc(var(--u)*3) hsl(var(--h) 90% 70% / .5);overflow:visible}
-.tank::before,.tank::after{content:'';position:absolute;left:-12%;right:-12%;height:11%;border-radius:calc(var(--u)*1.2);background:linear-gradient(#9aa0c0,#4a4f70 50%,#22253a);box-shadow:0 calc(var(--u)*.4) calc(var(--u)*.8) #000a,inset 0 calc(var(--u)*.3) 0 #fff5}
-.tank::before{top:-8%}.tank::after{bottom:-8%}
-.tank img{position:absolute;left:8%;width:84%;top:22%;filter:drop-shadow(0 0 calc(var(--u)*1.5) hsl(var(--h) 90% 70%))}
-.tank i{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fff,hsl(var(--h) 90% 80% / .5) 40%,transparent 70%);border:1px solid #fff6}
-.tank b{position:absolute;right:-6%;top:6%;font:calc(var(--u)*2.2)/1 Lilita;padding:calc(var(--u)*.5) calc(var(--u)*1);border-radius:calc(var(--u)*1.2);background:linear-gradient(hsl(var(--h) 70% 50%),hsl(var(--h) 70% 25%));border:2px solid #fff8;box-shadow:0 calc(var(--u)*.4) 0 #0008}
-.pipe{height:calc(var(--u)*1.2);border-radius:9px;background:linear-gradient(#aab0d0,#4a4f70 60%,#22253a);box-shadow:0 0 calc(var(--u)*1) #000a}
-/* campioni */
-.ch{filter:drop-shadow(0 calc(var(--u)*1) calc(var(--u)*1.5) #000d)}
-.glow{border-radius:50%;filter:blur(calc(var(--u)*4));mix-blend-mode:screen}
-.hero{z-index:5;filter:drop-shadow(0 0 2px #000) drop-shadow(0 0 1px #000) drop-shadow(0 calc(var(--u)*1) calc(var(--u)*2) #000c)}
-.back{filter:drop-shadow(0 0 calc(var(--u)*2) #000) brightness(.78) saturate(1.1) blur(calc(var(--u)*.12))}
-/* esplosione di energia dietro l'eroe */
-.burst{left:50%;translate:-50% -50%;width:var(--bw);aspect-ratio:1;background:repeating-conic-gradient(from 0deg,#ffd36b55 0 3deg,transparent 3deg 11deg,#ff9d2e33 11deg 13deg,transparent 13deg 22deg);-webkit-mask:radial-gradient(circle,#000 0,#000 18%,transparent 62%);mix-blend-mode:screen;filter:blur(1px)}
-.core{left:50%;translate:-50% -50%;width:calc(var(--bw)*.42);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff 0,#ffe9a0 18%,#ff9d2e88 40%,#ff5a1a22 62%,transparent 72%);mix-blend-mode:screen}
-/* monete, gemme, sfere */
-.coin{width:var(--s);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff9d0 0 8%,#ffe066 22%,#f5b80f 55%,#b8740a 80%,#7a4a00);box-shadow:inset 0 0 0 calc(var(--s)*.07) #ffd34a,inset 0 0 0 calc(var(--s)*.11) #c98a0a,0 calc(var(--s)*.06) calc(var(--s)*.15) #000a,0 0 calc(var(--s)*.5) #ffc23a88;rotate:var(--r,0deg);transform:scaleX(var(--sx,1))}
-.coin::after{content:'★';position:absolute;inset:0;display:grid;place-items:center;font-size:calc(var(--s)*.5);color:#c98a0a;text-shadow:0 1px 0 #fff7}
-.gem{width:var(--s);filter:drop-shadow(0 0 calc(var(--s)*.25) var(--gc))}
-.orb{width:var(--s);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#e2b8ff 20%,#a35cff 55%,#4a1890);box-shadow:0 0 calc(var(--s)*.6) #b77bff,inset 0 0 calc(var(--s)*.2) #fff8}
-.spark{width:var(--s);aspect-ratio:1;background:radial-gradient(circle,#fff 0 8%,transparent 12%),conic-gradient(from 45deg,transparent 0 40deg,#fff 45deg,transparent 50deg 130deg,#fff 135deg,transparent 140deg 220deg,#fff 225deg,transparent 230deg 310deg,#fff 315deg,transparent 320deg);-webkit-mask:radial-gradient(circle,#000 0,transparent 70%);filter:drop-shadow(0 0 4px #ffd36b)}
-.ember{width:var(--s);aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,#fff,#ffb02e 40%,transparent 70%)}
-.trail{height:calc(var(--u)*.5);border-radius:9px;background:linear-gradient(90deg,transparent,#ffe9a0aa);transform-origin:100% 50%}
-/* scritte di gioco */
-.badge{font:calc(var(--u)*2.6)/1 Lilita;letter-spacing:.04em;padding:calc(var(--u)*1) calc(var(--u)*2.2);border-radius:calc(var(--u)*3);background:linear-gradient(#ffe07a,#ff9d2e);color:#5a2400;border:calc(var(--u)*.35) solid #fff6;box-shadow:0 calc(var(--u)*.6) 0 #7a3a00,0 0 calc(var(--u)*3) #ffb02eaa;white-space:nowrap}
-.crit{z-index:9;font:calc(var(--u)*5.2)/1 Lilita;color:#ffe34a;-webkit-text-stroke:calc(var(--u)*.35) #7a1a00;paint-order:stroke;text-shadow:0 calc(var(--u)*.5) 0 #7a1a00,0 0 calc(var(--u)*3) #ff5a1a;rotate:-10deg;white-space:nowrap}
-.crit small{display:block;font-size:.55em;color:#fff;-webkit-text-stroke:calc(var(--u)*.25) #5a1a00}
-.lvl{font:calc(var(--u)*2.4)/1 Lilita;padding:calc(var(--u)*.7) calc(var(--u)*1.4);border-radius:calc(var(--u)*2);background:#0009;border:2px solid #ffffff55;white-space:nowrap}
-/* carte dell'unione */
 .merge{display:flex;align-items:center;gap:calc(var(--u)*1.4);padding:calc(var(--u)*1.6);border-radius:calc(var(--u)*3);background:linear-gradient(#2a1a55e8,#160c33e8);border:calc(var(--u)*.3) solid #b77bff88;box-shadow:0 calc(var(--u)*1) calc(var(--u)*3) #000a,0 0 calc(var(--u)*4) #8b43ff55}
 .card{position:relative;width:var(--k);aspect-ratio:1;border-radius:calc(var(--k)*.18);display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,hsl(var(--h) 60% 40%),hsl(var(--h) 60% 12%));border:calc(var(--u)*.35) solid hsl(var(--h) 80% 65%);box-shadow:0 0 calc(var(--u)*2) hsl(var(--h) 90% 55% / .7)}
 .card img{width:86%}
@@ -76,156 +11,37 @@ html,body{width:100%;height:100%;overflow:hidden;background:#07040f}
 .op{font:calc(var(--u)*4.4)/1 Lilita;color:#fff;text-shadow:0 0 calc(var(--u)*1.5) #b77bff}
 .arrow{font:calc(var(--u)*4.4)/1 Lilita;color:#8be04a;text-shadow:0 0 calc(var(--u)*1.5) #8be04a}
 .card.big{--k:calc(var(--kk)*1.35);box-shadow:0 0 calc(var(--u)*4) #ffd36b,0 0 0 calc(var(--u)*.4) #ffd36b}
-/* logo */
 .logo{left:50%;translate:-50% 0;top:var(--ly);text-align:center;white-space:nowrap;z-index:8}
 .logo h1{font:var(--ls)/.86 Lilita;letter-spacing:.02em;position:relative}
 .l1{display:block;color:#ffd84a;background:linear-gradient(#fffbe0 5%,#ffe066 30%,#ffb31a 62%,#ff7a00 95%);-webkit-background-clip:text;background-clip:text;color:transparent;
  filter:drop-shadow(0 calc(var(--ls)*.012) 0 #c25a00) drop-shadow(0 calc(var(--ls)*.012) 0 #a24600) drop-shadow(0 calc(var(--ls)*.012) 0 #7a3200) drop-shadow(0 calc(var(--ls)*.012) 0 #5a2200) drop-shadow(0 calc(var(--ls)*.04) calc(var(--ls)*.04) #000c) drop-shadow(0 0 calc(var(--ls)*.12) #ffb02e88)}
 .l2{display:block;font-size:.6em;margin-top:.06em;background:linear-gradient(#f6ecff 5%,#d3a8ff 40%,#9b55ff 75%,#6a22d8);-webkit-background-clip:text;background-clip:text;color:transparent;
  filter:drop-shadow(0 calc(var(--ls)*.01) 0 #4a1a9a) drop-shadow(0 calc(var(--ls)*.01) 0 #3a1080) drop-shadow(0 calc(var(--ls)*.01) 0 #2a0a60) drop-shadow(0 calc(var(--ls)*.04) calc(var(--ls)*.04) #000c) drop-shadow(0 0 calc(var(--ls)*.12) #b77bff88)}
-.outline{position:absolute;inset:0;color:transparent;-webkit-text-stroke:calc(var(--ls)*.02) #fff;opacity:.35;pointer-events:none}
 .tag{display:inline-block;margin-top:calc(var(--ls)*.12);font:700 calc(var(--ls)*.2)/1 Fredoka;letter-spacing:.08em;padding:.45em 1.2em;border-radius:3em;background:linear-gradient(#7be04a,#2f8a14);border:calc(var(--u)*.3) solid #d6ffb0aa;box-shadow:0 calc(var(--u)*.6) 0 #1a4a08,0 0 calc(var(--u)*3) #6cc22a99;text-shadow:0 2px 0 #1a4a08}
-/* pulsante gioca */
 .cta{z-index:9;font:calc(var(--u)*var(--cs))/1 Lilita;letter-spacing:.04em;padding:.55em 1.6em .6em;border-radius:1em;color:#fff;background:linear-gradient(#ffd36b 0,#ff9d2e 48%,#ff6a00 52%,#e04a00);border:calc(var(--u)*.45) solid #fff3c0;box-shadow:0 .14em 0 #8a2a00,0 .3em .5em #000a,0 0 1em #ff9d2e;text-shadow:0 .06em 0 #8a2a00;white-space:nowrap}
 .cta::before{content:'';position:absolute;left:8%;right:8%;top:6%;height:40%;border-radius:1em;background:linear-gradient(#ffffffaa,#fff0)}
 .hand{font-size:calc(var(--u)*var(--cs)*1.3);z-index:10;filter:drop-shadow(0 4px 4px #000a);rotate:-15deg}
 .vig{inset:0;background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 55%,#000c);z-index:20;pointer-events:none}
 .grain{inset:0;z-index:21;opacity:.07;mix-blend-mode:overlay;pointer-events:none}
-
-/* ======================= formati ======================= */
-/* 16:9 */
-.h{--wy:-6vh;--ww:46vh;--sy:12vh;--sw:22vw;--sx:1vw;--fh:42vh;--cb:4vh;--cw:34vw;--bw:78vh;--tw:7.5vw;--ly:3vh;--ls:15vh;--cs:5;--kk:8vh}
-/* 1:1 */
-.q{--wy:-8vh;--ww:44vh;--sy:30vh;--sw:30vw;--sx:-4vw;--fh:40vh;--cb:5vh;--cw:56vw;--bw:80vh;--tw:12vw;--ly:3vh;--ls:13.5vh;--cs:4.6;--kk:7vw}
-/* 9:16 */
-.v{--wy:3vh;--ww:62vw;--sy:30vh;--sw:44vw;--sx:-8vw;--fh:30vh;--cb:9vh;--cw:110vw;--bw:110vw;--tw:17vw;--ly:5vh;--ls:21vw;--cs:6.6;--kk:12vw}
-</style></head>
-<body><div id="c">
-<div class="abs sky"></div>
-<div class="abs rays"></div>
-<div class="abs win"><svg viewBox="0 0 100 100" preserveAspectRatio="none">
- <g fill="#fff">
-  <circle cx="18" cy="30" r=".6"/><circle cx="30" cy="16" r=".4"/><circle cx="44" cy="28" r=".5"/><circle cx="24" cy="48" r=".35"/><circle cx="12" cy="62" r=".5"/><circle cx="38" cy="8" r=".3"/><circle cx="58" cy="12" r=".35"/><circle cx="86" cy="52" r=".45"/><circle cx="80" cy="66" r=".3"/><circle cx="62" cy="40" r=".3"/>
- </g>
- <path d="M70 0 L64 22 L70 22 L58 52 L66 30 L60 30 L68 0Z" fill="#e9d6ff" opacity=".9" filter="url(#bl)"/>
- <path d="M8 85 Q30 70 50 82 T100 78 L100 100 L0 100Z" fill="#1a0b40"/>
- <path d="M0 92 Q20 80 45 90 T100 88 L100 100 L0 100Z" fill="#120830"/>
- <defs><filter id="bl"><feGaussianBlur stdDeviation=".6"/></filter></defs>
-</svg></div>
-
-<!-- scaffali con ampolle luminose -->
-<svg class="abs shelf L" viewBox="0 0 300 260"><defs>
- <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a2c6a"/><stop offset="1" stop-color="#1f1030"/></linearGradient>
- <radialGradient id="lgg" cx=".5" cy=".72" r=".65"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#5dff9a"/><stop offset="1" stop-color="#5dff9a" stop-opacity=".25"/></radialGradient><radialGradient id="lgp" cx=".5" cy=".72" r=".65"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#ff6ad5"/><stop offset="1" stop-color="#ff6ad5" stop-opacity=".25"/></radialGradient><radialGradient id="lgo" cx=".5" cy=".72" r=".65"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#ffb02e"/><stop offset="1" stop-color="#ffb02e" stop-opacity=".25"/></radialGradient><radialGradient id="lgb" cx=".5" cy=".72" r=".65"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#4ad8ff"/><stop offset="1" stop-color="#4ad8ff" stop-opacity=".25"/></radialGradient><radialGradient id="lgv" cx=".5" cy=".72" r=".65"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#b77bff"/><stop offset="1" stop-color="#b77bff" stop-opacity=".25"/></radialGradient><radialGradient id="lgy" cx=".5" cy=".72" r=".65"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#ffe066"/><stop offset="1" stop-color="#ffe066" stop-opacity=".25"/></radialGradient><radialGradient id="lgr" cx=".5" cy=".72" r=".65"><stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".35" stop-color="#ff5a5a"/><stop offset="1" stop-color="#ff5a5a" stop-opacity=".25"/></radialGradient>
- <filter id="gl"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
- <rect x="0" y="110" width="300" height="12" rx="3" fill="url(#wood)"/><rect x="0" y="235" width="300" height="12" rx="3" fill="url(#wood)"/>
- <g filter="url(#gl)">
-  <g><path d="M30 60h16v18l14 26a6 6 0 0 1-5 8H21a6 6 0 0 1-5-8l14-26z" fill="url(#lgg)" stroke="#d0ffe0" stroke-width="2"/></g>
-  <g><circle cx="100" cy="88" r="22" fill="url(#lgp)" stroke="#ffd0f0" stroke-width="2"/><rect x="93" y="52" width="14" height="18" fill="#ffd0f033" stroke="#ffd0f0" stroke-width="2"/></g>
-  <g><rect x="150" y="50" width="22" height="60" rx="8" fill="url(#lgo)" stroke="#ffe9c0" stroke-width="2"/></g>
-  <g><path d="M205 70h14v10l12 22a5 5 0 0 1-4 8h-30a5 5 0 0 1-4-8l12-22z" fill="url(#lgb)" stroke="#d0f4ff" stroke-width="2"/></g>
-  <g><circle cx="268" cy="94" r="16" fill="url(#lgv)" stroke="#e6d0ff" stroke-width="2"/></g>
-  <g><rect x="20" y="180" width="26" height="55" rx="10" fill="url(#lgy)" stroke="#fff4c0" stroke-width="2"/></g>
-  <g><path d="M80 175h16v20l18 30a6 6 0 0 1-5 9H63a6 6 0 0 1-5-9l18-30z" fill="url(#lgr)" stroke="#ffd0d0" stroke-width="2"/></g>
-  <g><circle cx="160" cy="212" r="22" fill="url(#lgg)" stroke="#d0ffe0" stroke-width="2"/></g>
-  <g><rect x="210" y="170" width="18" height="65" rx="7" fill="url(#lgb)" stroke="#d0f4ff" stroke-width="2"/><rect x="240" y="190" width="18" height="45" rx="7" fill="url(#lgp)" stroke="#d0f4ff" stroke-width="2"/></g>
- </g>
- <g fill="#fff" opacity=".8"><circle cx="37" cy="96" r="2"/><circle cx="44" cy="88" r="1.4"/><circle cx="96" cy="84" r="2.4"/><circle cx="160" cy="205" r="2.2"/><circle cx="88" cy="215" r="1.8"/></g>
-</svg>
-<svg class="abs shelf R" viewBox="0 0 300 260"><use href="#__none"/>
- <rect x="0" y="110" width="300" height="12" rx="3" fill="url(#wood)"/><rect x="0" y="235" width="300" height="12" rx="3" fill="url(#wood)"/>
- <g filter="url(#gl)">
-  <g><path d="M30 60h16v18l14 26a6 6 0 0 1-5 8H21a6 6 0 0 1-5-8l14-26z" fill="url(#lgo)" stroke="#ffe9c0" stroke-width="2"/></g>
-  <g><circle cx="100" cy="88" r="22" fill="url(#lgb)" stroke="#d0f4ff" stroke-width="2"/></g>
-  <g><rect x="150" y="50" width="22" height="60" rx="8" fill="url(#lgg)" stroke="#d0ffe0" stroke-width="2"/></g>
-  <g><path d="M205 70h14v10l12 22a5 5 0 0 1-4 8h-30a5 5 0 0 1-4-8l12-22z" fill="url(#lgp)" stroke="#ffd0f0" stroke-width="2"/></g>
-  <g><rect x="30" y="178" width="22" height="57" rx="9" fill="url(#lgv)" stroke="#e6d0ff" stroke-width="2"/></g>
-  <g><circle cx="120" cy="212" r="22" fill="url(#lgy)" stroke="#fff4c0" stroke-width="2"/></g>
-  <g><path d="M200 175h16v20l18 30a6 6 0 0 1-5 9h-46a6 6 0 0 1-5-9l18-30z" fill="url(#lgr)" stroke="#ffd0d0" stroke-width="2"/></g>
- </g>
-</svg>
-
-<div class="abs fog" style="left:-10%;top:55%;width:60%;height:30%;background:#14b87a33"></div>
-<div class="abs fog" style="right:-10%;top:55%;width:60%;height:30%;background:#ff5a1a2a"></div>
-<div class="abs floor"></div>
-
-<!-- cerchio magico -->
-<svg class="abs circle" viewBox="0 0 200 200"><g fill="none" stroke="#ffd36b">
- <circle cx="100" cy="100" r="96" stroke-width="2.5"/><circle cx="100" cy="100" r="86" stroke-width="1.2" stroke-dasharray="4 3"/><circle cx="100" cy="100" r="64" stroke-width="2"/>
- <polygon points="100,14 174,143 26,143" stroke-width="1.6"/><polygon points="100,186 26,57 174,57" stroke-width="1.6"/>
- <circle cx="100" cy="100" r="30" stroke-width="1.4"/>
- <g font-family="serif" font-size="9" fill="#ffd36b" stroke="none"><text x="96" y="12">ᚠ</text><text x="183" y="104">ᚱ</text><text x="96" y="196">ᚦ</text><text x="9" y="104">ᛟ</text><text x="157" y="38">ᛉ</text><text x="34" y="170">ᛞ</text><text x="157" y="170">ᚹ</text><text x="34" y="38">ᛗ</text></g>
-</g></svg>
-
-<div id="scene"></div>
+#c{position:relative;width:100vw;height:100vh;overflow:hidden;--u:1vmin;font-family:Fredoka,sans-serif;color:#fff}
+.bg{inset:0;background-size:cover;background-position:center}
+.shade{inset:0;background:linear-gradient(#0d0626e6 0%,#0d062688 var(--sh),transparent calc(var(--sh) + 12%)),linear-gradient(transparent 70%,#0d0626cc)}
+.h{--ly:3vh;--ls:15vh;--cs:5;--kk:8vh;--sh:22%}
+.q{--ly:3vh;--ls:13vh;--cs:4.8;--kk:8vw;--sh:24%}
+.v{--ly:5vh;--ls:20vw;--cs:6.6;--kk:12vw;--sh:22%}
+</style></head><body><div id="c">
+<div class="abs bg" id="bg"></div><div class="abs shade"></div>
+<div class="abs logo"><h1><span class="l1">MONSTER</span><span class="l2">LABORATORY</span></h1><div class="tag">MERGE · EVOLVE · BATTLE</div></div>
+<div id="x"></div>
 <div class="abs vig"></div>
 <svg class="abs grain" width="100%" height="100%"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
-</div>
-<script>
-// Composizione: posizioni in vw/vh per ciascun formato (h 16:9, q 1:1, v 9:16)
-const F=(new URLSearchParams(location.search).get('f'))||'h';
-document.getElementById('c').classList.add(F);
-const L={
- h:{tanks:[[1.5,30,150,'fanghiglia',3],[10.5,40,280,'lenzuolino',7],[82,40,25,'candelino',5],[91,30,320,'lumizucca',9]],
-  glowHero:[50,62,46],hero:[50,8,62,'chimeracco'],burstY:58,
-  sides:[[13,6,46,'diavolaccio',25,'L'],[87,6,46,'abissaleviatano',195,'R']],
-  backs:[[31,24,34,'golemvite'],[69,24,34,'grifospettrale']],
-  badge:[50,4],crit:[63,40],lvl:[50,93],merge:[2,77],cta:[84,85],hand:[92,88],
-  coins:[[38,44,4.2,-20],[61,47,3.4,15],[27,62,3,10],[73,64,3.8,-30],[45,30,2.6,0],[57,33,2.2,20],[20,36,2.6,0],[79,34,3,0],[52,74,2.6,0]],
-  gems:[[33,52,4,'#4ad8ff'],[68,55,3.6,'#ff6ad5'],[42,62,2.6,'#5dff9a'],[60,24,2.4,'#ffe066']],orbs:[[25,48,3.2],[76,50,2.8],[48,24,2]]},
- q:{tanks:[[-2,48,150,'fanghiglia',3],[88,48,25,'candelino',5]],
-  glowHero:[50,62,40],hero:[50,12,52,'chimeracco'],burstY:58,
-  sides:[[18,7,42,'diavolaccio',25,'L'],[82,7,42,'abissaleviatano',195,'R']],
-  backs:[[30,30,28,'golemvite'],[70,30,28,'grifospettrale']],
-  badge:null,crit:[70,44],lvl:[50,93],merge:[1.5,83],cta:[73,90],hand:[88,93],
-  coins:[[30,50,5,-20],[68,52,4.2,15],[22,66,3.6,10],[80,66,4,-30],[44,36,3,0],[58,38,2.6,20],[14,42,3,0],[88,40,3.2,0]],
-  gems:[[36,58,4.6,'#4ad8ff'],[64,60,4.2,'#ff6ad5'],[86,58,3,'#5dff9a']],orbs:[[24,56,3.6],[76,56,3.2]]},
- v:{tanks:[[2,34,150,'fanghiglia',3],[80,34,25,'candelino',5]],
-  glowHero:[50,55,40],hero:[50,24,38,'chimeracco'],burstY:54,
-  sides:[[17,15,26,'diavolaccio',25,'L'],[83,15,26,'abissaleviatano',195,'R']],
-  backs:[[27,42,18,'golemvite'],[73,42,18,'grifospettrale']],
-  badge:[50,23],crit:[66,38],lvl:[50,93],merge:[50,76,'c'],cta:[50,94],hand:[78,96],
-  coins:[[22,46,4.2,-20],[78,48,3.6,15],[14,60,3.2,10],[86,60,3.6,-30],[36,36,2.6,0],[64,38,2.4,20],[50,30,2.2,0]],
-  gems:[[30,56,4,'#4ad8ff'],[70,57,3.6,'#ff6ad5'],[90,46,2.6,'#5dff9a']],orbs:[[12,50,3.2],[88,52,2.8]]}
-}[F];
-const S=document.getElementById('scene');let h='';
-const vm=Math.min(innerWidth,innerHeight)/100,vw=innerWidth/100,vh=innerHeight/100;
-const gem=(c)=>`<svg viewBox="0 0 40 40"><polygon points="20,2 36,14 20,38 4,14" fill="${c}"/><polygon points="20,2 28,14 20,38 12,14" fill="#fff" opacity=".35"/><polygon points="4,14 36,14 28,14 20,2 12,14" fill="#fff" opacity=".55"/><polygon points="20,38 4,14 12,14" fill="#000" opacity=".25"/></svg>`;
-// vasche laterali con bolle e cavi
-L.tanks.forEach(([x,y,hue,img,lv],k)=>{let b='';for(let j=0;j<9;j++){const s=4+((j*37+k*13)%9);b+=`<i style="width:${s}%;aspect-ratio:1;left:${10+((j*53+k*7)%76)}%;top:${8+((j*29)%80)}%"></i>`}
- h+=`<div class="abs tank" style="left:${x}vw;top:${y}vh;--h:${hue}">${b}<img src="../public/m/${img}.webp"><b>${lv}</b></div>`});
-// campioni sullo sfondo
-L.backs.forEach(([x,y,s,img])=>{h+=`<img class="abs ch back" src="../public/m/${img}.webp" style="left:${x}vw;top:${y}vh;height:${s}vh;translate:-50% 0">`});
-// esplosione di energia + fulmini
-h+=`<div class="abs burst" style="top:${L.burstY}vh"></div><div class="abs core" style="top:${L.burstY}vh"></div>`;
-h+=`<svg class="abs" style="left:0;top:0;width:100vw;height:100vh;mix-blend-mode:screen" viewBox="0 0 100 100" preserveAspectRatio="none"><defs><filter id="bg2"><feGaussianBlur stdDeviation=".35"/></filter></defs>
- <g fill="none" stroke-linejoin="round" stroke-linecap="round">
- ${[[50,L.burstY,30,L.burstY-22],[50,L.burstY,70,L.burstY-24],[50,L.burstY,22,L.burstY+6],[50,L.burstY,78,L.burstY+4]].map(([a,b,c,d],k)=>{let p=`M${a} ${b}`;for(let j=1;j<=6;j++){const t=j/6;p+=` L${(a+(c-a)*t+(j%2?1.6:-1.6)*(k%2?1:-1)).toFixed(1)} ${(b+(d-b)*t+(j%2?-1:1)).toFixed(1)}`}return `<path d="${p}" stroke="#b77bff" stroke-width=".9" filter="url(#bg2)"/><path d="${p}" stroke="#fff" stroke-width=".25"/>`}).join('')}
- </g></svg>`;
-// alone e campioni ai lati
-L.sides.forEach(([x,y,s,img,hue,side])=>{h+=`<div class="abs glow" style="left:${x}vw;bottom:${y+s*.15}vh;width:${s*0.9}vh;height:${s*.6}vh;translate:-50% 0;background:hsl(${hue} 95% 55% / .55)"></div>`;
- h+=`<img class="abs ch" src="../public/m/${img}.webp" style="left:${x}vw;bottom:${y}vh;height:${s}vh;translate:-50% 0;${side==='R'?'transform:scaleX(-1);':''}">`});
-// eroe
-{const [x,y,s,img]=L.hero,[gx,gy,gs]=L.glowHero;h+=`<div class="abs glow" style="left:${gx}vw;top:${gy}vh;width:${gs}vh;height:${gs*.55}vh;translate:-50% -50%;background:#ff9d2e88"></div>`;
- h+=`<img class="abs ch hero" src="../public/m/${img}.webp" style="left:${x}vw;bottom:${y}vh;height:${s}vh;translate:-50% 0">`}
-// scie, monete, gemme, sfere, scintille, braci
-L.coins.forEach(([x,y,s,r],k)=>{h+=`<div class="abs trail" style="left:${x-s*2.6}vw;top:${y+s*.45}vh;width:${s*2.4}vw;rotate:${r/2}deg;opacity:.6"></div><div class="abs coin" style="left:${x}vw;top:${y}vh;--s:${s*vm}px;--r:${r}deg;--sx:${k%3?1:.55}"></div>`});
-L.gems.forEach(([x,y,s,c])=>{h+=`<div class="abs gem" style="left:${x}vw;top:${y}vh;--s:${s*vm}px;--gc:${c}">${gem(c)}</div>`});
-L.orbs.forEach(([x,y,s])=>{h+=`<div class="abs orb" style="left:${x}vw;top:${y}vh;--s:${s*vm}px"></div>`});
-for(let j=0;j<26;j++){const x=(j*37.3)%100,y=(j*53.7)%95,s=1+(j%4)*.7;h+=`<div class="abs ${j%3?'spark':'ember'}" style="left:${x}vw;top:${y}vh;--s:${s*vm}px;opacity:${.5+((j*7)%5)/10}"></div>`}
-// scritte di gioco
-h+=`<div class="abs crit" style="left:${L.crit[0]}vw;top:${L.crit[1]}vh">CRIT!<small>-12.5K</small></div>`;
-// unione: 3 + 3 → 4
-h+=`<div class="abs merge" style="left:${L.merge[0]}vw;top:${L.merge[1]}vh;--k:var(--kk);${L.merge[2]?'translate:-50% 0;':''}">
+</div><script>
+const q=new URLSearchParams(location.search),F=q.get('f')||'h';document.getElementById('c').classList.add(F);
+document.getElementById('bg').style.backgroundImage='url('+(q.get('bg')||'ai/sfondo-'+{h:'16x9',q:'1x1',v:'9x16'}[F]+'.jpg')+')';
+const L={h:{cta:[84,86],hand:[92,89],merge:[2,78]},q:{cta:[73,90],hand:[87,93],merge:[2,83]},v:{cta:[50,93.5],hand:[77,95.5],merge:[50,75.5,'c']}}[F];
+document.getElementById('x').innerHTML=`<div class="abs merge" style="left:${L.merge[0]}vw;top:${L.merge[1]}vh;--k:var(--kk);${L.merge[2]?'translate:-50% 0;':''}">
  <div class="card" style="--h:85"><img src="../public/m/fanghiglia.webp"><b>3</b></div><span class="op">+</span>
  <div class="card" style="--h:85"><img src="../public/m/fanghiglia.webp"><b>3</b></div><span class="arrow">➜</span>
- <div class="card big" style="--h:280"><img src="../public/m/melmostro.webp"><b>4</b></div></div>`;
-// logo
-h+=`<div class="abs logo"><h1><span class="l1">MONSTER</span><span class="l2">LABORATORY</span></h1><div class="tag">MERGE · EVOLVE · BATTLE</div></div>`;
-// badge leggendario (sotto il logo nel formato verticale)
-if(L.badge)h+=`<div class="abs badge" style="left:${L.badge[0]}vw;bottom:${L.badge[1]}vh;translate:-50% 0;z-index:7">★★★★★ LEGENDARY · LV 100</div>`;
-// pulsante
-h+=`<div class="abs cta" style="left:${L.cta[0]}vw;top:${L.cta[1]}vh;translate:-50% -50%">▶ PLAY NOW</div><div class="abs hand" style="left:${L.hand[0]}vw;top:${L.hand[1]}vh">👆</div>`;
-S.innerHTML=h;
-</script>
-</body></html>
+ <div class="card big" style="--h:280"><img src="../public/m/melmostro.webp"><b>4</b></div></div>
+ <div class="abs cta" style="left:${L.cta[0]}vw;top:${L.cta[1]}vh;translate:-50% -50%">▶ PLAY NOW</div><div class="abs hand" style="left:${L.hand[0]}vw;top:${L.hand[1]}vh">👆</div>`;
+</script></body></html>
