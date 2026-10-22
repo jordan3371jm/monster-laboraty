@@ -9,7 +9,7 @@ import {REW,claimable,lists,misCheck,msLeft} from '../game/missions.js';
 import {GR,claimLong,grDone,onProg} from '../game/timers.js';
 import {save} from '../save.js';
 import {adThen} from './ads.js';
-import {setT,toast} from './common.js';
+import {onTab,pickTab,setT,tabs,toast} from './common.js';
 import {ui} from './hud.js';
 import {track} from '../analytics.js';
 import {addT,psAdd} from '../game/meta.js';
@@ -48,7 +48,7 @@ let tab=0;
 const left=k=>{const ms=msLeft(k),h=Math.floor(ms/36e5),d=Math.floor(h/24);return d?d+'d '+h%24+'h':h+'h '+Math.floor(ms%36e5/6e4)+'m'};
 const misNew=()=>[0,1,2].some(claimable);
 function renderMis(){const l=lists()[tab]||[],r=REW[tab];
- setT('misTabs',[tr('tabD'),tr('tabW'),tr('tabM')].map((n,k)=>'<button class="b'+(k===tab?' on':'')+'" data-t="'+k+'">'+n+(claimable(k)?'<i class="dot"></i>':'')+'</button>').join(''));
+ tabs('misTabs',[tr('tabD'),tr('tabW'),tr('tabM')],tab,[0,1,2].map(claimable));
  let h='<div class="dc">⏳ '+tr('misNew').replace('{t}',left(tab))+'</div>';
  if(tab)h+='<div class="dc"><small>'+tr(tab>1?'misMInfo':'misWInfo')+'</small></div>';
  const done=l.filter(m=>m.c).length;h+='<div class="dh">'+done+'/'+l.length+' ✓</div>';
@@ -56,9 +56,9 @@ function renderMis(){const l=lists()[tab]||[],r=REW[tab];
   h+='<div class="ms'+(tab?' wk':'')+(ok?' ok':'')+'"><div>'+mText(m)+'<small>'+fmt(m.p)+'/'+fmt(m.n)+'</small><small class="d">'+rw+'</small><div class="bar"><i style="width:'+m.p/m.n*100+'%"></i></div></div><div class="mb">'
   +(m.c?'<b>✓ '+tr('claimed')+'</b>':ok?'<button class="b g" data-a="c" data-i="'+i+'">'+tr('claim')+'</button><button class="b o" data-a="x" data-i="'+i+'">📺 x2</button>':'')+'</div></div>'});
  setT('misB',h)}
-function openMis(){if(!claimable(tab)){const k=[0,1,2].find(claimable);if(k!==undefined)tab=k}renderMis();$('mis').classList.add('on')}
+function openMis(){tab=pickTab(tab,[0,1,2].map(claimable));renderMis();$('mis').classList.add('on')}
 $('tMis').onclick=openMis;$('misClose').onclick=()=>$('mis').classList.remove('on');
-$('misTabs').onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;tab=+b.dataset.t;sfx('tap');renderMis()};
+onTab('misTabs',k=>{tab=k;sfx('tap');renderMis()});
 $('misB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const i=+b.dataset.i,k=tab;
  if(b.dataset.a==='c')claim(k,i,1);else if(b.dataset.a==='x')adThen('mission',()=>claim(k,i,2));
  renderMis();ui()};

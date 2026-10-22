@@ -38,7 +38,7 @@ const base={c:5e5,g:[3,3,4,2,2,1,0,5,0,6,1,1,0,0,2,4,0,0,0,0],sp:30,up:{l:3,d:2,
  ok(t.qa('#statB .rw').length===18,'18 righe di statistiche: '+t.qa('#statB .rw').map(r=>r.textContent).slice(0,3).join(' | '));
  t.click(t.$('statClose'));
  // reset con conferma
- t.click(t.$('tSet'));const c0=t.S().c;t.click(t.q('[data-a=rs]'));ok(!!t.q('[data-a=rsOk]'),'il reset chiede conferma');
+ t.click(t.$('tSet'));const c0=t.S().c;ok(!t.q('[data-a=rs]')&&!!t.q('[data-a=lang]'),'impostazioni: scheda Gioco con lingua, senza il reset');t.click(t.qa('#setTabs .b')[1]);t.click(t.q('[data-a=rs]'));ok(!!t.q('[data-a=rsOk]'),'il reset chiede conferma');
  t.click(t.q('[data-a=rsNo]'));ok(!t.q('[data-a=rsOk]')&&t.S().c===c0,'«Annulla» non cancella nulla');
  t.click(t.q('[data-a=rs]'));t.click(t.q('[data-a=rsOk]'));await t.adv(300);
  const s=t.S();ok(s.c<100&&s.st===1&&s.tut===0&&s.lp==='en'&&s.musOn===1,'reset: progressi azzerati, tutorial da capo, lingua e audio mantenuti (monete '+Math.floor(s.c)+', livello '+s.st+')');
@@ -49,7 +49,11 @@ const base={c:5e5,g:[3,3,4,2,2,1,0,5,0,6,1,1,0,0,2,4,0,0,0,0],sp:30,up:{l:3,d:2,
  t.click(t.$('tCol'));const cell=t.q('.cm[data-a=mon]');ok(!!cell,'i mostri scoperti sono toccabili');t.click(cell);
  const card=t.q('#colB .mi');ok(!!card&&card.textContent.length>40,'scheda del mostro: '+(card&&card.textContent.slice(0,70)));
  t.click(t.q('.cm[data-a=mon][data-t="2"]'));ok(/Microbo|Germ/.test(t.q('#colB .mi').textContent),'cambio scheda sul mostro 2');
+ t.click(t.qa('#colTabs .b')[1]);ok(!t.q('#colB .cm')&&!!t.q('#colB .ag'),'collezione: scheda Album separata dai mostri');t.click(t.qa('#colTabs .b')[0]);
  t.click(t.$('cClose'));
+ t.click(t.$('n2'));ok(t.$('upsTabs').style.display!=='none'&&t.$('ups').dataset.t==='0'&&t.w.getComputedStyle(t.$('pr')).display==='none','potenziamenti: scheda Laboratorio, l\'Evocazione oscura è nell\'altra scheda');
+ t.click(t.qa('#upsTabs .b')[1]);ok(t.$('ups').dataset.t==='1'&&t.w.getComputedStyle(t.$('pr')).display!=='none'&&t.w.getComputedStyle(t.$('u0')).display==='none','potenziamenti: scheda Essenze con l\'Evocazione oscura');t.click(t.$('closeUps'));
+ t.click(t.$('tPor'));ok(!!t.q('#porB [data-a=x1]')&&!t.q('#porB .chg'),'portale: scheda Evoca');t.click(t.qa('#porTabs .b')[1]);ok(!!t.q('#porB .chg')&&!t.q('#porB [data-a=x1]'),'portale: scheda Campioni');t.click(t.qa('#porTabs .b')[2]);ok(!t.q('#porB .chg')&&/🎒|gear|equip/i.test(t.$('porB').textContent+t.$('porTabs').textContent),'portale: scheda Equipaggiamento');t.click(t.$('porClose'));
  const s=t.S();ok(s.dl.m.length===5&&s.dl.m[0].t==='merge'&&s.dl.wl.length===5&&s.dl.ml.length===5,'5 missioni giornaliere, 5 settimanali, 5 mensili: '+s.dl.m.map(m=>m.t).join(',')+' / '+s.dl.wl.map(m=>m.t+m.n).join(',')+' / '+s.dl.ml.map(m=>m.t+m.n).join(','));
  ok(s.dl.wl.some(m=>m.t==='days'&&m.p===1)&&s.dl.ml.some(m=>m.t==='days'&&m.p===1),'settimanali e mensili: «gioca in N giorni» conta già oggi');
  ok(s.dl.ml.some(m=>m.t==='dmis'&&m.n>=10)&&s.dl.wl.find(m=>m.t==='days').n>1,'le lunghe non si finiscono in un giorno');
@@ -176,17 +180,17 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  const et=t.S().exp.run[0].et;t.click(t.$('tmClose'));await t.adv(6000);ok(t.S().exp.run[0].et===et,'la spedizione tiene il suo orario (nessun azzeramento)');
  t.jump(3700e3);await t.adv(800);ok(t.$('tExp').classList.contains('n'),'spedizione pronta: pallino rosso sul pulsante');
  const c0=t.S().c;t.click(t.$('tExp'));t.click(t.q('#tmB [data-a=xc]'));await t.adv(300);ok(t.S().exp.run.length===0&&t.S().c>c0,'riscossione della spedizione');
- t.click(t.q('#tmB [data-a=nb][data-k="1"]'));await t.adv(300);ok(t.S().inc.r.length===1,'uovo incubato nel nido');
+ t.click(t.qa('#tmTabs .b')[1]);ok(!t.q('#tmB [data-a=xs]')&&!!t.q('#tmB [data-a=nb]'),'timer: la scheda Nidi mostra solo i nidi');t.click(t.q('#tmB [data-a=nb][data-k="1"]'));await t.adv(300);ok(t.S().inc.r.length===1,'uovo incubato nel nido');
  t.click(t.q('#tmB [data-a=np]'));await t.adv(300);ok(t.S().inc.r.length===1,'senza pubblicità disponibile il timer non scende');
  t.jump(3700e3);await t.adv(800);t.click(t.q('#tmB [data-a=nc]'));await t.adv(300);ok(t.S().inc.r.length===0&&t.S().inc.h===1,'uovo riscosso dopo 1h');
  ok(t.errs.length===0,'timer: nessun errore JS '+t.errs.slice(0,2));}
 {const t=await boot({...base,introSeen:1,dl:{d:-1,m:[],last:dn2,st:2,dbl:1,lr:null}},{});await t.adv(1500);
  ok(t.S().ord&&t.S().ord.list.length===2&&t.S().ord.list.every(o=>!o.d&&!o.c&&o.et>0&&o.ic),'ordini: due richieste aperte, non già soddisfatte');
- t.click(t.$('tExp'));ok(/📜/.test(t.$('tmB').textContent)||t.qa('#tmB .ms').length>=2,'ordini: visibili nel pannello');
+ t.click(t.$('tExp'));t.click(t.qa('#tmTabs .b')[2]);ok(/📜/.test(t.$('tmB').textContent)||t.qa('#tmB .ms').length>=2,'ordini: visibili nel pannello');
  t.click(t.$('tmClose'));t.click(t.$('mall'));await t.adv(300);t.click(t.$('tExp'));await t.adv(300);
  ok(t.errs.length===0,'ordini: «Unisci tutto» non genera errori');}
 {const t=await boot({...base,introSeen:1,dl:{d:-1,m:[],last:dn2,st:2,dbl:1,lr:null},ev:{wk:Math.floor((dn2+3)/7),el:0,p:500,tot:0,b:0,ok:1,x:0,m:null,got:0,cl:[],sp:{}}},{});
- t.click(t.$('tExp'));await t.adv(300);const n0=t.qa('#grid .c.f').length;
+ t.click(t.$('tExp'));await t.adv(300);t.click(t.qa('#tmTabs .b')[3]);const n0=t.qa('#grid .c.f').length;
  t.click(t.q('#tmB [data-a=eb][data-i="5"]'));await t.adv(300);ok(t.qa('#grid .c.f').length===n0+1,'evento: il campione è UN mostro in più (non riempie il laboratorio)');
  const b0=t.S().boost;t.click(t.q('#tmB [data-a=eb][data-i="0"]'));await t.adv(300);ok(t.S().boost-1.8e12<2*3600e3,'evento: ⚡ dà 60 minuti, non 1000 ore');
  ok(t.errs.length===0,'evento: nessun errore JS '+t.errs.slice(0,2));}
@@ -271,7 +275,7 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  ok(t.calls.some(c=>/^msg:player_got_achievement/.test(c))&&t.calls.some(c=>/^ach:/.test(c)),'Playgama: trofeo → player_got_achievement e obiettivo della piattaforma');
  ok(t.calls.some(c=>/^an:/.test(c)),'Playgama: eventi di analytics inviati alla piattaforma');
  t.w.document.dispatchEvent(new t.w.Event('visibilitychange'));
- t.click(t.$('tSet'));ok(!!t.q('[data-a=login]')&&!!t.q('[data-a=soc][data-v=share]')&&!t.q('[data-a=soc][data-v=rate]'),'impostazioni: «Accedi» e solo i pulsanti social supportati');
+ t.click(t.$('tSet'));t.click(t.qa('#setTabs .b')[1]);ok(!!t.q('[data-a=login]')&&!!t.q('[data-a=soc][data-v=share]')&&!t.q('[data-a=soc][data-v=rate]'),'impostazioni: «Accedi» e solo i pulsanti social supportati');
  t.click(t.q('[data-a=login]'));t.click(t.q('[data-a=soc][data-v=share]'));await t.adv(300);ok(t.calls.includes('auth')&&t.calls.includes('share'),'accesso e condivisione chiamano il Bridge');
  ok(t.errs.length===0,'Playgama: nessun errore JS '+t.errs.slice(0,2));}
 {const t=await boot({...base},{});ok(t.$('tShop').style.display!=='none','il negozio 🛒 si vede sempre (anche senza pagamenti)');t.click(t.$('tShop'));

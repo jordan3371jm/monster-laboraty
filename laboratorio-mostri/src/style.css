@@ -532,8 +532,13 @@ em.mon{display:inline-block;width:1.3em;height:1.3em;vertical-align:-.3em;font-s
 #shopB>.b.sh.ofr{border:2px solid #ffd36b;box-shadow:0 0 16px #ffd36b66,0 4px 0 #1a0f33}
 .oft{display:block;margin-top:3px;font-style:normal;font-weight:900;color:#ffd36b}
 /* Missioni: schede Giornaliere / Settimanali / Mensili */
-#misTabs{display:flex;gap:6px;flex-shrink:0;position:sticky;top:44px;z-index:1}
-#misTabs .b{flex:1;position:relative;padding:9px 4px;font-size:13px;background:#2c1b52;box-shadow:0 2px 0 #160c2c;color:var(--txt2)}
-#misTabs .b.on{background:linear-gradient(#8a5cf0,#5b34b8);color:#fff}
-#misTabs .dot{position:absolute;top:-3px;right:-3px;width:11px;height:11px;border-radius:50%;background:#ff4d5e;box-shadow:0 0 0 2px #0f081c}
+/* (schede in comune, vedi tabs() in ui/common.js) */
+.tabs{display:flex;gap:6px;flex-shrink:0;position:sticky;top:44px;z-index:1}
+.tabs .b{flex:1;position:relative;padding:9px 4px;font-size:13px;background:#2c1b52;box-shadow:0 2px 0 #160c2c;color:var(--txt2)}
+.tabs .b.on{background:linear-gradient(#8a5cf0,#5b34b8);color:#fff}
+.tabs .dot{position:absolute;top:-3px;right:-3px;width:11px;height:11px;border-radius:50%;background:#ff4d5e;box-shadow:0 0 0 2px #0f081c}
 #misB{display:flex;flex-direction:column;gap:8px}
+.tabs .b small{display:block;font-size:10.5px;font-weight:700;margin-top:1px}
+.tabs .b b{display:block;font-size:17px;line-height:1.1}
+#ups[data-t="0"] :is(#treeB,#pr),#ups[data-t="1"] :is([id^=u]:not(#upsT):not(#upsTabs),#amB){display:none!important}
+#ups .tabs{top:0}

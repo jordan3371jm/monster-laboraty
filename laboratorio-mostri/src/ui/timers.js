@@ -10,7 +10,7 @@ import {EXP,EXPN,ELN,NEST,NID,SH,bells,evBuy,evCan,evNeed,evPrice,evBought,evMon
 import {save} from '../save.js';
 import {track} from '../analytics.js';
 import {adThen} from './ads.js';
-import {setT,toast} from './common.js';
+import {onTab,pickTab,setT,tabs,toast} from './common.js';
 import {ui} from './hud.js';
 import {draw} from './lab.js';
 import {CH} from '../data/champs.js';
@@ -50,7 +50,7 @@ function secNest(){const mx=nidMax();let h='<div class="dh">'+tr('nidT')+'</div>
  if(mx<NEST)h+='<small class="d">🔒 '+tr('nidLocked').replace('{n}',4-((S.inc.h||0)%4))+'</small>';
  return h+'</div>'}
 
-function secOrd(){const l=ordList();if(!l.length)return '';let h='<div class="dh">'+tr('ordT')+' · '+tr('ordTier')+' '+S.ord.tier+'</div>';
+function secOrd(){const l=ordList();if(!l.length)return '<div class="dh">'+tr('ordT')+'</div><div class="dc">'+tr('ordNone')+'</div>';let h='<div class="dh">'+tr('ordT')+' · '+tr('ordTier')+' '+S.ord.tier+'</div>';
  l.forEach((o,i)=>{const r=ordReward(o),lbl=(o.k==='at'?tr('ordAt'):tr('ordEx')).replace('{n}',o.ic+' '+o.t);
   h+='<div class="ms'+(ordOk(o)?' ok':'')+'"><div>'+lbl+'<small>'+(o.c===1?tr('ordDone'):o.c===2?tr('ordLost'):o.d?tr('ordRdy'):tr('ordLeft')+' '+tt(o.et))+'</small><small class="d">'+gain(r.c,r.e)+'</small></div><div class="mb">'
    +(ordOk(o)?'<button class="b g" data-a="oc" data-i="'+i+'">'+tr('claim')+'</button>':'')+'</div></div>'});
@@ -67,8 +67,12 @@ function secEv(){const el=S.ev.el,m=S.ev.m,need=evNeed();
    +(got?'<b>✓ '+tr('tmBought')+'</b>':'<button class="b g" data-a="eb" data-i="'+i+'"'+(evCan(i)?'':' disabled')+'>'+tr('tmBuy')+'</button>')+'</div></div>'});
  return h}
 
-const renderTm=()=>{setT('tmB',secExp()+secNest()+secOrd()+secEv());tickT()};
-const openTm=()=>{renderTm();$('tm').classList.add('on')};
+// Una scheda per sezione: Spedizioni, Nidi, Ordini, Evento (pallino dove c'è qualcosa pronto)
+let tab=0;const SEC=[secExp,secNest,secOrd,secEv],TB={xb:0,hb:1,ob:2,goEv:3};
+const tmDots=()=>{const d=[0,0,0,0];bells().forEach(b=>{if(TB[b.a]!==undefined)d[TB[b.a]]=1});return d};
+const renderTm=()=>{tabs('tmTabs',['🧭','🥚','📜','🎪'].map((ic,k)=>'<b>'+ic+'</b><small>'+tr(['tbExp','tbNid','tbOrd','tbEv'][k])+'</small>'),tab,tmDots());setT('tmB',SEC[tab]());tickT()};
+onTab('tmTabs',k=>{tab=k;sfx('tap');renderTm()});
+const openTm=()=>{tab=pickTab(tab,tmDots());renderTm();$('tm').classList.add('on')};
 const openIntro=()=>{$('intro').classList.add('on')};
 function renderIntro(){setT('introB','<h2>'+tr('introT')+'</h2>'+[1,2,3,4].map(n=>'<div class="xc">'+tr('introD'+n)+'</div>').join('')+'<button class="b g" id="introOk">'+tr('introOk')+'</button>')}
 $('tExp').onclick=openTm;$('tmClose').onclick=()=>$('tm').classList.remove('on');

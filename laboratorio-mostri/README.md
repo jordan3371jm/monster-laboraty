@@ -32,6 +32,7 @@ La simulazione usa le stesse formule del gioco, ma è un modello semplificato (a
 Comprimi il **contenuto** di `dist` in uno zip, con `index.html` nella radice dello zip.
 
 ## Funzioni
+- **Schede**: i pannelli con più sezioni mostrano una sezione per volta, con schede in alto e un pallino rosso dove c'è qualcosa da fare (`tabs()` in `ui/common.js`): Missioni (Giornaliere / Settimanali / Mensili), Timer (Spedizioni / Nidi / Ordini / Evento), Portale (Evoca / Campioni / Equipaggiamento), Collezione (Mostri / Album), Potenziamenti (Laboratorio / Essenze, la seconda solo dopo le prime Essenze o lo sblocco dell'Evocazione oscura), Impostazioni (Gioco / Account). All'apertura si va sulla scheda che ha qualcosa da riscuotere.
 - **Bonus giornaliero** (🎁): premio che cresce su una serie di 7 giorni (il 7° dà anche 🔮) e calendario della serie, «▶ Raddoppia» con pubblicità rewarded (`daily`). Il giorno cambia a mezzanotte locale.
 - **Impostazioni** (⚙️): lingua (English, Italiano, Español, Français, 中文; scelta salvata), effetti e musica accesi/spenti separatamente, accesso alle statistiche e «Azzera il salvataggio» con conferma (restano lingua e audio, il tutorial riparte). L'audio è generato con WebAudio, nessun file: parte dopo il primo tocco e si spegne quando la piattaforma lo disattiva, durante le pubblicità e con la scheda in background.
 - **Statistiche** (da ⚙️): tempo giocato, unioni, uova, livelli vinti, mostro più alto, monete, Essenze, forzieri, eventi, abilità, serie, trofei.

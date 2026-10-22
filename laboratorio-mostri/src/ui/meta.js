@@ -12,7 +12,7 @@ import {fmtT} from '../game/timers.js';
 import {save} from '../save.js';
 import {track} from '../analytics.js';
 import {adThen} from './ads.js';
-import {burst,setT,toast} from './common.js';
+import {burst,onTab,pickTab,setT,tabs,toast} from './common.js';
 import {ui} from './hud.js';
 
 // ---- Pannelli della progressione permanente: Portale dei Campioni, Torre, Pass, Invasione, Album ----
@@ -42,15 +42,22 @@ function detail(i){const c=CH[i],s=M.star(i),lead=S.ch.ld.includes(i),eq=S.ch.eq
   h+='<div class="dh">'+tr('gearPick')+' · '+tr('gear'+R.gearSl)+'</div>'+(list.length?list.map(g=>{const on=eq[R.gearSl]===g.id;
    return '<div class="ms"><div>'+gearTxt(g)+'</div><div class="mb"><button class="b'+(on?'':' g')+'" data-a="'+(on?'un':'eq')+'" data-id="'+g.id+'" data-s="'+g.s+'">'+(on?'✕':'✓')+'</button></div></div>'}).join(''):'<small class="d">'+tr('gearNone')+'</small>')}
  return h+'</div>'}
+// Portale in tre schede: Evoca, Campioni (capisquadra, scheda del campione, tutti i campioni), Equipaggiamento
+let porTab=0;
+const porDots=()=>[!M.freeLeft()||M.ch().t>=1,0,0];
 function renderPor(){const c=M.ch(),fl=M.freeLeft(),al=M.adLeft();
+ tabs('porTabs',['🌀','🦸','🎒'].map((ic,k)=>'<b>'+ic+'</b><small>'+tr(['tbPull','tbCh','tbGear'][k])+'</small>'),porTab,porDots());
  let h='<div class="cs">🎫 <b>'+c.t+'</b> '+tr('porTk')+'<small class="d">'+tr('porPity').replace('{n}',Math.max(1,PITY_R-c.pr)).replace('{m}',Math.max(1,PITY_L-c.pl))+'</small></div>'
   +'<div class="row"><button class="b g" data-a="x1"'+(c.t<1?' disabled':'')+'>'+tr('porX1')+' · 🎫1</button><button class="b g" data-a="x10"'+(c.t<10?' disabled':'')+'>'+tr('porX10')+' · 🎫10</button></div>'
   +'<div class="row"><button class="b'+(fl?'':' o')+'" data-a="free"'+(fl?' disabled':'')+'>'+(fl?tr('porFreeIn')+' <b class="tt" data-e="'+(c.free+M.FREE_CD)+'"></b>':tr('porFree'))+'</button><button class="b o" data-a="ad"'+(al?'':' disabled')+'>'+tr('porAd')+' · '+al+'/'+M.AD_MAX+' '+tr('porAdN')+'</button></div>'
   +'<small class="d" style="text-align:center">'+tr('porOdds')+'</small>';
- h+='<div class="dh">'+tr('porLd')+'</div><small class="d" style="text-align:center">'+tr('porLdD')+'</small><div class="lds">'
+ if(porTab===0){setT('porB',h);ttick('porB');return}
+ h='';
+ if(porTab===1){h+='<div class="dh">'+tr('porLd')+'</div><small class="d" style="text-align:center">'+tr('porLdD')+'</small><div class="lds">'
   +[0,1].map(k=>{const i=c.ld[k];return i===undefined?'<div class="chc e"><small>'+tr('porEmpty')+'</small></div>':chCard(i)}).join('')+'</div>';
  if(R.chSel>=0&&CH[R.chSel])h+=detail(R.chSel);
  h+='<div class="dh">'+tr('porAll')+' · '+Object.keys(c.own).length+'/'+CH.length+'</div><div class="chg">'+CH.map((_,i)=>chCard(i)).join('')+'</div>';
+ setT('porB',h);ttick('porB');return}
  h+='<div class="dh">'+tr('gearT')+'</div><small class="d" style="text-align:center">'+tr('gearOnly')+'</small>';
  if(c.gear.length){const on={};for(const k in c.eq)c.eq[k].forEach(id=>{if(id)on[id]=k});
   h+='<button class="b" data-a="auto">'+tr('gearAuto')+'</button>'+[...c.gear].sort((a,b)=>b.r-a.r||b.v-a.v).map(g=>'<div class="ms"><div>'+gearTxt(g)+(on[g.id]!==undefined?'<small>'+tr('gearOn')+' '+nm(+on[g.id])+'</small>':'')+'</div><div class="mb"><button class="b" data-a="salv" data-id="'+g.id+'">'+tr('gearSalv')+' 🪙</button></div></div>').join('')}
@@ -133,11 +140,13 @@ function albHtml(){M.ch();let h='<div class="wh">'+tr('albT')+'</div><small clas
   h+='<div class="cr"><div class="xh">'+al.ic+' '+tr('alb'+a)+' · '+n+'/9</div><div class="ag">'+al.c.map((e,k)=>{const q=S.ch.cards[a*9+k];return '<div class="ac'+(q?' f':'')+(k===8?' gd':'')+'"><i'+(q?'':' class="u"')+'>'+e+'</i>'+(q>1?'<small>×'+q+'</small>':'')+'</div>'}).join('')+'</div>'
    +(S.ch.alb[a]?'<b class="rdy" style="text-align:center">'+tr('albDone')+'</b>':done?'<button class="b g" data-a="acl" data-al="'+a+'">'+tr('albClaim')+'</button>':'<button class="b" data-a="atr" data-al="'+a+'"'+(dup>=3?'':' disabled')+'>'+tr('albTrade')+' ('+dup+')</button>')+'</div>'});
  return h}
+const albNew=()=>{M.ch();return ALB.some((_,a)=>M.albDone(a)&&!S.ch.alb[a])};
 function albClick(b){const a=+b.dataset.al;if(b.dataset.a==='acl'){if(M.albClaim(a)){toast('🃏 🎫 +'+M.ALB_T,1);sfx('win');save(true)}return true}
  if(b.dataset.a==='atr'){const r=M.albTrade(a);if(r){toast(tr('cardGot')+' '+ALB[r.a].c[r.k],1);sfx('claim');save(true)}return true}return false}
 
 const open=(id,fn)=>()=>{fn();$(id).classList.add('on')};
-$('tPor').onclick=open('por',()=>{R.chSel=-1;R.gearSl=-1;renderPor()});$('porClose').onclick=()=>$('por').classList.remove('on');
+$('tPor').onclick=open('por',()=>{R.chSel=-1;R.gearSl=-1;porTab=pickTab(porTab,porDots());renderPor()});
+onTab('porTabs',k=>{porTab=k;R.gearSl=-1;sfx('tap');renderPor()});$('porClose').onclick=()=>$('por').classList.remove('on');
 $('bTow').onclick=open('tow',()=>{R.twRes=null;renderTow()});$('towClose').onclick=()=>$('tow').classList.remove('on');
 $('tPas').onclick=open('pas',renderPas);$('pasClose').onclick=()=>$('pas').classList.remove('on');
 $('bInv').onclick=open('inv',renderInv);$('invClose').onclick=()=>$('inv').classList.remove('on');
@@ -145,4 +154,4 @@ $('bInv').onclick=open('inv',renderInv);$('invClose').onclick=()=>$('inv').class
 function metaUi(){if($('por').classList.contains('on'))renderPor();if($('tow').classList.contains('on')&&!R.twRes)renderTow();if($('pas').classList.contains('on'))renderPas();if($('inv').classList.contains('on'))renderInv()}
 function metaLang(){$('porT').textContent=tr('porT');$('towT').textContent=tr('twT');$('pasT').textContent=tr('psT');$('invT').textContent=tr('ivT');
  ['porClose','towClose','pasClose','invClose'].forEach(id=>$(id).textContent=tr('close'));$('bTow').innerHTML=tr('bTow')+'<i class="dot"></i>';$('bInv').innerHTML=tr('bInv')+'<i class="dot"></i>'}
-export {ci,grantMsg,reveal,renderPor,renderTow,renderPas,renderInv,albHtml,albClick,metaUi,metaLang,nm,skTxt,stars,gearTxt};
+export {ci,grantMsg,reveal,renderPor,renderTow,renderPas,renderInv,albHtml,albClick,albNew,metaUi,metaLang,nm,skTxt,stars,gearTxt};
