@@ -4,7 +4,7 @@ import {R,S,setS} from '../core/state.js';
 import {fmt} from '../core/util.js';
 import {E} from '../data/config.js';
 import {tr} from '../data/text.js';
-import {AM_COST,amInt,amMax,essMult,pgN,PK,PKR,UP,eggInt,inc,pgain,pkrCost,prestigeState,spCost} from '../game/economy.js';
+import {give,rBase,AM_COST,amInt,amMax,essMult,pgN,PK,PKR,UP,eggInt,inc,pgain,pkrCost,prestigeState,spCost} from '../game/economy.js';
 import {save} from '../save.js';
 import {inter} from './ads.js';
 import {drawB,startFight} from './battle.js';
@@ -24,6 +24,7 @@ import {metaLang,metaUi} from './meta.js';
 import * as Mt from '../game/meta.js';
 import * as Ul from '../game/unlocks.js';
 import {banner,bannerMenu} from '../platform.js';
+import {offerCheck} from './shop.js';
 
 // ---- Sblocchi a obiettivi (game/unlocks.js): all'inizio c'è solo il laboratorio, il resto si apre raggiungendo dei traguardi.
 // Ogni sblocco ha una finestra «Nuova funzione!»; le schede ancora chiuse restano visibili con il lucchetto e dicono cosa serve.
@@ -50,8 +51,9 @@ function gate(){Ul.ulMigrate();const tut=S.tut>=3,on=k=>tut&&Ul.has(k);
 const UGO={ups:()=>$('ups').classList.add('on'),pr:()=>$('ups').classList.add('on'),bat:()=>show(1),fm:()=>show(1),tow:()=>show(1),inv:()=>show(1),
  day:()=>$('tDaily').click(),col:()=>$('tCol').click(),tr:()=>$('tTr').click(),por:()=>$('tPor').click(),pas:()=>$('tPas').click(),
  exp:()=>{if(!S.introSeen){S.introSeen=1;openIntro()}else $('tExp').click()}};
-function openUl(){R.ulT=0;const k=R.ulq.shift();if(!k)return;const u=Ul.UL.find(x=>x.k===k);
- setT('ulpB','<div class="ulc"><small>'+tr('ulT')+'</small><i>'+u.ic+'</i><b>'+ulName(k)+'</b><p>'+tr('uld_'+k)+'</p><button class="b g" data-a="go" data-k="'+k+'">'+tr('ulGo')+'</button></div>');
+// ogni sblocco dà anche un premio: 10 minuti di guadagni e 1 biglietto (consegnati subito)
+function openUl(){R.ulT=0;const k=R.ulq.shift();if(!k)return;const u=Ul.UL.find(x=>x.k===k),c=rBase()*2;give(c,0);Mt.addT(1);
+ setT('ulpB','<div class="ulc"><small>'+tr('ulT')+'</small><i>'+u.ic+'</i><b>'+ulName(k)+'</b><p>'+tr('uld_'+k)+'</p><div class="ulr">🎁 '+tr('ulRew')+': 🪙 +'+fmt(c)+' · 🎫 +1</div><button class="b g" data-a="go" data-k="'+k+'">'+tr('ulGo')+'</button></div>');
  $('ulp').classList.add('on');sfx('new');track('unlock_'+k)}
 $('ulp').onclick=e=>{const b=e.target.closest('[data-a=go]');if(!b&&e.target.id!=='ulp')return;$('ulp').classList.remove('on');
  if(b&&UGO[b.dataset.k])UGO[b.dataset.k]();if(R.ulq.length)R.ulT=setTimeout(openUl,500)};
@@ -75,7 +77,7 @@ function ui(){const b=Date.now()<S.boost;
  if($('trop').classList.contains('on'))renderTr();if($('tree').classList.contains('on'))renderTree();
  if($('set').classList.contains('on'))renderSet();if($('stat').classList.contains('on'))renderStats();
  $('tMute').textContent=S.sfxOn||S.musOn?'🔊':'🔇';
- drawTimers();drawB();renderGoal();gate();metaUi();
+ drawTimers();drawB();renderGoal();gate();metaUi();offerCheck();
  banner(!!document.querySelector('#ups.on,.ov.on:not(#ulp):not(#pull):not(#wb):not(#intro)'));$('app').classList.toggle('bnm',bannerMenu()&&innerHeight>innerWidth)}
 // Testo «🎁 Missioni» → icona sopra ed etichetta sotto (pulsanti in alto e barra di navigazione)
 const lbl=(id,t)=>{$(id).querySelector('span').textContent=String(t).replace(/^\S+\s/,'')};

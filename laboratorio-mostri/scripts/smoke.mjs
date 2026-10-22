@@ -290,6 +290,16 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
 {const mem={ml_save_v1:JSON.stringify({...base,c:777777,ls:1.8e12-1000})};const st=()=>({storage:{get:async k=>mem[k]||null,set:async(k,v)=>{mem[k]=v}}});
  const t=await boot(null,{bridge:true,bx:st});await t.adv(600);ok(/7[78]\d\.\dK/.test(t.$('coins').textContent),'caricamento tramite bridge.storage ('+t.$('coins').textContent+')');}
 
+// --- premio a ogni sblocco e offerta a tempo del Pacchetto iniziale (72 ore dopo la prima Evocazione oscura)
+{const t=await boot({g:[3,3,...z(18)],tut:3,disc:[1,1,1,...z(36)],ul:['v2','ups'],introSeen:0,c:0},{});await t.adv(600);
+ const t0=(t.S().ch&&t.S().ch.t)||0,c0=t.S().c;const cells=t.qa('#grid .c');t.click(cells[0]);t.click(cells[1]);await t.adv(1500);
+ ok(t.$('ulp').classList.contains('on')&&/🎫 \+1/.test(t.$('ulpB').textContent)&&t.S().ch.t>=t0+1&&t.S().c>c0,'sblocco: premio di monete e biglietto');}
+{const pay=calls=>({payments:{isSupported:true,getCatalog:async()=>[{id:'starter_pack',price:'4.99 $'},{id:'tickets_10',price:'0.99 $'}],getPurchases:async()=>[],purchase:async id=>({id,orderId:'x'}),consumePurchase:async()=>{}}});
+ const t=await boot({...base,introSeen:1,dl:dl0({last:dn})},{bridge:true,bx:pay});await t.adv(4000);
+ ok(t.$('ulp').classList.contains('on')&&!!t.q('#ulpB [data-a=ofr]'),'dopo la prima Evocazione oscura: finestra «Offerta speciale!»');
+ t.click(t.q('#ulpB [data-a=ofr]'));ok(t.$('shop').classList.contains('on')&&!!t.q('#shopB .ofr .oft'),'«Vedi l\'offerta» apre il negozio con il conto alla rovescia sul Pacchetto iniziale');
+ t.jump(73*3600e3);await t.adv(600);t.click(t.$('shopClose'));t.click(t.$('tShop'));ok(!t.q('#shopB [data-id=starter_pack]'),'dopo 72 ore il Pacchetto iniziale non è più in vendita');}
+
 // --- salvataggi rovinati: l'avvio non deve rompersi (prima la pagina restava bianca per sempre)
 for(const [nome,sv] of [['sq null',{sq:null}],['campi null',{c:null,up:null,pk:'x',tr:5,dl:{m:null,w:7}}],['celle sporche',{g:['a',null,99,-3,2,1]}],['numeri NaN',{st:'9',bs:null,essT:'много',tut:77}]]){
  const t=await boot(sv);
