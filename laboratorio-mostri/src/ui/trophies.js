@@ -10,7 +10,7 @@ import {achieve} from '../platform.js';
 
 // ---- Trofei (+1% guadagni ciascuno, permanenti) ----
 const TRF=[{k:'mg',ic:'🔗',th:[50,250,1000,5000],v:()=>S.ach.mg},{k:'sp',ic:'🥚',th:[100,500,2500,10000],v:()=>S.ach.sp},{k:'st',ic:'⚔️',th:[5,15,30,60],v:()=>S.bs},
- {k:'lt',ic:'🪙',th:[1e4,1e6,1e9,1e12],v:()=>S.lt},{k:'tm',ic:'👑',th:[5,9,13,20,26],v:()=>S.disc.lastIndexOf(1)+1},{k:'ev',ic:'👻',th:[5,25,100],v:()=>S.ach.ev},
+ {k:'lt',ic:'🪙',th:[1e4,1e6,1e9,1e12],v:()=>S.lt},{k:'tm',ic:'👑',th:[5,9,13,20,26,33,39],v:()=>S.disc.lastIndexOf(1)+1},{k:'ev',ic:'👻',th:[5,25,100],v:()=>S.ach.ev},
  {k:'pr',ic:'🔮',th:[1,5,15],v:()=>S.ach.pr},{k:'dy',ic:'🔥',th:[3,7,30],v:()=>S.dl.st},{k:'ch',ic:'🎁',th:[1,10,50],v:()=>S.ach.ch}];
 const TOT=TRF.reduce((s,f)=>s+f.th.length,0);
 function chk(){let n=0,first='';

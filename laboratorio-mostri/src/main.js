@@ -19,10 +19,11 @@ import {initShop} from './ui/shop.js';
 
 import './style.css';
 import {initCoins} from './ui/coin.js';
+import {initMonsters} from './ui/monsters.js';
 import {bootProgress,preload} from './preload.js';
 
 // Le immagini iniziano a caricarsi subito, in parallelo all'avvio del Bridge e al caricamento del salvataggio
-const pre=preload(bootProgress);initCoins();
+const pre=preload(bootProgress);initMonsters();initCoins();
 
 // Salvataggio periodico e sincronizzazione audio
 setInterval(()=>save(),5000);
@@ -65,7 +66,7 @@ async function boot(){
  await pre; // schermata di caricamento: aspetta che tutte le immagini dei mostri siano pronte (al massimo 25s)
  window.__ready=1;const bt=document.getElementById('boot');if(bt){bootProgress(1,1);bt.classList.add('out');setTimeout(()=>bt.remove(),500)}
  if(S.tut>=3&&has('day')&&dailyInfo().can)setTimeout(()=>{if(!R.dlgShown){R.dlgShown=true;openDaily()}},1200);
- if(R.inited)ready();else{syncPlay();lateBridge()}}
+ if(R.inited)ready();else{syncPlay();initShop();lateBridge()}}
 // Bridge arrivato tardi: lo collego e, se il salvataggio della piattaforma ha più tempo di gioco di quello partito in locale
 // (es. l'app ha cancellato i dati del browser), riparto da quello. Poi salvo subito anche sulla piattaforma.
 async function lateBridge(){const t0=Date.now();

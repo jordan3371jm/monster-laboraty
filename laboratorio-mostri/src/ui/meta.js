@@ -1,4 +1,5 @@
 import {sfx} from '../audio.js';
+import {prog} from './missions.js';
 import {$} from '../core/dom.js';
 import {R,S} from '../core/state.js';
 import {fmt,ico} from '../core/util.js';
@@ -11,7 +12,7 @@ import {fmtT} from '../game/timers.js';
 import {save} from '../save.js';
 import {track} from '../analytics.js';
 import {adThen} from './ads.js';
-import {burst,setT,toast} from './common.js';
+import {burst,onTab,pickTab,setT,tabs,toast} from './common.js';
 import {ui} from './hud.js';
 
 // ---- Pannelli della progressione permanente: Portale dei Campioni, Torre, Pass, Invasione, Album ----
@@ -41,15 +42,22 @@ function detail(i){const c=CH[i],s=M.star(i),lead=S.ch.ld.includes(i),eq=S.ch.eq
   h+='<div class="dh">'+tr('gearPick')+' · '+tr('gear'+R.gearSl)+'</div>'+(list.length?list.map(g=>{const on=eq[R.gearSl]===g.id;
    return '<div class="ms"><div>'+gearTxt(g)+'</div><div class="mb"><button class="b'+(on?'':' g')+'" data-a="'+(on?'un':'eq')+'" data-id="'+g.id+'" data-s="'+g.s+'">'+(on?'✕':'✓')+'</button></div></div>'}).join(''):'<small class="d">'+tr('gearNone')+'</small>')}
  return h+'</div>'}
+// Portale in tre schede: Evoca, Campioni (capisquadra, scheda del campione, tutti i campioni), Equipaggiamento
+let porTab=0;
+const porDots=()=>[!M.freeLeft()||M.ch().t>=1,0,0];
 function renderPor(){const c=M.ch(),fl=M.freeLeft(),al=M.adLeft();
+ tabs('porTabs',['🌀','🦸','🎒'].map((ic,k)=>'<b>'+ic+'</b><small>'+tr(['tbPull','tbCh','tbGear'][k])+'</small>'),porTab,porDots());
  let h='<div class="cs">🎫 <b>'+c.t+'</b> '+tr('porTk')+'<small class="d">'+tr('porPity').replace('{n}',Math.max(1,PITY_R-c.pr)).replace('{m}',Math.max(1,PITY_L-c.pl))+'</small></div>'
   +'<div class="row"><button class="b g" data-a="x1"'+(c.t<1?' disabled':'')+'>'+tr('porX1')+' · 🎫1</button><button class="b g" data-a="x10"'+(c.t<10?' disabled':'')+'>'+tr('porX10')+' · 🎫10</button></div>'
   +'<div class="row"><button class="b'+(fl?'':' o')+'" data-a="free"'+(fl?' disabled':'')+'>'+(fl?tr('porFreeIn')+' <b class="tt" data-e="'+(c.free+M.FREE_CD)+'"></b>':tr('porFree'))+'</button><button class="b o" data-a="ad"'+(al?'':' disabled')+'>'+tr('porAd')+' · '+al+'/'+M.AD_MAX+' '+tr('porAdN')+'</button></div>'
   +'<small class="d" style="text-align:center">'+tr('porOdds')+'</small>';
- h+='<div class="dh">'+tr('porLd')+'</div><small class="d" style="text-align:center">'+tr('porLdD')+'</small><div class="lds">'
+ if(porTab===0){setT('porB',h);ttick('porB');return}
+ h='';
+ if(porTab===1){h+='<div class="dh">'+tr('porLd')+'</div><small class="d" style="text-align:center">'+tr('porLdD')+'</small><div class="lds">'
   +[0,1].map(k=>{const i=c.ld[k];return i===undefined?'<div class="chc e"><small>'+tr('porEmpty')+'</small></div>':chCard(i)}).join('')+'</div>';
  if(R.chSel>=0&&CH[R.chSel])h+=detail(R.chSel);
  h+='<div class="dh">'+tr('porAll')+' · '+Object.keys(c.own).length+'/'+CH.length+'</div><div class="chg">'+CH.map((_,i)=>chCard(i)).join('')+'</div>';
+ setT('porB',h);ttick('porB');return}
  h+='<div class="dh">'+tr('gearT')+'</div><small class="d" style="text-align:center">'+tr('gearOnly')+'</small>';
  if(c.gear.length){const on={};for(const k in c.eq)c.eq[k].forEach(id=>{if(id)on[id]=k});
   h+='<button class="b" data-a="auto">'+tr('gearAuto')+'</button>'+[...c.gear].sort((a,b)=>b.r-a.r||b.v-a.v).map(g=>'<div class="ms"><div>'+gearTxt(g)+(on[g.id]!==undefined?'<small>'+tr('gearOn')+' '+nm(+on[g.id])+'</small>':'')+'</div><div class="mb"><button class="b" data-a="salv" data-id="'+g.id+'">'+tr('gearSalv')+' 🪙</button></div></div>').join('')}
@@ -58,7 +66,7 @@ function renderPor(){const c=M.ch(),fl=M.freeLeft(),al=M.adLeft();
 // Conti alla rovescia aggiornati sul posto: l'HTML contiene solo l'orario di fine, così il pannello non si ridisegna ogni secondo (un tocco non si perde)
 function ttick(id){const n=Date.now();$(id).querySelectorAll('.tt').forEach(x=>{const t=fmtT(x.dataset.e-n);if(x.textContent!==t)x.textContent=t})}
 // Rivelazione delle evocazioni: carte che girano una dopo l'altra, i leggendari brillano
-function reveal(out){if(!out||!out.length)return;let best=0;
+function reveal(out){if(!out||!out.length)return;prog('pull',out.length);let best=0;
  setT('pullB','<div class="wbh">'+tr('pullT')+'</div><div class="pg'+(out.length>1?' many':'')+'">'+out.map((o,k)=>{const c=CH[o.i];best=Math.max(best,c.r);
   return '<div class="pc r'+c.r+'" style="animation-delay:'+(k*.12)+'s"><i>'+ci(o.i)+'</i><b>'+nm(o.i)+'</b><small>'+(o.co!==undefined?tr('pullMax').replace('{c}',fmt(o.co))+(o.back?' · 🎫 +'+o.back:''):o.nw?'<em>'+tr('pullNew')+'</em>':o.up?'<em>'+tr(o.evo?'pullEvo':'pullUp')+'</em> '+stars(o.s):tr('pullCp').replace('{a}',o.cp).replace('{b}',o.need))+'</small></div>'}).join('')+'</div><button class="b g" data-a="ok">'+tr('pullOk')+'</button>');
  $('pull').classList.add('on');sfx(best>=2?'win':'new');if(best>=3)burst($('pullB'),['✨','🌟','💫'],18);track('pull',{n:out.length,best});save(true);renderPor();ui()}
@@ -76,7 +84,7 @@ $('porB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)ret
  renderPor();ui()};
 
 // ---- Torre giornaliera ----
-const twEmo=f=>{const w=W[S.wd>1?1:0],s=M.twStage(f);return ico(M.twBoss(f)?w.tw[(f/5)%w.tw.length|0]:w.en.n[s%3])};
+const twEmo=f=>{const w=W[Math.min(W.length,S.wd)-1],s=M.twStage(f);return ico(M.twBoss(f)?w.tw[(f/5)%w.tw.length|0]:w.en.n[s%3])};
 function renderTow(){M.twCheck();const tw=S.ch.tw;
  let h='<div class="cs">'+tr('twTries')+': <b>'+tw.tries+'/'+M.TW_TRIES+'</b> · '+tr('twBest')+': <b>'+tw.best+'</b> · '+tr('twRec')+': <b>'+tw.rec+'</b></div><small class="d" style="text-align:center">'+tr('twD')+'</small>';
  if(R.twRes){const r=R.twRes;h+='<div class="twf'+(r.win?' w':' l')+'"><div class="twv"><span>'+(S.ch.ld.length?S.ch.ld.map(i=>ci(i)).join(''):'🧪')+'</span><b>VS</b><span>'+twEmo(r.f)+'</span></div>'
@@ -132,11 +140,13 @@ function albHtml(){M.ch();let h='<div class="wh">'+tr('albT')+'</div><small clas
   h+='<div class="cr"><div class="xh">'+al.ic+' '+tr('alb'+a)+' · '+n+'/9</div><div class="ag">'+al.c.map((e,k)=>{const q=S.ch.cards[a*9+k];return '<div class="ac'+(q?' f':'')+(k===8?' gd':'')+'"><i'+(q?'':' class="u"')+'>'+e+'</i>'+(q>1?'<small>×'+q+'</small>':'')+'</div>'}).join('')+'</div>'
    +(S.ch.alb[a]?'<b class="rdy" style="text-align:center">'+tr('albDone')+'</b>':done?'<button class="b g" data-a="acl" data-al="'+a+'">'+tr('albClaim')+'</button>':'<button class="b" data-a="atr" data-al="'+a+'"'+(dup>=3?'':' disabled')+'>'+tr('albTrade')+' ('+dup+')</button>')+'</div>'});
  return h}
+const albNew=()=>{M.ch();return ALB.some((_,a)=>M.albDone(a)&&!S.ch.alb[a])};
 function albClick(b){const a=+b.dataset.al;if(b.dataset.a==='acl'){if(M.albClaim(a)){toast('🃏 🎫 +'+M.ALB_T,1);sfx('win');save(true)}return true}
  if(b.dataset.a==='atr'){const r=M.albTrade(a);if(r){toast(tr('cardGot')+' '+ALB[r.a].c[r.k],1);sfx('claim');save(true)}return true}return false}
 
 const open=(id,fn)=>()=>{fn();$(id).classList.add('on')};
-$('tPor').onclick=open('por',()=>{R.chSel=-1;R.gearSl=-1;renderPor()});$('porClose').onclick=()=>$('por').classList.remove('on');
+$('tPor').onclick=open('por',()=>{R.chSel=-1;R.gearSl=-1;porTab=pickTab(porTab,porDots());renderPor()});
+onTab('porTabs',k=>{porTab=k;R.gearSl=-1;sfx('tap');renderPor()});$('porClose').onclick=()=>$('por').classList.remove('on');
 $('bTow').onclick=open('tow',()=>{R.twRes=null;renderTow()});$('towClose').onclick=()=>$('tow').classList.remove('on');
 $('tPas').onclick=open('pas',renderPas);$('pasClose').onclick=()=>$('pas').classList.remove('on');
 $('bInv').onclick=open('inv',renderInv);$('invClose').onclick=()=>$('inv').classList.remove('on');
@@ -144,4 +154,4 @@ $('bInv').onclick=open('inv',renderInv);$('invClose').onclick=()=>$('inv').class
 function metaUi(){if($('por').classList.contains('on'))renderPor();if($('tow').classList.contains('on')&&!R.twRes)renderTow();if($('pas').classList.contains('on'))renderPas();if($('inv').classList.contains('on'))renderInv()}
 function metaLang(){$('porT').textContent=tr('porT');$('towT').textContent=tr('twT');$('pasT').textContent=tr('psT');$('invT').textContent=tr('ivT');
  ['porClose','towClose','pasClose','invClose'].forEach(id=>$(id).textContent=tr('close'));$('bTow').innerHTML=tr('bTow')+'<i class="dot"></i>';$('bInv').innerHTML=tr('bInv')+'<i class="dot"></i>'}
-export {ci,grantMsg,reveal,renderPor,renderTow,renderPas,renderInv,albHtml,albClick,metaUi,metaLang,nm,skTxt,stars,gearTxt};
+export {ci,grantMsg,reveal,renderPor,renderTow,renderPas,renderInv,albHtml,albClick,albNew,metaUi,metaLang,nm,skTxt,stars,gearTxt};

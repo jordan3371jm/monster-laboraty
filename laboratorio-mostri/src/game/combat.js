@@ -6,7 +6,7 @@ const atkT=t=>2*Math.pow(1.9,t-1),hpT=t=>12*Math.pow(2,t-1);
 // Squadra: fino a 4 mostri del laboratorio (auto = i più forti), con bonus formazione.
 // Elementi: (livello-1)%3 → 0 🔥, 1 💧, 2 🌿. 🔥>🌿>💧>🔥
 // Elemento di ogni mostro (0 🔥, 1 💧, 2 🌿): ora è una proprietà del mostro, non del suo livello. Le prime abilità (liv. 4, 5, 6) coprono i tre elementi.
-const ELM=[2,1,2,0,1,2,0,2,1,1,2,0,0, 1,2,0,1,0,2,1,0,1,1,2,0,2];
+const ELM=[2,1,2,0,1,2,0,2,1,1,2,0,0, 1,2,0,1,0,2,1,0,1,1,2,0,2, 0,2,0,1,0,2,0,0,1,0,2,0,1];
 const SQN=4,SQB=1.3,EL=['🔥','💧','🌿'],elOf=t=>ELM[t-1]??(t-1)%3,eEl=s=>isBoss(s)?(s/5)%3:(s-1)%3;
 const advM=(a,d)=>(a-d+3)%3===1?1.5:(d-a+3)%3===1?.7:1;
 function squad(){const pool=S.g.filter(Boolean).sort((x,y)=>y-x),out=[];
@@ -25,7 +25,7 @@ const TR=['fast','armor','n','heal','armor','fast','heal','n'];
 const trait=s=>isBoss(s)?'boss':s<3?'n':TR[(s-3)%8];
 const eHp=s=>Math.floor(30*Math.pow(1.45,s-1)*(isBoss(s)?4:1)*({fast:.75,heal:1.1}[trait(s)]||1)*CK.ehp());
 const eAtk=s=>2*Math.pow(1.4,s-1)*(isBoss(s)?1.5:1)*(trait(s)==='fast'?1.5:1);
-const eEmo=s=>{const w=W[S.wd>1?1:0];return isBoss(s)?w.bm[(s/5-1)%w.bm.length]:w.en[trait(s)][s%3]};
+const eEmo=s=>{const w=W[Math.min(W.length,S.wd)-1];return isBoss(s)?w.bm[(s/5-1)%w.bm.length]:w.en[trait(s)][s%3]};
 // Abilità attive: una per elemento, sbloccata da un mostro di quell'elemento (liv. 4+) in squadra
 const SK=[{cd:10,ic:'🔥'},{cd:16,ic:'💧'},{cd:14,ic:'🌿'}],SKMIN=4,AUTO_T=6;
 const skOn=i=>squad().some(t=>elOf(t)===i&&t>=SKMIN);

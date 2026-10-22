@@ -14,7 +14,7 @@ if(location.protocol==='file:')location.replace('dist/index.html');
 // Schermata di caricamento ed errore: la pagina non resta mai bianca. Se qualcosa si rompe all'avvio compare un messaggio con il pulsante per azzerare il salvataggio.
 window.__fatal=function(e){
  var b=document.getElementById('boot');if(!b||window.__ready)return;
- var M={en:['The game could not start.','Reset save and retry'],it:['Il gioco non è partito.','Azzera il salvataggio e riprova'],es:['El juego no ha podido arrancar.','Borrar la partida y reintentar'],fr:['Le jeu n\'a pas pu démarrer.','Effacer la partie et réessayer'],zh:['游戏无法启动。','重置存档并重试']};
+ var M={en:['The game could not start.','Reset save and retry'],it:['Il gioco non è partito.','Azzera il salvataggio e riprova'],es:['El juego no ha podido arrancar.','Borrar la partida y reintentar'],fr:['Le jeu n\'a pas pu démarrer.','Effacer la partie et réessayer'],zh:['游戏无法启动。','重置存档并重试'],ru:['Не удалось запустить игру.','Сбросить сохранение и повторить']};
  var t=M[String(navigator.language||'').slice(0,2).toLowerCase()]||M.en;
  b.innerHTML='<div style="padding:24px;max-width:420px;text-align:center"><div style="font-size:48px">🧪</div><p style="font-size:16px">'+t[0]+'</p><p style="font-size:12px;opacity:.7;word-break:break-word">'+String(e&&e.message||e||'').slice(0,160)+'</p><button id="bootRs" style="font:inherit;padding:12px 18px;border:0;border-radius:12px;background:#6cc22a;color:#fff">'+t[1]+'</button></div>';
  document.getElementById('bootRs').onclick=function(){try{localStorage.removeItem('ml_save_v1')}catch(x){}location.reload()}};
@@ -42,11 +42,11 @@ addEventListener('error',function(ev){var t=ev.target;if(t&&t.tagName==='SCRIPT'
 @media (prefers-reduced-motion:reduce){#boot::before,.bt-m{animation:none}}
 </style>
 <div id="boot"><div class="bt-in"><img class="bt-m" src="m/lumizucca.webp" alt=""><h1 id="bootT">MONSTER<small>LABORATORY</small></h1><div class="bt-bar"><i id="bootBar"></i></div><div id="bootPct">0%</div></div></div>
-<script>(function(){var T={en:['MONSTER','LABORATORY','Loading monsters…'],it:['LABORATORIO','DI MOSTRI','Caricamento dei mostri…'],es:['LABORATORIO','DE MONSTRUOS','Cargando monstruos…'],fr:['LABORATOIRE','DE MONSTRES','Chargement des monstres…'],zh:['怪物','实验室','正在加载怪物……']},t=T[String(navigator.language||'').slice(0,2).toLowerCase()]||T.en;document.getElementById('bootT').innerHTML=t[0]+'<small>'+t[1]+'</small>';document.getElementById('bootPct').setAttribute('data-l',t[2])})()</script>
+<script>(function(){var T={en:['MONSTER','LABORATORY','Loading monsters…'],it:['LABORATORIO','DI MOSTRI','Caricamento dei mostri…'],es:['LABORATORIO','DE MONSTRUOS','Cargando monstruos…'],fr:['LABORATOIRE','DE MONSTRES','Chargement des monstres…'],zh:['怪物','实验室','正在加载怪物……'],ru:['ЛАБОРАТОРИЯ','МОНСТРОВ','Загрузка монстров…']},t=T[String(navigator.language||'').slice(0,2).toLowerCase()]||T.en;document.getElementById('bootT').innerHTML=t[0]+'<small>'+t[1]+'</small>';document.getElementById('bootPct').setAttribute('data-l',t[2])})()</script>
 <div id="app">
  <canvas id="bgfx" aria-hidden="true"></canvas>
  <div id="top"><div class="cn"><div id="coins"></div><div id="inc"></div></div><div id="stg"></div><div class="tr8"><div id="ess"></div><button class="ib" id="tMute" aria-label="Sound">🔊</button><button class="ib" id="tSet" aria-label="Settings">⚙️</button></div></div>
- <div id="tools"><button class="tb" id="tDaily"><b>🎁</b><span></span><i class="dot"></i></button><button class="tb" id="tCol"><b>📖</b><span></span><i class="dot"></i></button><button class="tb" id="tTr"><b>🏆</b><span></span><i class="dot"></i></button><button class="tb" id="tExp"><b>🧭</b><span></span><i class="dot"></i></button><button class="tb" id="tPor"><b>🌀</b><span></span><i class="dot"></i></button><button class="tb" id="tPas"><b>🎟️</b><span></span><i class="dot"></i></button><button class="tb" id="tShop"><b>🛒</b><span></span></button></div>
+ <div id="tools"><button class="tb" id="tDaily"><b>🎁</b><span></span><i class="dot"></i></button><button class="tb" id="tMis"><b>📋</b><span></span><i class="dot"></i></button><button class="tb" id="tCol"><b>📖</b><span></span><i class="dot"></i></button><button class="tb" id="tTr"><b>🏆</b><span></span><i class="dot"></i></button><button class="tb" id="tExp"><b>🧭</b><span></span><i class="dot"></i></button><button class="tb" id="tPor"><b>🌀</b><span></span><i class="dot"></i></button><button class="tb" id="tPas"><b>🎟️</b><span></span><i class="dot"></i></button><button class="tb" id="tShop"><b>🛒</b><span></span></button></div>
  <div id="goal"><i></i><span id="goalT"></span></div>
  <div id="tut"><b id="tutT"></b><button id="tutX">✕</button></div>
  <div id="labV" class="view on">
@@ -66,7 +66,7 @@ addEventListener('error',function(ev){var t=ev.target;if(t&&t.tagName==='SCRIPT'
  </div>
  <nav id="nav"><button id="n0" class="on"><b>🧪</b><span></span></button><button id="n1"><b>⚔️</b><span></span></button><button id="n2"><b>⚙️</b><span></span></button></nav>
  <div id="ups">
-  <h2 id="upsT"></h2>
+  <h2 id="upsT"></h2><div id="upsTabs" class="tabs"></div>
   <button class="b" id="u0"></button><button class="b" id="u1"></button><button class="b" id="u2"></button><button class="b" id="amB"></button><button class="b" id="u3"></button><button class="b" id="u6"></button><button class="b" id="u4"></button><button class="b" id="u5"></button>
   <div class="ulk" id="uLk"></div>
   <button class="b" id="treeB"></button>
@@ -74,15 +74,16 @@ addEventListener('error',function(ev){var t=ev.target;if(t&&t.tagName==='SCRIPT'
   <button class="b" id="closeUps"></button>
  </div>
  <div id="daily" class="ov"><h2 id="dT"></h2><div id="dBody"></div><button class="b" id="dClose"></button></div>
- <div id="tm" class="ov"><h2 id="tmT"></h2><div id="tmB"></div><button class="b" id="tmClose"></button></div>
+ <div id="mis" class="ov"><h2 id="misT"></h2><div id="misTabs" class="tabs"></div><div id="misB"></div><button class="b" id="misClose"></button></div>
+ <div id="tm" class="ov"><h2 id="tmT"></h2><div id="tmTabs" class="tabs"></div><div id="tmB"></div><button class="b" id="tmClose"></button></div>
  <div id="intro" class="ov"><div id="introB"></div></div>
- <div id="col" class="ov"><h2 id="cT"></h2><div id="colB"></div><button class="b" id="cClose"></button></div>
+ <div id="col" class="ov"><h2 id="cT"></h2><div id="colTabs" class="tabs"></div><div id="colB"></div><button class="b" id="cClose"></button></div>
  <div id="trop" class="ov"><h2 id="trT"></h2><div id="trB"></div><button class="b" id="trClose"></button></div>
  <div id="tree" class="ov"><h2 id="tT"></h2><div id="tBody"></div><button class="b" id="tClose"></button></div>
  <div id="sqp" class="ov"><h2 id="sqT"></h2><div id="sqB"></div><button class="b" id="sqClose"></button></div>
- <div id="set" class="ov"><h2 id="setT"></h2><div id="setB"></div><button class="b" id="setClose"></button></div>
+ <div id="set" class="ov"><h2 id="setT"></h2><div id="setTabs" class="tabs"></div><div id="setB"></div><button class="b" id="setClose"></button></div>
  <div id="stat" class="ov"><h2 id="statT"></h2><div id="statB"></div><button class="b" id="statClose"></button></div>
- <div id="por" class="ov"><h2 id="porT"></h2><div id="porB"></div><button class="b" id="porClose"></button></div>
+ <div id="por" class="ov"><h2 id="porT"></h2><div id="porTabs" class="tabs"></div><div id="porB"></div><button class="b" id="porClose"></button></div>
  <div id="tow" class="ov"><h2 id="towT"></h2><div id="towB"></div><button class="b" id="towClose"></button></div>
  <div id="pas" class="ov"><h2 id="pasT"></h2><div id="pasB"></div><button class="b" id="pasClose"></button></div>
  <div id="inv" class="ov"><h2 id="invT"></h2><div id="invB"></div><button class="b" id="invClose"></button></div>

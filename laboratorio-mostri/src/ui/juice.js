@@ -19,7 +19,7 @@ function part(w2,any){return w2?{x:Math.random()*W,y:Math.random()*H,r:Math.rand
 let t0=0;
 function frame(t){requestAnimationFrame(frame);if(!cx||document.hidden||t-t0<33)return; // ~30 fps bastano per lo sfondo
  const dt=Math.min(.1,(t-t0)/1000);t0=t;if(app.clientWidth!==W||app.clientHeight!==H)size();
- const w2=S.wd>1;if(w2!==lastW){lastW=w2;seed(w2)}
+ const w2=S.wd===2;if(w2!==lastW){lastW=w2;seed(w2)}
  cx.clearRect(0,0,W,H);
  for(const p of P){
   if(w2){p.ph+=dt*p.sp;const a=.35+.65*Math.abs(Math.sin(p.ph));cx.fillStyle='hsla('+p.h+',90%,85%,'+a+')';cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.283);cx.fill()}
@@ -30,7 +30,7 @@ function frame(t){requestAnimationFrame(frame);if(!cx||document.hidden||t-t0<33)
  if(w2&&Math.random()<dt*.25)shoot1()}
 let star=null;
 function shoot1(){if(star)return;const s=document.createElement('i');s.className='comet';s.style.left=(Math.random()*70+10)+'%';s.style.top=(Math.random()*30)+'%';app.appendChild(s);star=s;setTimeout(()=>{s.remove();star=null},1300)}
-if(cx&&typeof requestAnimationFrame==='function'){size();seed(S.wd>1);if(calm()){lastW=S.wd>1}else requestAnimationFrame(frame);addEventListener('resize',size)}
+if(cx&&typeof requestAnimationFrame==='function'){size();seed(S.wd===2);if(calm()){lastW=S.wd===2}else requestAnimationFrame(frame);addEventListener('resize',size)}
 
 // Centro di un elemento in coordinate di #app
 function ctr(el){const a=app.getBoundingClientRect(),r=el.getBoundingClientRect();return{x:r.left-a.left+r.width/2,y:r.top-a.top+r.height/2,w:r.width}}

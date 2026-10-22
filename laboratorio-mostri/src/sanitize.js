@@ -17,18 +17,19 @@ function sanitize(d){
  for(const k of ['c','sp','ess','run','boost','fm','ls','pt','essT','lt'])S[k]=fin(S[k],d[k]);
  S.c=Math.max(0,S.c);S.ess=Math.max(0,S.ess);S.boost=Math.min(S.boost,Date.now()+24*3600e3); // il boost non supera 24 ore (ripara anche i salvataggi creati con il vecchio errore delle 1000 ore)
  safeMult(); // prima di tutto: se il tasso è rotto niente funziona
- S.st=Math.floor(fin(S.st,1,1));S.introSeen=S.introSeen?1:0;S.bs=Math.floor(fin(S.bs,1,1));S.tut=Math.floor(fin(S.tut,0,0,3));S.wd=fin(S.wd,1,1,2)|0||1;
- S.sfxOn=S.sfxOn?1:0;S.musOn=S.musOn?1:0;if(!['auto','en','it','es','fr','zh'].includes(S.lp))S.lp='auto';
+ S.st=Math.floor(fin(S.st,1,1));S.introSeen=S.introSeen?1:0;S.bs=Math.floor(fin(S.bs,1,1));S.tut=Math.floor(fin(S.tut,0,0,3));S.wd=fin(S.wd,1,1,3)|0||1;
+ S.sfxOn=S.sfxOn?1:0;S.musOn=S.musOn?1:0;if(!['auto','en','it','es','fr','ru','zh'].includes(S.lp))S.lp='auto';
  S.g=S.g.map(t=>Number.isInteger(t)&&t>0&&t<=MAXT?t:0);
  const gv=Array.isArray(S.gv)?S.gv:[];S.gv=S.g.map((t,i)=>t&&gv[i]?1:0); // varianti dorate: solo sulle celle occupate
  S.ch=sanCh(S.ch);S.ul=Array.isArray(S.ul)?S.ul.filter(k=>typeof k==='string').slice(0,50):[];
- S.am=S.am?1:0;{const q=obj(S.sad);S.sad={d:Math.floor(fin(q.d,-1)),n:Math.floor(fin(q.n,0,0,99))}}S.amAd=Math.min(fin(S.amAd,0),Date.now()+3*3e5);S.mga=Math.floor(fin(S.mga,0,0,1e6));{const q=obj(S.iap);S.iap={x2:q.x2?1:0,na:q.na?1:0,st:q.st?1:0,got:arr(q.got).filter(k=>typeof k==='string').slice(-60)}}
+ S.am=S.am?1:0;{const q=obj(S.sad);S.sad={d:Math.floor(fin(q.d,-1)),n:Math.floor(fin(q.n,0,0,99))}}S.amAd=Math.min(fin(S.amAd,0),Date.now()+3*3e5);S.mga=Math.floor(fin(S.mga,0,0,1e6));{const q=obj(S.iap);S.iap={x2:q.x2?1:0,na:q.na?1:0,st:q.st?1:0,os:Math.min(fin(q.os,0,0),Date.now()),got:arr(q.got).filter(k=>typeof k==='string').slice(-60)}}
  S.sq=Array.isArray(S.sq)?S.sq.filter(t=>Number.isInteger(t)&&t>0&&t<=MAXT).slice(0,4):[];
  for(const u of UP)S.up[u.k]=Math.floor(fin(S.up[u.k],0,0,u.max));
  const pk=obj(S.pk);S.pk={...d.pk};for(const p of PK)S.pk[p.k]=Math.floor(fin(pk[p.k],0,0,p.max));for(const p of PKR)S.pk[p.k]=Math.floor(fin(pk[p.k],0,0,p.max));
  S.ach={...d.ach,...obj(S.ach)};for(const k in S.ach)S.ach[k]=fin(S.ach[k],0);
  S.tr=obj(S.tr);S.an=obj(S.an);
  const dl=S.dl;if(!Array.isArray(dl.m))dl.m=[];dl.m=dl.m.filter(m=>m&&typeof m==='object');dl.w=dl.w&&typeof dl.w==='object'?dl.w:null;
+ for(const k of['wl','ml'])dl[k]=Array.isArray(dl[k])?dl[k].filter(m=>m&&typeof m==='object'&&typeof m.t==='string'):[];
  for(const k of ['d','last','wk'])dl[k]=fin(dl[k],-1,-1e9,1e15);
  dl.st=Math.floor(fin(dl.st,0,0,1e6));
  for(const k of ['sh','cl2','mon','hp'])dl[k]=Math.floor(fin(dl[k],k==='sh'?1:0,0,1e6));

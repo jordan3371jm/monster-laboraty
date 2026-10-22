@@ -49,8 +49,8 @@ nav button.on{background:linear-gradient(#7a3fe0,#4b1fa0);color:#fff;box-shadow:
 .tb{position:relative;flex:1;border:0;border-radius:12px;padding:7px 2px;background:#ffffff12;color:#e6d8ff;font:inherit;font-size:12px;border:1px solid #ffffff18}
 #tSnd{flex:0 0 46px;font-size:16px;padding:4px}
 .dot{display:none;position:absolute;top:3px;right:6px;width:10px;height:10px;border-radius:50%;background:#ff4d4d;box-shadow:0 0 8px #ff4d4d}.tb.n .dot{display:block}
-#ups,#daily,#col{display:none;position:absolute;inset:0;background:#0f081cf7;flex-direction:column;padding:14px;gap:10px;overflow-y:auto;overscroll-behavior:contain;z-index:5}
-#daily.on,#col.on{display:flex}#daily h2,#col h2{margin:0;text-align:center;color:#ffd36b}
+#ups,#daily,#mis,#col{display:none;position:absolute;inset:0;background:#0f081cf7;flex-direction:column;padding:14px;gap:10px;overflow-y:auto;overscroll-behavior:contain;z-index:5}
+#daily.on,#mis.on,#col.on{display:flex}#daily h2,#mis h2,#col h2{margin:0;text-align:center;color:#ffd36b}
 #dBody,#colB{display:flex;flex-direction:column;gap:10px}
 .dc,.cs{text-align:center;color:#ffb86b}.dh{margin:2px 0 0;text-align:center;font-size:14px;color:#c79bff}
 .pips{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
@@ -392,7 +392,7 @@ nav button.lk::after{content:'🔒';position:absolute;top:3px;right:8px;font-siz
 /* Pannelli: titolo in alto e «Chiudi» in basso restano sempre visibili */
 .ov>h2,#ups>h2{position:sticky;top:-14px;z-index:2;margin:-14px -14px 0!important;padding:14px;background:#140b26;border-bottom:1px solid var(--line);font-size:19px}
 .ov>button.b:last-child,#ups>button.b:last-child{position:sticky;bottom:-14px;z-index:2;flex-shrink:0;margin-top:auto;box-shadow:0 -10px 20px #0f081c,0 4px 0 #1a0f33}
-#ups,#daily,#col,#trop,#tree,#set,#stat,#tm,#intro,#por,#tow,#pas,#inv,#sqp{background:#0f081cfa}
+#ups,#daily,#mis,#col,#trop,#tree,#set,#stat,#tm,#intro,#por,#tow,#pas,#inv,#sqp{background:#0f081cfa}
 /* Potenziamenti: scheda con icona, testo e prezzo a destra */
 :is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh){display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:10px;text-align:left;padding:10px 12px;background:linear-gradient(#3d2770,#2c1b52);flex-shrink:0}
 :is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh) i{font-style:normal;font-size:26px;text-align:center}
@@ -498,3 +498,47 @@ img{-webkit-user-drag:none;user-select:none}
 .ico-coin{display:inline-block;width:1.08em;height:1.08em;vertical-align:-.2em;margin:0 .04em;font-style:normal;background:url('./assets/coin.svg') center/contain no-repeat;filter:drop-shadow(0 1px 1px #0006)}
 #coins .ico-coin{width:1.1em;height:1.1em;vertical-align:-.16em;filter:drop-shadow(0 0 6px #ffb02e88)}
 .pt .ico-coin,.cfly .ico-coin{width:1em;height:1em}
+/* Trascinamento: il mostro segue il dito, la cella di partenza si svuota, quella sotto si illumina (verde = unione) */
+#grid{touch-action:none}
+.dg{position:fixed;z-index:60;pointer-events:none;display:flex;align-items:center;justify-content:center;translate:-50% -50%;scale:1.12;border-radius:16px;
+ background:radial-gradient(circle,hsl(var(--h) 70% 50% / .35),transparent 70%);filter:drop-shadow(0 10px 14px #000a)}
+.dg i{font-style:normal}.dg::after{display:none}
+.c.dragf>*{opacity:.25}
+.c.dt{outline:3px dashed #ffffff66;outline-offset:-3px}
+.c.dtm{outline:3px solid #8be04a;outline-offset:-3px;box-shadow:0 0 18px #8be04a!important;transform:scale(1.05)}
+/* Mostri del laboratorio disegnati (data/monart.js, ui/monsters.js) */
+em.mon{display:inline-block;width:1.3em;height:1.3em;vertical-align:-.3em;font-style:normal;background:center/contain no-repeat}
+.c i em.mon{width:1.55em;height:1.55em;vertical-align:middle}
+.cm em.mon,.sqc em.mon{width:1.35em;height:1.35em}.ci i em.mon,.mi>i em.mon{width:1.3em;height:1.3em}
+/* Mondo 3: vulcano */
+#app.w3{background:radial-gradient(ellipse at 50% -10%,#8a2a10 0,transparent 60%),radial-gradient(circle at 90% 100%,#5a1a3a 0,transparent 50%),linear-gradient(#2a0f0a,#120604)}
+#app.w3::before{background:#ff6a1e}#app.w3::after{background:#ffb21e}
+#app.w3 #arena{background:radial-gradient(circle at 50% 40%,#a0381a,#2a0a06 72%);border-color:#c2541e}
+#app.w3 #arena.bossA{border-color:#ff2a2a}
+#app{overflow:clip}
+/* Evoluzione animata nella scheda del mostro nuovo */
+.ci.evo{animation:cin .45s cubic-bezier(.2,1.5,.4,1),cout .4s 2.25s forwards}
+.evs{position:relative;width:110px;height:110px;display:flex;align-items:center;justify-content:center}
+.evs::before{content:'';position:absolute;inset:-30px;border-radius:50%;background:repeating-conic-gradient(hsl(var(--h) 90% 75% / .45) 0 9deg,transparent 9deg 22deg);-webkit-mask:radial-gradient(circle,#000 30%,transparent 70%);mask:radial-gradient(circle,#000 30%,transparent 70%);opacity:0;animation:evRays 3s .75s linear forwards}
+.evs i{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:84px;font-style:normal}
+.evs .old{animation:evOld .8s ease-in forwards}.evs .nw{opacity:0;animation:evNew .7s .72s cubic-bezier(.2,1.7,.4,1) forwards}
+.evs .fl{position:absolute;width:30px;height:30px;border-radius:50%;background:#fff;box-shadow:0 0 30px 20px #fff,0 0 60px 40px hsl(var(--h) 90% 70%);opacity:0;animation:evFlash .5s .6s ease-out forwards}
+@keyframes evOld{0%{transform:scale(1)}40%{transform:scale(1.08) rotate(-6deg);filter:brightness(1.6)}70%{transform:scale(1.12) rotate(6deg);filter:brightness(3)}100%{transform:scale(.2);filter:brightness(6);opacity:0}}
+@keyframes evNew{from{opacity:0;transform:scale(.2)}to{opacity:1;transform:scale(1)}}
+@keyframes evFlash{0%{opacity:0;transform:scale(.3)}30%{opacity:1}100%{opacity:0;transform:scale(2.4)}}
+@keyframes evRays{0%{opacity:0}15%{opacity:1}100%{opacity:.7;rotate:120deg}}
+@media (prefers-reduced-motion:reduce){.evs .old{display:none}.evs .nw{opacity:1}.evs .nw,.evs::before,.evs .fl{animation:none}}
+.ulr{font-size:14px;font-weight:800;color:#ffd36b;padding:6px 12px;border-radius:12px;background:#ffd36b1a;border:1px solid #ffd36b55}
+#shopB>.b.sh.ofr{border:2px solid #ffd36b;box-shadow:0 0 16px #ffd36b66,0 4px 0 #1a0f33}
+.oft{display:block;margin-top:3px;font-style:normal;font-weight:900;color:#ffd36b}
+/* Missioni: schede Giornaliere / Settimanali / Mensili */
+/* (schede in comune, vedi tabs() in ui/common.js) */
+.tabs{display:flex;gap:6px;flex-shrink:0;position:sticky;top:44px;z-index:1}
+.tabs .b{flex:1;position:relative;padding:9px 4px;font-size:13px;background:#2c1b52;box-shadow:0 2px 0 #160c2c;color:var(--txt2)}
+.tabs .b.on{background:linear-gradient(#8a5cf0,#5b34b8);color:#fff}
+.tabs .dot{position:absolute;top:-3px;right:-3px;width:11px;height:11px;border-radius:50%;background:#ff4d5e;box-shadow:0 0 0 2px #0f081c}
+#misB{display:flex;flex-direction:column;gap:8px}
+.tabs .b small{display:block;font-size:10.5px;font-weight:700;margin-top:1px}
+.tabs .b b{display:block;font-size:17px;line-height:1.1}
+#ups[data-t="0"] :is(#treeB,#pr),#ups[data-t="1"] :is([id^=u]:not(#upsT):not(#upsTabs),#amB){display:none!important}
+#ups .tabs{top:0}
