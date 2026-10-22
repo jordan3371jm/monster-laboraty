@@ -52,8 +52,8 @@ function merged(i,n){adCount(n);disc(S.g[i]);pop(i,4+Math.min(8,S.g[i]));shock(g
 // e «fusione perfetta» (probabilità LUCK di saltare un livello; non durante il tutorial). Premiano chi gioca attivamente.
 // Varianti dorate: GOLD_P per ogni uovo, GOLD_M per un'unione a mano (oltre a due dorati che si uniscono)
 const LUCK=.06,CMB_T=2500,GOLD_P=.03,GOLD_M=.04;
-function goldRoll(i,p){if(S.tut<3||S.gv[i]||Math.random()>=p)return;S.gv[i]=1;toast(tr('gold'),1);sfx('new');label(grid.children[i],'✨ ×3','lucky')}
-function handBonus(i){const g=S.g,el=grid.children[i],n=Date.now();
+function goldRoll(i,p){if(S.tut<3||S.gv[i]||Math.random()>=p)return;S.gv[i]=1;prog('gold',1);toast(tr('gold'),1);sfx('new');label(grid.children[i],'✨ ×3','lucky')}
+function handBonus(i){const g=S.g,el=grid.children[i],n=Date.now();prog('hand',1);
  R.cmb=n-R.cmbT<CMB_T?R.cmb+1:1;R.cmbT=n;
  if(R.cmb>=2){const c=incBase()*.5*Math.min(R.cmb,10);earn(c);label(el,tr('combo')+' x'+R.cmb+' · 🪙+'+fmt(c),'cmb')}
  goldRoll(i,GOLD_M);

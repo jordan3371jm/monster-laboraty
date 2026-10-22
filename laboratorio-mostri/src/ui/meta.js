@@ -1,4 +1,5 @@
 import {sfx} from '../audio.js';
+import {prog} from './missions.js';
 import {$} from '../core/dom.js';
 import {R,S} from '../core/state.js';
 import {fmt,ico} from '../core/util.js';
@@ -58,7 +59,7 @@ function renderPor(){const c=M.ch(),fl=M.freeLeft(),al=M.adLeft();
 // Conti alla rovescia aggiornati sul posto: l'HTML contiene solo l'orario di fine, così il pannello non si ridisegna ogni secondo (un tocco non si perde)
 function ttick(id){const n=Date.now();$(id).querySelectorAll('.tt').forEach(x=>{const t=fmtT(x.dataset.e-n);if(x.textContent!==t)x.textContent=t})}
 // Rivelazione delle evocazioni: carte che girano una dopo l'altra, i leggendari brillano
-function reveal(out){if(!out||!out.length)return;let best=0;
+function reveal(out){if(!out||!out.length)return;prog('pull',out.length);let best=0;
  setT('pullB','<div class="wbh">'+tr('pullT')+'</div><div class="pg'+(out.length>1?' many':'')+'">'+out.map((o,k)=>{const c=CH[o.i];best=Math.max(best,c.r);
   return '<div class="pc r'+c.r+'" style="animation-delay:'+(k*.12)+'s"><i>'+ci(o.i)+'</i><b>'+nm(o.i)+'</b><small>'+(o.co!==undefined?tr('pullMax').replace('{c}',fmt(o.co))+(o.back?' · 🎫 +'+o.back:''):o.nw?'<em>'+tr('pullNew')+'</em>':o.up?'<em>'+tr(o.evo?'pullEvo':'pullUp')+'</em> '+stars(o.s):tr('pullCp').replace('{a}',o.cp).replace('{b}',o.need))+'</small></div>'}).join('')+'</div><button class="b g" data-a="ok">'+tr('pullOk')+'</button>');
  $('pull').classList.add('on');sfx(best>=2?'win':'new');if(best>=3)burst($('pullB'),['✨','🌟','💫'],18);track('pull',{n:out.length,best});save(true);renderPor();ui()}

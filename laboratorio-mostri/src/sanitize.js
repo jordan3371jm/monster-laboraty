@@ -29,6 +29,7 @@ function sanitize(d){
  S.ach={...d.ach,...obj(S.ach)};for(const k in S.ach)S.ach[k]=fin(S.ach[k],0);
  S.tr=obj(S.tr);S.an=obj(S.an);
  const dl=S.dl;if(!Array.isArray(dl.m))dl.m=[];dl.m=dl.m.filter(m=>m&&typeof m==='object');dl.w=dl.w&&typeof dl.w==='object'?dl.w:null;
+ for(const k of['wl','ml'])dl[k]=Array.isArray(dl[k])?dl[k].filter(m=>m&&typeof m==='object'&&typeof m.t==='string'):[];
  for(const k of ['d','last','wk'])dl[k]=fin(dl[k],-1,-1e9,1e15);
  dl.st=Math.floor(fin(dl.st,0,0,1e6));
  for(const k of ['sh','cl2','mon','hp'])dl[k]=Math.floor(fin(dl[k],k==='sh'?1:0,0,1e6));

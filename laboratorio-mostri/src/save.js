@@ -4,6 +4,7 @@ import {K,MAXT,N,NR,WS} from './data/config.js';
 import {timersTick} from './game/timers.js';
 import {obj,num0,sanitize} from './sanitize.js';
 import {dayCheck} from './ui/missions.js';
+import {ulMigrate} from './game/unlocks.js';
 
 // Con Playgama Bridge si salva SOLO con bridge.storage (regola della piattaforma): l'SDK sceglie da solo cloud o memoria locale
 // e, quando il cloud riesce, cancella la copia locale con la stessa chiave. localStorage diretto solo se il Bridge non c'è (offline).
@@ -32,6 +33,6 @@ async function load(){const c=[],st=brSt();
   R.trC=Object.keys(S.tr).length;
   const mx=Math.max(0,...S.g);for(let t=1;t<=mx;t++)S.disc[t-1]=1;sanitize(d);
   // Spedizioni e uova hanno un orario di fine: a gioco chiuso restano pronte da riscuotere. Il campione dell'evento scorre dall'ultimo salvataggio (col tetto offline); gli ordini scaduti si chiudono.
-  R.lastO=Math.min(num0(S.ls),Date.now());dayCheck();timersTick()}
+  R.lastO=Math.min(num0(S.ls),Date.now());ulMigrate();dayCheck();timersTick()}
   else{R.lastO=Date.now();dayCheck();timersTick()}}
 export {save,load,sanitize};

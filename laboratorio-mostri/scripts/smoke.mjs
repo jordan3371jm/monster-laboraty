@@ -50,8 +50,13 @@ const base={c:5e5,g:[3,3,4,2,2,1,0,5,0,6,1,1,0,0,2,4,0,0,0,0],sp:30,up:{l:3,d:2,
  const card=t.q('#colB .mi');ok(!!card&&card.textContent.length>40,'scheda del mostro: '+(card&&card.textContent.slice(0,70)));
  t.click(t.q('.cm[data-a=mon][data-t="2"]'));ok(/Microbo|Germ/.test(t.q('#colB .mi').textContent),'cambio scheda sul mostro 2');
  t.click(t.$('cClose'));
- const s=t.S();ok(s.dl.m.length===3&&s.dl.m[0].t==='merge'&&!!s.dl.w&&s.dl.w.n>0,'3 missioni giornaliere + settimanale: '+s.dl.m.map(m=>m.t).join(',')+' / '+s.dl.w.t);
- t.click(t.$('tDaily'));ok(!!t.q('#dBody .ms.wk'),'la missione settimanale è nella schermata');
+ const s=t.S();ok(s.dl.m.length===5&&s.dl.m[0].t==='merge'&&s.dl.wl.length===5&&s.dl.ml.length===5,'5 missioni giornaliere, 5 settimanali, 5 mensili: '+s.dl.m.map(m=>m.t).join(',')+' / '+s.dl.wl.map(m=>m.t+m.n).join(',')+' / '+s.dl.ml.map(m=>m.t+m.n).join(','));
+ ok(s.dl.wl.some(m=>m.t==='days'&&m.p===1)&&s.dl.ml.some(m=>m.t==='days'&&m.p===1),'settimanali e mensili: «gioca in N giorni» conta già oggi');
+ ok(s.dl.ml.some(m=>m.t==='dmis'&&m.n>=10)&&s.dl.wl.find(m=>m.t==='days').n>1,'le lunghe non si finiscono in un giorno');
+ t.click(t.$('tDaily'));ok(!t.q('#dBody [data-a=cm]')&&!/Unisci \d|Merge \d/.test(t.$('dBody').textContent),'il pannello Bonus non contiene più le missioni');t.click(t.$('dClose'));
+ t.click(t.$('tMis'));ok(t.$('mis').classList.contains('on')&&t.qa('#misB .ms').length===5&&t.qa('#misTabs .b').length===3,'schermata Missioni con 3 schede e 5 missioni');
+ t.click(t.qa('#misTabs .b')[2]);ok(/giorni diversi|different days/.test(t.$('misB').textContent)&&/⏳/.test(t.$('misB').textContent),'scheda Mensili con conto alla rovescia');
+ t.click(t.$('misClose'));
  // le missioni cambiano nei giorni: tutti i tipi sono generabili e il testo esiste
  t.click(t.$('dClose'));
  ok(t.errs.length===0,'nessun errore JS '+t.errs.slice(0,2));}
@@ -117,6 +122,13 @@ const z=n=>Array(n).fill(0);
 // --- punto 1: scudo serie, barra obiettivo, rami infiniti, festeggiamento, analytics
 const dn=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
 const dl0=o=>({d:-1,m:[],last:-1,st:0,dbl:1,lr:null,wk:-1,w:null,...o});
+{const wk=Math.floor((dn+3)/7),d=new Date(1.8e12),mo=d.getFullYear()*12+d.getMonth(),M=(t,n,p)=>({t,n,p,c:0});
+ const t=await boot({...base,dl:dl0({last:dn,d:dn,m:[M('merge',30,30),M('spawn',20,3)],wk,wl:[M('dmis',15,14),M('days',5,1)],mo,ml:[M('wmis',10,0),M('days',20,1)]})},{});
+ t.click(t.$('tMis'));ok(t.qa('#misB [data-a=c]').length===1,'missione giornaliera completata: si può riscuotere');
+ const c0=t.S().c;t.click(t.q('#misB [data-a=c]'));const s1=t.S();
+ ok(s1.dl.m[0].c===1&&s1.c>c0&&s1.dl.wl[0].p===15,'riscossa: monete date e la settimanale «completa missioni giornaliere» avanza');
+ t.click(t.qa('#misTabs .b')[1]);t.click(t.q('#misB [data-a=c]'));const s2=t.S();
+ ok(s2.dl.wl[0].c===1&&s2.dl.ml[0].p===1&&s2.ess>s1.ess,'settimanale riscossa: 🔮 e la mensile avanza');}
 {const t=await boot({...base,dl:dl0({last:dn-2,st:5,sh:1})},{});
  t.click(t.$('tDaily'));ok(/Hai saltato|You missed/.test(t.$('dBody').textContent),'serie a rischio con scudo: la schermata avvisa che lo scudo la salva');
  t.click(t.q('#dBody [data-a=cd]'));ok(t.S().dl.st===6&&t.S().dl.sh===0,'saltato un giorno con lo scudo: la serie continua (6) e lo scudo si consuma');

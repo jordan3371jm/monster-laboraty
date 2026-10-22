@@ -1,4 +1,5 @@
 import {sfx} from '../audio.js';
+import {prog} from './missions.js';
 import {$} from '../core/dom.js';
 import {R,S} from '../core/state.js';
 import {fmt} from '../core/util.js';
@@ -84,12 +85,12 @@ function drawTimers(){const b=bells();$('tExp').classList.toggle('n',b.length>0)
 $('tmB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a,i=+b.dataset.i;
  if(a==='ec'){R.expCh=+b.dataset.c;sfx('tap')}
  else if(a==='xs'){const q=+b.dataset.q;if(expStart(q,R.expCh)){R.expCh=-1;sfx('spawn');toast('🧭 '+EXP[q].ic+' '+fmtT(expDur(q)));track('exp_start',{q});save(true)}}
- else if(a==='xc'){const r=expClaim(i);if(r){sfx('claim');toast('🧭 '+gain(r.c,r.e),1);track('exp_claim');save(true)}}
+ else if(a==='xc'){const r=expClaim(i);if(r){sfx('claim');toast('🧭 '+gain(r.c,r.e),1);track('exp_claim');prog('exp',1);save(true)}}
  else if(a==='xp')adThen('speed',()=>{if(expSpeed(i))toast('⏩ -1h')});
  else if(a==='nb'){if(nidBuy(+b.dataset.k)){sfx('spawn');track('egg_start');save(true)}}
  else if(a==='nc'){const r=nidHatch(i);if(r){sfx('new');toast('🥚 '+gain(r.c,r.e),1);track('egg_hatch');save(true)}}
  else if(a==='np')adThen('speed',()=>{if(nidSpeed(i))toast('⏩ -1h')});
- else if(a==='oc'){const r=ordClaim(i);if(r){sfx('claim');toast('📜 '+gain(r.c,r.e),1);track('order_done');save(true)}}
+ else if(a==='oc'){const r=ordClaim(i);if(r){sfx('claim');toast('📜 '+gain(r.c,r.e),1);track('order_done');prog('ord',1);save(true)}}
  else if(a==='eb'){if(evBuy(i)){sfx('claim');track('event_buy',{i});draw();save(true)}}
  renderTm();ui()};
 export {drawTimers,openIntro,renderTm,openTm};
