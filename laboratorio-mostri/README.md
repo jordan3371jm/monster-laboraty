@@ -195,12 +195,13 @@ Controllato sulla documentazione ufficiale (wiki.playgama.com: requisiti, checkl
 - **Bordi dello schermo** (notch): gestiti in CSS con `env(safe-area-inset-*)`.
 
 ## Scheda per Playgama (`store/`)
-- `cover-1x1.png` (800×800), `cover-9x16.png` (1080×1920), `cover-16x9.png` (1920×1080): copertine con l'illustrazione generata dall'AI di Canva (sfondi in `ai/sfondo-*.jpg`) e sopra logo, fascia «MERGE · EVOLVE · BATTLE», riquadro dell'unione con i mostri veri del gioco e pulsante «PLAY NOW».
+- `cover-1x1.png` (800×800), `cover-9x16.png` (1080×1920), `cover-16x9.png` (1920×1080): copertine nelle misure per Playgama con l'illustrazione del laboratorio generata con l'AI di Figma (Gemini) e ingrandita ×4 con Real-ESRGAN (sfondi ad alta risoluzione in `ai/sfondo-*.jpg`, fino a 5504 px) e sopra logo, fascia «MERGE · EVOLVE · BATTLE», riquadro dell'unione con i mostri veri del gioco e pulsante «PLAY NOW».
+- `hd/cover-*.png`: le stesse copertine ad altissima risoluzione (16:9 3840×2160, 1:1 4096×4096, 9:16 2160×3840) per store, social e pubblicità.
 - `cover.html`: la pagina che compone le copertine (`cover.html?f=h|q|v` = 16:9, 1:1, 9:16; `&bg=` per un altro sfondo). Si fotografa con Playwright alla misura giusta con `deviceScaleFactor: 2` e poi si rimpicciolisce. Font in `fonts/` (Lilita One, Fredoka — Google Fonts, licenza OFL).
 - `alt/`: le copertine alternative disegnate interamente col codice (`alt/cover.html`, stessi parametri), con i mostri e i campioni del gioco.
 
 ## Schermata di caricamento e moneta
-- **Caricamento** (`#boot` in `index.html`, `src/preload.js`): nome del gioco nella lingua del dispositivo, la zucca che saltella e una barra «Caricamento dei mostri… 45%». Mentre l'SDK si avvia e il salvataggio si carica, si scaricano e decodificano tutte le 99 immagini dei mostri (`public/m`, ~3,3 MB, elenco preso da `CH` e `W`); solo alla fine la schermata sfuma e parte `game_ready` (la wiki vuole `game_ready` quando il gioco è davvero giocabile). Tetto di 25s con una rete lentissima. Il logo di Playgama compare prima e sparisce da solo dopo l'avvio dell'SDK.
+- **Caricamento** (`#boot` in `index.html`, `src/preload.js`): sopra l'illustrazione del laboratorio (`public/boot-v.webp` sul telefono, `boot-h.webp` sugli schermi larghi, ~175 KB l'una) il nome del gioco nella lingua del dispositivo e una barra «Caricamento dei mostri… 45%». Mentre l'SDK si avvia e il salvataggio si carica, si scaricano e decodificano tutte le 99 immagini dei mostri (`public/m`, ~3,3 MB, elenco preso da `CH` e `W`); solo alla fine la schermata sfuma e parte `game_ready` (la wiki vuole `game_ready` quando il gioco è davvero giocabile). Tetto di 25s con una rete lentissima. Il logo di Playgama compare prima e sparisce da solo dopo l'avvio dell'SDK.
 - **Moneta disegnata** (`src/assets/coin.svg`, inclusa nel bundle): al posto dell'emoji 🪙, brutta o mancante su molti dispositivi. `src/ui/coin.js` sostituisce ogni 🪙 che entra nella pagina con `<i class="ico-coin">`, quindi testi e traduzioni restano uguali.
 
 ## Novità: trascinamento, mostri disegnati, Mondo 3, russo, suoni, premi
