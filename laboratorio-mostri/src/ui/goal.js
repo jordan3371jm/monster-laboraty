@@ -3,7 +3,7 @@ import {R,S} from '../core/state.js';
 import {fmt} from '../core/util.js';
 import {E,MAXT,NR} from '../data/config.js';
 import {tr} from '../data/text.js';
-import {AM_COST,pgN,PK,PKR,pgain,pkrCost} from '../game/economy.js';
+import {AE_COST,AM_COST,pgN,PK,PKR,pgain,pkrCost} from '../game/economy.js';
 import {rowOk} from './collection.js';
 import {setT} from './common.js';
 import {dailyInfo,misNew} from './missions.js';
@@ -20,6 +20,7 @@ function nextGoal(){
  if(has('col'))for(let r=0;r<NR;r++)if(rowOk(r)&&!S.col[r])return{t:tr('g_col'),p:1,go:'tCol'};
  if(PK.some(p=>S.pk[p.k]<p.max&&S.ess>=p.cost[S.pk[p.k]])||PKR.some(p=>(S.pk[p.k]||0)<p.max&&S.ess>=pkrCost(S.pk[p.k]||0)))return{t:tr('g_tree'),p:1,go:'treeB'};
  if(!S.am&&S.ess>=AM_COST&&has('ups'))return{t:tr('g_am'),p:1,go:'n2:0'}; // unione automatica acquistabile
+ if(S.am&&!S.ae&&S.ess>=AE_COST&&has('u5'))return{t:tr('g_ae'),p:1,go:'n2:0'}; // poi l'incubatrice automatica
  const pg=pgain();if(has('pr')&&!S.ach.pr&&pg>=1)return{t:tr('g_prA').replace('{n}',pg),p:1,go:'n2:1'};
  const nu=ulNext();if(nu)return{t:ulName(nu.k)+' · '+rqTxt(nu),p:rqP(nu),go:nu.s?'n1':nu.p?'n2':'n0',ul:1};
  if(!S.ach.pr)return{t:tr('g_pr1')+' · '+fmt(S.run)+'/'+fmt(pgN()),p:Math.min(1,S.run/pgN()),go:'n2:1'};

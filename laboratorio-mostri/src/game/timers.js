@@ -116,6 +116,17 @@ const EV_CATCH=2,EV_MRG=10,EV_DM=5,EV_WM=25;
 function evAdd(n){if(!evOn()||!(n>0))return;
  S.ev.p=num(S.ev.p,0)+n;S.ev.tot=num(S.ev.tot,0)+n;S.ev.ok=(S.ev.ok||0)+1;
  if(S.an.f.week_event===undefined)S.an.f.week_event=Math.max(1,Math.round((Date.now()-S.an.fs)/1000))}
+// Spedizione della festa (scheda Spedizioni) e Uovo della festa (scheda Nidi): timer separati da quelli normali che danno 💠.
+// Durate tra 45 minuti e 7 ore (mai sopra le 8 ore del gioco offline). Un video toglie EV_AD (5 minuti), non un'ora.
+// I 💠 per ora calano con la durata: chi torna spesso guadagna un po' di più, chi passa due volte al giorno resta in partita.
+const EVX=[{ic:'🎈',dur:45*MIN,pt:4},{ic:'🎠',dur:3*HOUR,pt:12},{ic:'🎆',dur:7*HOUR,pt:24}],EVN={ic:'🎪',dur:2*HOUR,pt:8,cost:.25},EV_AD=5*MIN;
+const evxLeft=()=>S.ev.fx?Math.max(0,S.ev.fx.et-Date.now()):0;
+function evxStart(q){if(R.PZ||!evOn()||S.ev.fx||!EVX[q])return false;const n=Date.now();S.ev.fx={q,st:n,et:n+EVX[q].dur};return true}
+function evxClaim(){const x=S.ev.fx;if(!x||evxLeft()>0)return 0;S.ev.fx=null;const pt=EVX[x.q].pt;evAdd(pt);return pt}
+const evnLeft=()=>S.ev.fn?Math.max(0,S.ev.fn.et-Date.now()):0,evnCost=()=>Math.ceil(rBase()*EVN.cost);
+function evnBuy(){if(R.PZ||!evOn()||S.ev.fn)return false;const c=evnCost();if(S.c<c)return false;S.c-=c;const n=Date.now();S.ev.fn={st:n,et:n+EVN.dur};return true}
+function evnClaim(){if(!S.ev.fn||evnLeft()>0)return 0;S.ev.fn=null;evAdd(EVN.pt);return EVN.pt}
+function evSpeed(k){const x=S.ev[k];if(!x)return false;x.et=Math.max(Date.now(),x.et-EV_AD);return true}
 // Unione che crea il livello t: se è dell'elemento in festa conta verso il prossimo 💠
 function evMerge(t){if(!evOn()||elOf(t)!==S.ev.el)return;S.ev.mc=num(S.ev.mc,0)+1;if(S.ev.mc>=EV_MRG){S.ev.mc-=EV_MRG;evAdd(1)}}
 // Traguardi della festa: premi per i 💠 GUADAGNATI nella settimana (anche se poi spesi nel negozio). Si riscuotono con un tocco.
@@ -205,11 +216,13 @@ setEvMul(calcEvMul); // economy.js lo invoca dentro mult(): niente import circol
 
 // ---- Segnali dentro il gioco: campanella (il portale web non ha push), barra obiettivo, finestra «bentornato» ----
 // Ritorna solo chiavi di testo + dati: i testi tradotti si costruiscono in ui/timers.js.
-const GKEY={xb:'g_exp',hb:'g_nid',ob:'g_ord',goEv:'g_ev'};
+const GKEY={xb:'g_exp',hb:'g_nid',ob:'g_ord',goEv:'g_ev',xf:'g_exp',hf:'g_nid'};
 const bells=()=>{const out=[];
  for(const e of expReady())out.push({a:'xb',i:S.exp.run.indexOf(e),k:'exp_'+EXP[e.q].k,ic:EXP[e.q].ic});
  S.inc.r.forEach((n,i)=>{if(nidLeft(n)<=0)out.push({a:'hb',i,k:'nidRdy',ic:NID[n.t].ic})});
  ordList().forEach((o,i)=>{if(ordOk(o))out.push({a:'ob',i,k:'ordRdy',ic:'📜'})});
+ if(S.ev.fx&&evxLeft()<=0)out.push({a:'xf',k:'expRdy',ic:'🎪'});
+ if(S.ev.fn&&evnLeft()<=0)out.push({a:'hf',k:'nidRdy',ic:'🎪'});
  if(evOn()&&(SH.some((_,i)=>evCan(i))||EVM.some((_,i)=>evMileOk(i))))out.push({a:'goEv',k:'evGo',ic:'🎪'});
  return out};
 // Obiettivo a tempo da mostrare subito: prima le cose pronte (premi da riscuotere), poi la prossima scadenza
@@ -241,6 +254,6 @@ export {SEC,MIN,HOUR,DAY,OFF_CAP,SPEED,since,timersTick,ordersExpire,
  EXP,EXPN,expDur,expPow,expVal,expGain,expCoins,expLeft,expReady,expStart,expClaim,expSpeed,
  NEST,NID,nidK,nidMax,nidCost,nidDur,nidLeft,nidProg,nidGain,nidBusy,nidBuy,nidHatch,nidSpeed,
  EXCL,isExcl,GR,stMul,grDone,claimLong,onProg,
- ELN,EXCL_IC,weekNum,weekLeft,evElNow,evOn,evKey,EV_CATCH,EV_MRG,EV_DM,EV_WM,EVM,evMileOk,evMile,evMerge,evShop,evBought,evPrice,evCan,evCheck,evAdd,evBuy,elBonus,evMonBonus,evClock,evChampTier,SH,
+ ELN,EXCL_IC,weekNum,weekLeft,evElNow,evOn,evKey,EV_CATCH,EV_MRG,EV_DM,EV_WM,EVM,evMileOk,evMile,evMerge,EVX,EVN,EV_AD,evxLeft,evxStart,evxClaim,evnLeft,evnCost,evnBuy,evnClaim,evSpeed,evShop,evBought,evPrice,evCan,evCheck,evAdd,evBuy,elBonus,evMonBonus,evClock,evChampTier,SH,
  ORDT,ORD_DUR,ORD_Q,ORD_WAIT,ordLv,ordList,ordLeft,ordFill,ordOk,ordClaim,ordReward,ordTick,onMerge,ordReach,
  bells,goal,horizon,fmtT};

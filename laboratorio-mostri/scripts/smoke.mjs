@@ -191,7 +191,7 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  ok(t.errs.length===0,'ordini: «Unisci tutto» non genera errori');}
 {const t=await boot({...base,introSeen:1,dl:{d:-1,m:[],last:dn2,st:2,dbl:1,lr:null},ev:{wk:Math.floor((dn2+3)/7),el:0,p:500,tot:120,b:0,ok:1,x:0,m:null,got:0,cl:[],sp:{}}},{});
  t.click(t.$('tExp'));await t.adv(300);t.click(t.qa('#tmTabs .b')[3]);const n0=t.qa('#grid .c.f').length;
- ok(!!t.q('#tmB .evh')&&t.qa('#tmB .evst').length===3&&t.qa('#tmB .evmi').length===6&&t.qa('#tmB .evsi').length===6&&!/NaN|undefined/.test(t.$('tmB').textContent),'evento: festa, 3 modi per guadagnare 💠, 6 traguardi e negozio');
+ ok(!!t.q('#tmB .evh')&&t.qa('#tmB .evst').length===4&&t.qa('#tmB .evmi').length===6&&t.qa('#tmB .evsi').length===6&&!/NaN|undefined/.test(t.$('tmB').textContent),'evento: festa, 4 modi per guadagnare 💠, 6 traguardi e negozio');
  ok(t.qa('#tmB [data-a=em]').length===2&&/Avventure|Adventures/.test(t.$('tmT').textContent),'evento: 2 traguardi pronti con 120 💠 guadagnati; il pannello si chiama Avventure');
  {const tk=t.S().ch?t.S().ch.t:0;t.click(t.q('#tmB [data-a=em]'));await t.adv(300);ok(t.S().ev.cl.includes(0)&&t.S().ch.t===tk+2&&t.qa('#tmB [data-a=em]').length===1,'evento: traguardo riscosso (🎫 +2)')}
  t.click(t.q('#tmB [data-a=eb][data-i="5"]'));await t.adv(300);ok(t.qa('#grid .c.f').length===n0+1,'evento: il campione è UN mostro in più (non riempie il laboratorio)');
@@ -245,6 +245,21 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  await t.adv(20500);ok(t.S().g.filter(x=>x===7).length===1,'le coppie di livello alto si uniscono anche loro (fino al livello 7)');
  t.click(t.$('a1'));await t.adv(300);ok(t.calls.includes('rw:boost')&&t.S().boost-1.8e12>=290e3,'x2 per 5 minuti');
  ok(t.errs.length===0,'video: nessun errore JS '+t.errs.slice(0,2));}
+// --- Incubatrice automatica: si sblocca con 5 Essenze, poi -0,5s a livello; i vecchi salvataggi la tengono
+{const t=await boot({...base,ess:6,essT:6,c:1e9,am:1,introSeen:1,dl:dl0({last:dn})},{});await t.adv(600);t.click(t.$('n2'));
+ ok(t.$('aeB').style.display!=='none'&&t.$('u5').style.display==='none'&&/5/.test(t.$('aeB').textContent),'incubatrice: prima si sblocca con 🔮 5');
+ t.click(t.$('aeB'));await t.adv(300);ok(t.S().ae===1&&t.S().ess===1&&t.$('u5').style.display!=='none'&&/30\.0s/.test(t.$('u5').textContent),'incubatrice sbloccata: un uovo ogni 30s');
+ t.click(t.$('u5'));await t.adv(300);ok(t.S().up.f===1&&/29\.5s/.test(t.$('u5').textContent),'incubatrice liv. 1: 29,5s');
+ ok(/×1\.15/.test(t.$('u0').textContent)&&/% offline/.test(t.$('u2').textContent),'le descrizioni mostrano quanto danno (Laboratorio ×1,15, Sonno profondo in %)');
+ ok(t.errs.length===0,'incubatrice: nessun errore JS '+t.errs.slice(0,2));}
+{const t=await boot({...base,up:{l:3,d:2,o:1,a:2,f:8},introSeen:1,dl:dl0({last:dn})},{});ok(t.S().ae===1&&t.S().up.f===49,'vecchio salvataggio con l\'incubatrice: resta sbloccata con lo stesso intervallo ('+t.S().up.f+')')}
+// --- Spedizione e uovo della festa nelle Avventure
+{const t=await boot({...base,c:1e9,introSeen:1,dl:dl0({last:dn})},{});await t.adv(600);t.click(t.$('tExp'));t.click(t.qa('#tmTabs .b')[0]);
+ ok(t.qa('#tmB [data-a=fs]').length===3,'spedizioni: c\'è la spedizione della festa (3 durate)');t.click(t.q('#tmB [data-a=fs][data-q="0"]'));await t.adv(300);
+ ok(t.S().ev.fx&&t.S().ev.fx.q===0&&!!t.q('#tmB [data-a=fp]'),'spedizione della festa partita, con il video «-5 min»');
+ t.click(t.qa('#tmTabs .b')[1]);t.click(t.q('#tmB [data-a=nb2]'));await t.adv(300);ok(t.S().ev.fn&&!!t.q('#tmB [data-a=np2]'),'uovo della festa nel nido');
+ t.jump(3*3600e3);await t.adv(800);t.click(t.q('#tmB [data-a=nc2]'));await t.adv(300);const p1=t.S().ev.p;t.click(t.qa('#tmTabs .b')[0]);t.click(t.q('#tmB [data-a=fc]'));await t.adv(300);
+ ok(t.S().ev.fn===null&&t.S().ev.fx===null&&t.S().ev.p>p1&&p1>0,'riscossi: 💠 per l\'evento ('+t.S().ev.p+')');ok(t.errs.length===0,'festa: nessun errore JS '+t.errs.slice(0,2));}
 // --- Pass: premio 👑 con 5 video (senza acquisto)
 {const rw={};const adv=calls=>({advertisement:{on:(e,cb)=>{if(e==='rewarded_state_changed')rw.cb=cb},showInterstitial:()=>Promise.resolve(),showRewarded:p=>{calls.push('rw:'+p);Promise.resolve().then(()=>{rw.cb('opened');rw.cb('rewarded');rw.cb('closed')})}}});
  const t=await boot({...base,introSeen:1,dl:dl0({last:dn}),ch:{ps:{o:dn,s:0,xp:2*230+10,cl:[],cp:[],prem:0,dd:-1,dm:0,dw:0}}},{bridge:true,bx:adv});await t.adv(600);

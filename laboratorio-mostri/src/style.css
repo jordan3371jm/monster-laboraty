@@ -390,14 +390,14 @@ nav button.lk::after{content:'🔒';position:absolute;top:3px;right:8px;font-siz
 .ov>button.b:last-child,#ups>button.b:last-child{position:sticky;bottom:-14px;z-index:2;flex-shrink:0;margin-top:auto;box-shadow:0 -10px 20px #0f081c,0 4px 0 #1a0f33}
 #ups,#daily,#mis,#col,#trop,#tree,#set,#stat,#tm,#intro,#por,#tow,#pas,#inv,#sqp{background:#0f081cfa}
 /* Potenziamenti: scheda con icona, testo e prezzo a destra */
-:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh){display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:10px;text-align:left;padding:10px 12px;background:linear-gradient(#3d2770,#2c1b52);flex-shrink:0}
-:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh) i{font-style:normal;font-size:26px;text-align:center}
-:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh) span{display:flex;flex-direction:column;gap:2px;min-width:0}
-:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh) b{font-size:14.5px}:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh) em{font-style:normal;font-size:11px;padding:1px 6px;margin-left:4px;border-radius:8px;background:#0005;color:var(--txt2)}
-:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh) small{font-size:11.5px;font-weight:600;color:var(--txt2);text-shadow:none}
-:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh) strong{padding:7px 10px;border-radius:10px;background:#6cc22a;box-shadow:0 2px 0 #1f4a08;font-size:13px;white-space:nowrap}
-:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh):disabled{opacity:1}:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh):disabled strong{background:#ffffff1a;box-shadow:none;color:#ffffffaa}
-:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh):disabled i,:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh):disabled span{opacity:.6}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh){display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:10px;text-align:left;padding:10px 12px;background:linear-gradient(#3d2770,#2c1b52);flex-shrink:0}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) i{font-style:normal;font-size:26px;text-align:center}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) span{display:flex;flex-direction:column;gap:2px;min-width:0}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) b{font-size:14.5px}:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) em{font-style:normal;font-size:11px;padding:1px 6px;margin-left:4px;border-radius:8px;background:#0005;color:var(--txt2)}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) small{font-size:11.5px;font-weight:600;color:var(--txt2);text-shadow:none}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) strong{padding:7px 10px;border-radius:10px;background:#6cc22a;box-shadow:0 2px 0 #1f4a08;font-size:13px;white-space:nowrap}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh):disabled{opacity:1}:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh):disabled strong{background:#ffffff1a;box-shadow:none;color:#ffffffaa}
+:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh):disabled i,:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh):disabled span{opacity:.6}
 .ulk{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;border:1px dashed #ffffff2a;color:var(--txt2);flex-shrink:0}
 .ulk>i{font-style:normal;font-size:22px;width:40px;text-align:center}.ulk span{display:flex;flex-direction:column;gap:2px}.ulk small{font-size:11.5px;color:var(--gold)}
 #treeB,#pr{flex-shrink:0}
@@ -431,8 +431,8 @@ nav button.lk::after{content:'🔒';position:absolute;top:3px;right:8px;font-siz
  #grid{gap:10px}.c::after{font-size:13px}
  #spawn{font-size:19px;padding:18px 8px}#mall{font-size:16px}#adr .b{font-size:14.5px;padding:12px 6px}
  nav button{font-size:14px;padding:9px 2px}nav button b{font-size:28px}
- #ups,.ov{padding:20px}:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh){grid-template-columns:52px 1fr auto;padding:14px 16px}:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh) i{font-size:32px}
- :is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh) b{font-size:17px}:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh) small{font-size:13.5px}:is(#ups>.b:is([id^=u],#amB),#shopB>.b.sh) strong{font-size:15px;padding:9px 14px}
+ #ups,.ov{padding:20px}:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh){grid-template-columns:52px 1fr auto;padding:14px 16px}:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) i{font-size:32px}
+ :is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) b{font-size:17px}:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) small{font-size:13.5px}:is(#ups>.b:is([id^=u],#amB,#aeB),#shopB>.b.sh) strong{font-size:15px;padding:9px 14px}
  #team{font-size:min(9vw,6dvh)}#ts{font-size:13.5px}.sk{font-size:14px;padding:12px 2px}
  .ulc{max-width:420px}.ulc i{font-size:96px}.ulc b{font-size:28px}.ulc p{font-size:17px}
 }
@@ -475,7 +475,7 @@ nav button.lk::after{content:'🔒';position:absolute;top:3px;right:8px;font-siz
  #spawn{padding:8px}#adr .b{padding:6px}
  #ups,.ov:not(#ulp):not(#pull):not(#wb):not(#intro){inset:8px max(8px,calc(50% - 300px))}
 }
-#amB{background:linear-gradient(#5a2c8a,#3a1a63)!important;border:1px solid #c79bff66}#amB strong{background:#a35cff!important;box-shadow:0 2px 0 #3a0f6a!important}#amB:disabled strong{background:#ffffff1a!important;box-shadow:none!important}
+#amB,#aeB{background:linear-gradient(#5a2c8a,#3a1a63)!important;border:1px solid #c79bff66}:is(#amB,#aeB) strong{background:#a35cff!important;box-shadow:0 2px 0 #3a0f6a!important}:is(#amB,#aeB):disabled strong{background:#ffffff1a!important;box-shadow:none!important}
 #shopB{display:flex;flex-direction:column;gap:10px}#shopB>.b.sh:disabled strong{background:#3f8a14;color:#fff}
 #shop{display:none;position:absolute;inset:0;flex-direction:column;padding:14px;gap:10px;overflow-y:auto;overscroll-behavior:contain;z-index:5;background:#0f081cfa}#shop.on{display:flex}#shop h2{margin:0;text-align:center;color:#ffd36b}
 /* Banner in fondo ai pannelli (solo in verticale): il pannello si accorcia così il banner non copre «Chiudi» */
@@ -536,7 +536,7 @@ em.mon{display:inline-block;width:1.3em;height:1.3em;vertical-align:-.3em;font-s
 #misB{display:flex;flex-direction:column;gap:8px}
 .tabs .b small{display:block;font-size:10.5px;font-weight:700;margin-top:1px}
 .tabs .b b{display:block;font-size:17px;line-height:1.1}
-#ups[data-t="0"] :is(#treeB,#pr),#ups[data-t="1"] :is([id^=u]:not(#upsT):not(#upsTabs),#amB){display:none!important}
+#ups[data-t="0"] :is(#treeB,#pr),#ups[data-t="1"] :is([id^=u]:not(#upsT):not(#upsTabs),#amB,#aeB){display:none!important}
 #ups .tabs{top:0}
 /* ---- Evento della settimana (scheda 🎪 delle Avventure) ---- */
 .evh{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:14px;border-radius:18px;border:2px solid #ffffff2a;box-shadow:0 6px 18px #0007;position:relative;overflow:hidden}
@@ -564,3 +564,6 @@ em.mon{display:inline-block;width:1.3em;height:1.3em;vertical-align:-.3em;font-s
 .psp b{font-size:16px;color:#ffd36b}.psp small{font-size:12px;opacity:.9}.psp.on{background:linear-gradient(135deg,#3f8a14,#1f4a08);border-color:#8be04a}
 .psa{display:flex;flex-direction:column;align-items:center;gap:3px}.psa .b{padding:5px 4px;font-size:11.5px;width:100%}.psa small{font-size:11px}
 .pab{display:block;width:100%;height:4px;border-radius:3px;background:#0006;overflow:hidden}.pab em{display:block;height:100%;background:#ff9d2e}
+/* Spedizione e uovo della festa (schede Spedizioni e Nidi delle Avventure) */
+.xc.evx{border-color:#ffd36b66;background:linear-gradient(135deg,#ffd36b14,#ff7a1a10)}
+.ecs3{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.ecs3 .b{padding:8px 4px;font-size:12.5px}
