@@ -8,29 +8,36 @@ import {elOf,squad} from '../game/combat.js';
 const calm=()=>typeof matchMedia==='function'&&matchMedia('(prefers-reduced-motion: reduce)').matches;
 const app=$('app');
 
-// Sfondo: bolle che salgono nel laboratorio (mondo 1) o stelle che brillano nello spazio (mondo 2)
+// Sfondo: bolle che salgono nel laboratorio (mondo 1), stelle che brillano nello spazio (mondo 2), braci che salgono nel vulcano (mondo 3)
 // (jsdom dei test non ha il canvas: lo salto per non sporcare il log)
 const cv=$('bgfx'),cx=cv&&cv.getContext&&!/jsdom/i.test(navigator.userAgent)?cv.getContext('2d'):null;
 let W=0,H=0,dpr=1,P=[],lastW=0;
 function size(){if(!cx)return;dpr=Math.min(1.5,window.devicePixelRatio||1);W=app.clientWidth;H=app.clientHeight;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0)}
-function seed(w2){P=[];const n=w2?60:34;for(let i=0;i<n;i++)P.push(part(w2,true))}
-function part(w2,any){return w2?{x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.6+.3,ph:Math.random()*6.28,sp:Math.random()*1.5+.5,h:Math.random()<.3?280:200}
+// Bolle e braci disegnate una volta sola per colore (sprite) e poi solo copiate: niente gradienti nuovi a ogni fotogramma
+const SPR={};
+function sprite(h,ember){const k=h+(ember?'e':'');if(SPR[k])return SPR[k];const c=document.createElement('canvas'),r=32;c.width=c.height=r*2;const g=c.getContext('2d');
+ const gr=ember?g.createRadialGradient(r,r,0,r,r,r):g.createRadialGradient(r*.65,r*.65,r*.1,r,r,r);
+ if(ember){gr.addColorStop(0,'hsla('+h+',100%,75%,.95)');gr.addColorStop(.35,'hsla('+h+',100%,55%,.5)');gr.addColorStop(1,'hsla('+h+',100%,50%,0)')}
+ else{gr.addColorStop(0,'hsla('+h+',90%,80%,.55)');gr.addColorStop(.7,'hsla('+h+',80%,55%,.12)');gr.addColorStop(1,'hsla('+h+',80%,60%,.35)')}
+ g.fillStyle=gr;g.beginPath();g.arc(r,r,r,0,6.283);g.fill();return SPR[k]=c}
+function seed(w){P=[];const n=w===2?60:34;for(let i=0;i<n;i++)P.push(part(w,true))}
+function part(w,any){return w===2?{x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.6+.3,ph:Math.random()*6.28,sp:Math.random()*1.5+.5,h:Math.random()<.3?280:200}
+ :w===3?{x:Math.random()*W,y:any?Math.random()*H:H+20,r:Math.random()*3+1.5,v:Math.random()*30+20,ph:Math.random()*6.28,h:[12,28,40][Math.random()*3|0]}
  :{x:Math.random()*W,y:any?Math.random()*H:H+20,r:Math.random()*7+2,v:Math.random()*18+8,ph:Math.random()*6.28,h:[275,130,25][Math.random()*3|0]}}
-let t0=0;
+let t0=0,dirty=true;
 function frame(t){requestAnimationFrame(frame);if(!cx||document.hidden||t-t0<33)return; // ~30 fps bastano per lo sfondo
- const dt=Math.min(.1,(t-t0)/1000);t0=t;if(app.clientWidth!==W||app.clientHeight!==H)size();
- const w2=S.wd===2;if(w2!==lastW){lastW=w2;seed(w2)}
+ const dt=Math.min(.1,(t-t0)/1000);t0=t;if(dirty){dirty=false;size()} // misure solo dopo un ridimensionamento (leggere clientWidth a ogni fotogramma forzava il layout)
+ const w=Math.min(3,S.wd||1);if(w!==lastW){lastW=w;seed(w)}
  cx.clearRect(0,0,W,H);
  for(const p of P){
-  if(w2){p.ph+=dt*p.sp;const a=.35+.65*Math.abs(Math.sin(p.ph));cx.fillStyle='hsla('+p.h+',90%,85%,'+a+')';cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.283);cx.fill()}
-  else{p.y-=p.v*dt;p.ph+=dt;const x=p.x+Math.sin(p.ph)*6;
-   if(p.y<-20)Object.assign(p,part(false,false));
-   const g=cx.createRadialGradient(x-p.r*.35,p.y-p.r*.35,p.r*.1,x,p.y,p.r);g.addColorStop(0,'hsla('+p.h+',90%,80%,.55)');g.addColorStop(.7,'hsla('+p.h+',80%,55%,.12)');g.addColorStop(1,'hsla('+p.h+',80%,60%,.35)');
-   cx.fillStyle=g;cx.beginPath();cx.arc(x,p.y,p.r,0,6.283);cx.fill()}}
- if(w2&&Math.random()<dt*.25)shoot1()}
+  if(w===2){p.ph+=dt*p.sp;const a=.35+.65*Math.abs(Math.sin(p.ph));cx.fillStyle='hsla('+p.h+',90%,85%,'+a+')';cx.beginPath();cx.arc(p.x,p.y,p.r,0,6.283);cx.fill()}
+  else{p.y-=p.v*dt;p.ph+=dt*(w===3?2:1);const x=p.x+Math.sin(p.ph)*(w===3?10:6);
+   if(p.y<-20)Object.assign(p,part(w,false));
+   const r=w===3?p.r*(2.2+.6*Math.sin(p.ph*3)):p.r;cx.drawImage(sprite(p.h,w===3),x-r,p.y-r,r*2,r*2)}}
+ if(w===2&&Math.random()<dt*.25)shoot1()}
 let star=null;
 function shoot1(){if(star)return;const s=document.createElement('i');s.className='comet';s.style.left=(Math.random()*70+10)+'%';s.style.top=(Math.random()*30)+'%';app.appendChild(s);star=s;setTimeout(()=>{s.remove();star=null},1300)}
-if(cx&&typeof requestAnimationFrame==='function'){size();seed(S.wd===2);if(calm()){lastW=S.wd===2}else requestAnimationFrame(frame);addEventListener('resize',size)}
+if(cx&&typeof requestAnimationFrame==='function'){size();if(!calm())requestAnimationFrame(frame);addEventListener('resize',()=>{dirty=true});if(typeof ResizeObserver==='function')new ResizeObserver(()=>{dirty=true}).observe(app)}
 
 // Centro di un elemento in coordinate di #app
 function ctr(el){const a=app.getBoundingClientRect(),r=el.getBoundingClientRect();return{x:r.left-a.left+r.width/2,y:r.top-a.top+r.height/2,w:r.width}}

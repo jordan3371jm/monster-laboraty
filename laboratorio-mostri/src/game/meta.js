@@ -1,13 +1,13 @@
 import {S} from '../core/state.js';
 import {evoIdx,CH,ODDS,PITY_R,PITY_L,MAXSTAR,GEAR,GEARV,GEARMAX,ALB,CARDW} from '../data/champs.js';
-import {dayNum,earn,rBase,setHook} from './economy.js';
+import {dayNum,earn,give,rBase,setHook} from './economy.js';
 import {setCK,tAtk,tHp,elOf} from './combat.js';
 
 // ---- Progressione permanente (resta dopo l'Evocazione oscura): Campioni del Portale, equipaggiamento, Torre giornaliera,
 // pass stagionale, Invasione dei boss e album di figurine. Tutto in S.ch. Niente interfaccia qui: la usano ui/meta.js e i test.
 const HOUR=3600e3,LDMAX=2,FREE_CD=8*HOUR,AD_MAX=2;
 const defCh=()=>({t:0,own:{},cp:{},ld:[],pr:0,pl:0,n:0,free:0,adD:-1,adN:0,gear:[],eq:{},nid:1,
- tw:{d:-1,tries:3,run:0,f:1,best:0,rec:0,buf:[],ch:null},ps:{o:-1,s:-1,xp:0,cl:[],cp:[],prem:0,dd:-1,dm:0,dw:0},man:0,iv:{wk:-1,pts:0,cl:0,b:1},cards:Array(18).fill(0),alb:[0,0]});
+ tw:{d:-1,tries:3,run:0,f:1,best:0,rec:0,buf:[],ch:null},ps:{o:-1,s:-1,xp:0,cl:[],cp:[],prem:0,dd:-1,dm:0,dw:0,av:{}},man:0,iv:{wk:-1,pts:0,cl:0,b:1},cards:Array(18).fill(0),alb:[0,0]});
 const C=()=>S.ch||(S.ch=defCh());   // stato nuovo o azzerato: si crea al primo uso
 
 // ---- Campioni ----
@@ -117,16 +117,25 @@ const PS_LV=30,PS_XP=230,PS_LEN=28,PS_CAP=60;
 // La stagione parte dal primo accesso di ogni giocatore (con un calendario uguale per tutti chi arriva all'ultimo giorno avrebbe una stagione di poche ore)
 const psO=()=>{const p=C().ps;if(!(p.o>=0))p.o=dayNum();return p.o};
 const psSeason=()=>Math.floor((dayNum()-psO())/PS_LEN),psLeft=()=>PS_LEN-(dayNum()-psO())%PS_LEN;
-function psCheck(){const c=C(),s=psSeason();if(c.ps.s!==s)c.ps={o:c.ps.o,s,xp:0,cl:[],cp:[],prem:0,dd:-1,dm:0,dw:0}}
+function psCheck(){const c=C(),s=psSeason();if(c.ps.s!==s)c.ps={o:c.ps.o,s,xp:0,cl:[],cp:[],prem:0,dd:-1,dm:0,dw:0,av:{}};if(!c.ps.av||typeof c.ps.av!=='object')c.ps.av={}}
 const psLv=()=>Math.min(PS_LV,Math.floor(C().ps.xp/PS_XP));
 // k: 'm' unione, 'w' vittoria (con tetto PS_CAP al giorno), altrimenti punti fissi (missioni, boss, torre…)
 function psAdd(n,k){psCheck();const p=C().ps,d=dayNum();if(p.dd!==d){p.dd=d;p.dm=0;p.dw=0}
  if(k==='m'||k==='w'){const key='d'+k,room=Math.max(0,PS_CAP-p[key]);n=Math.min(n,room);p[key]+=n}
  if(n>0)p.xp=Math.min(PS_LV*PS_XP,p.xp+n)}
 const SEASON_CH=CH.findIndex(c=>c.ex==='ps');
-const psRew=(l,prem)=>prem?(l%5===0?{g:l>=15?3:2}:{t:2}):(l===PS_LV?{ch:SEASON_CH}:l%5===0?{g:l>=20?2:1}:l%3===0?{card:1}:{t:l<10?1:2});
+// Premi (più ricchi di prima): t biglietti, g equipaggiamento (rarità), card figurina, ch campione, e Essenze, c monete (× 5 minuti di guadagni)
+const psRew=(l,prem)=>prem?(l%10===0?{g:3,e:4,t:5}:l%5===0?{g:l>=15?3:2,e:2}:l%2===0?{t:3,c:6}:{t:3}):
+ (l===PS_LV?{ch:SEASON_CH,e:3}:l%10===0?{t:3,e:1}:l%5===0?{g:l>=20?2:1,t:1}:l%3===0?{card:1,c:3}:{t:l<10?2:3});
+// Premium: si compra (prodotto «pass_premium», vale per la stagione in corso) oppure si sblocca un premio alla volta con PS_ADS video
+const PS_ADS=5;
+const psAds=l=>{psCheck();return Math.max(0,Math.floor(Number(C().ps.av[l])||0))};
+// Un video per il premio premium del livello l (già raggiunto e non riscosso): al PS_ADS° video il premio si consegna da solo
+function psAd(l){psCheck();const p=C().ps;if(p.prem||l<1||l>psLv()||p.cp.includes(l))return null;const n=psAds(l)+1;
+ if(n<PS_ADS){p.av[l]=n;return{n}}delete p.av[l];p.cp.push(l);return{n,got:grant(psRew(l,1))}}
+const psBuy=()=>{psCheck();C().ps.prem=1};
 // Consegna un premio (pass, invasione…): biglietti, pezzo d'equipaggiamento, figurina, campione
-function grant(r){const out={...r};if(r.t)addT(r.t);if(r.g!==undefined)out.gear=addGear(r.g);if(r.card)out.cd=addCard();if(r.ch!==undefined)out.chr=giveCh(r.ch);return out}
+function grant(r){const out={...r};if(r.t)addT(r.t);if(r.e)give(0,r.e);if(r.c){out.co=Math.floor(rBase()*r.c);earn(out.co)}if(r.g!==undefined)out.gear=addGear(r.g);if(r.card)out.cd=addCard();if(r.ch!==undefined)out.chr=giveCh(r.ch);return out}
 function psClaim(l,prem){psCheck();const p=C().ps,list=prem?p.cp:p.cl;if(l<1||l>psLv()||list.includes(l)||(prem&&!p.prem))return null;list.push(l);return grant(psRew(l,prem))}
 const psCan=()=>{psCheck();const p=C().ps,lv=psLv();for(let l=1;l<=lv;l++)if(!p.cl.includes(l)||(p.prem&&!p.cp.includes(l)))return true;return false};
 
@@ -166,7 +175,8 @@ function sanCh(x){const d=defCh(),o=x&&typeof x==='object'&&!Array.isArray(x)?x:
   buf:(Array.isArray(tw.buf)?tw.buf:[]).filter(k=>BUFS.some(b=>b.k===k)).slice(0,1e3),ch:Array.isArray(tw.ch)?tw.ch.filter(k=>BUFS.some(b=>b.k===k)).slice(0,3):null};
  if(c.tw.ch&&!c.tw.ch.length)c.tw.ch=null;
  const ps=o.ps&&typeof o.ps==='object'?o.ps:{},lvl=a=>(Array.isArray(a)?a:[]).filter(l=>Number.isInteger(l)&&l>=1&&l<=PS_LV).filter((l,j,a2)=>a2.indexOf(l)===j);
- c.man=o.man?1:0;c.ps={o:Math.floor(fin(ps.o,-1,-1,1e9)),s:Math.floor(fin(ps.s,-1,-1,1e9)),xp:Math.floor(fin(ps.xp,0,0,PS_LV*PS_XP)),cl:lvl(ps.cl),cp:lvl(ps.cp),prem:ps.prem?1:0,dd:Math.floor(fin(ps.dd,-1,-1,1e9)),dm:Math.floor(fin(ps.dm,0,0,PS_CAP)),dw:Math.floor(fin(ps.dw,0,0,PS_CAP))};
+ c.man=o.man?1:0;c.ps={o:Math.floor(fin(ps.o,-1,-1,1e9)),s:Math.floor(fin(ps.s,-1,-1,1e9)),xp:Math.floor(fin(ps.xp,0,0,PS_LV*PS_XP)),cl:lvl(ps.cl),cp:lvl(ps.cp),prem:ps.prem?1:0,dd:Math.floor(fin(ps.dd,-1,-1,1e9)),dm:Math.floor(fin(ps.dm,0,0,PS_CAP)),dw:Math.floor(fin(ps.dw,0,0,PS_CAP)),av:{}};
+ {const av=ps.av&&typeof ps.av==='object'?ps.av:{};for(const k in av){const l=+k,n=Math.floor(fin(av[k],0,0,PS_ADS-1));if(Number.isInteger(l)&&l>=1&&l<=PS_LV&&n>0)c.ps.av[l]=n}}
  const iv=o.iv&&typeof o.iv==='object'?o.iv:{};c.iv={wk:Math.floor(fin(iv.wk,-1,-1,1e9)),pts:Math.floor(fin(iv.pts,0)),cl:iv.cl?1:0,b:Math.floor(fin(iv.b,1,1))};
  c.cards=d.cards.map((_,k)=>Math.floor(fin(Array.isArray(o.cards)?o.cards[k]:0,0,0,999)));
  c.alb=[0,1].map(a=>Array.isArray(o.alb)&&o.alb[a]&&c.cards.slice(a*9,a*9+9).every(n=>n>0)?1:0);
@@ -181,5 +191,5 @@ export {LEADB,form,needCp,cps,C as ch,expMulCh,defCh,sanCh,LDMAX,FREE_CD,AD_MAX,
  rollRar,giveCh,pull1,pullT,pullFree,pullAd,freeLeft,adLeft,addT,gearRar,addGear,salvage,equip,unequip,autoEquip,SALV,
  addCard,albHave,albDone,albDup,albClaim,albTrade,ALB_T,
  TW_TRIES,BUFS,twCheck,twStage,twBoss,twSim,twStart,twFight,twPick,twQuit,twBuf,
- PS_LV,PS_XP,psSeason,psLeft,psCheck,psLv,psAdd,psRew,psClaim,psCan,grant,SEASON_CH,
+ PS_LV,PS_XP,PS_ADS,psAds,psAd,psBuy,psSeason,psLeft,psCheck,psLv,psAdd,psRew,psClaim,psCan,grant,SEASON_CH,
  IV_EX,ivOn,ivWeek,ivPts,ivCheck,ivEnded,ivBoard,ivRank,ivRew,ivAdd,ivClaim,ivProg,RIV,elOf};

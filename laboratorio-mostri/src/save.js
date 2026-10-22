@@ -18,7 +18,10 @@ async function load(){const c=[],st=brSt();
  if(st){try{const r=await Promise.race([st.get(K),sleep(5000).then(()=>null)]);if(r)c.push(typeof r==='string'?JSON.parse(r):r)}catch(e){}} // l'SDK legge anche i vecchi salvataggi locali (stessa chiave)
  else{try{const r=localStorage.getItem(K);if(r)c.push(JSON.parse(r))}catch(e){}}
  const v=c.filter(x=>x&&Array.isArray(x.g)&&x.g.length>=1&&x.g.length<=N).sort((a,b)=>(b.ls||0)-(a.ls||0))[0];
- if(v){const d=def();setS({...d,...v,up:{...d.up,...obj(v.up)},dl:{...d.dl,...obj(v.dl)}});sanitize(d);
+ if(v){const d=def();setS({...d,...v,up:{...d.up,...obj(v.up)},dl:{...d.dl,...obj(v.dl)}});
+  // vecchia Incubatrice automatica (comprata con le monete, 8 livelli ×0,78): resta sbloccata, con il livello che dà lo stesso intervallo
+  if(v.ae===undefined&&S.up.f>0){const f=Math.floor(Number(S.up.f)||0),old=30*Math.pow(.78,Math.max(0,f-1));S.ae=1;S.up.f=Math.max(0,Math.min(50,Math.round((30-old)/.5)))}
+  sanitize(d);
   if(v.sfxOn===undefined){S.sfxOn=S.musOn=v.snd===0?0:1}delete S.snd; // il vecchio interruttore unico diventa effetti + musica
   while(S.g.length<N)S.g.push(0); // i vecchi salvataggi avevano meno celle
   if(v.bs===undefined)S.bs=Math.max(1,v.st||1);S.bs=Math.max(S.bs,S.st||1);S.st=Math.max(1,Math.min(S.st,S.bs));

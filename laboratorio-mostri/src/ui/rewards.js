@@ -30,9 +30,9 @@ function chApply(r){give(r.c,r.e);if(r.b)S.boost=Math.max(Date.now(),S.boost)+r.
 // Extra dei forzieri (non raddoppiati dalla pubblicità): biglietti del Portale, equipaggiamento, figurine
 const xTxt=x=>x?[x.t?'🎫 +'+x.t:'',x.gear?RAR[x.gear.r]+'🎒':'',x.cd?ALB[x.cd.a].c[x.cd.k]:''].filter(Boolean).join(' · '):'';
 function chest(){const q=Math.random(),pe=.08+.04*S.pk.b,k=q<pe?2:q<pe+.3?1:0,d=CHR[k];
- R.chR={k,c:Math.floor(rBase()*d.c),e:d.e(),b:d.b()};chApply(R.chR);
+ const r={k,c:Math.floor(rBase()*d.c),e:d.e(),b:d.b()};chApply(r); // R.chR solo per la finestra aperta: un secondo forziere che arriva intanto non cambia ciò che raddoppia il video
  const x={t:[1,2,3][k]};if(k||Math.random()<.35)x.g=gearRar([0,.2,.45][k]);if(Math.random()<.5)x.card=1;const xt=xTxt(grant(x));S.ach.ch++;prog('chest',1);track('first_boss');sfx('new');save();
  // finestra solo se si sta guardando la battaglia: nel laboratorio un popup a ogni boss interrompeva le unioni (il premio è già accreditato)
- if($('wb').classList.contains('on')||document.hidden||!$('batV').classList.contains('on'))toast(CHI[k]+' '+tr('ch'+k)+' · '+chTxt(R.chR)+' · '+xt,1);
- else openWB('<div class="wbi">'+CHI[k]+'</div><div class="wbh">'+tr('ch'+k)+'</div><div class="wbc">'+chTxt(R.chR).replace(/ · /g,'<br>')+'</div><div class="dc">'+xt+'</div><button class="b o" data-a="cd">'+tr('chDbl')+'</button><button class="b g" data-a="wc">'+tr('chOk')+'</button>')}
+ if($('wb').classList.contains('on')||document.hidden||!$('batV').classList.contains('on'))toast(CHI[k]+' '+tr('ch'+k)+' · '+chTxt(r)+' · '+xt,1);
+ else{R.chR=r;openWB('<div class="wbi">'+CHI[k]+'</div><div class="wbh">'+tr('ch'+k)+'</div><div class="wbc">'+chTxt(r).replace(/ · /g,'<br>')+'</div><div class="dc">'+xt+'</div><button class="b o" data-a="cd">'+tr('chDbl')+'</button><button class="b g" data-a="wc">'+tr('chOk')+'</button>')}}
 export {openWB,showOff,CHR,CHI,chTxt,chApply,chest};

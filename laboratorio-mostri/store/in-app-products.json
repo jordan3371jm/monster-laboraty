@@ -70,6 +70,13 @@
       "description": "Doubles all income forever.",
       "type": "non_consumable",
       "priceUsd": 19.99
+    },
+    {
+      "productId": "pass_premium",
+      "title": "Premium Pass",
+      "description": "Every premium reward of the Season Pass for the current season (28 days).",
+      "type": "consumable",
+      "priceUsd": 4.99
     }
   ]
 }

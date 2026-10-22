@@ -3,6 +3,8 @@ import {S,setS,def} from '../src/core/state.js';
 import {freeCell,prestigeState,inc} from '../src/game/economy.js';
 import * as T from '../src/game/timers.js';
 import {sanitize} from '../src/sanitize.js';
+import {elOf} from '../src/game/combat.js';
+import {ch} from '../src/game/meta.js';
 
 let fails=0;const ok=(c,m)=>{console.log((c?'✓ ':'✗ ')+m);if(!c)fails++};
 const real=Date.now;let off=0;Date.now=()=>real()+off;const wait=ms=>{off+=ms};
@@ -52,8 +54,20 @@ const i0=inc();S.dl.mon=0;S.dl.hp=0;ok(inc()<i0,'il bonus entra davvero nei guad
 
 // --- Evento settimanale
 fresh();ok(T.evOn()&&S.ev.m&&S.ev.m.t>=2&&S.ev.m.t<=S.disc.lastIndexOf(1)+1,'evento: campione vicino al tuo migliore ('+S.ev.m.t+')');
-T.evAdd(1);ok(S.ev.p===1&&S.ev.b===0,'1 💠: niente spilla regalata al primo punto');
-T.evAdd(T.evNeed()-1);ok(S.ev.b===1&&S.ev.m.left===6*3600e3,'servono evNeed 💠 per una spilla (+6h di campione)');
+T.evAdd(1);ok(S.ev.p===1&&S.ev.tot===1&&!T.evMileOk(0),'1 💠: il primo traguardo non è ancora raggiunto');
+T.onProg('event',1);ok(S.ev.p===1+T.EV_CATCH,'👻💎 catturato: +'+T.EV_CATCH+' 💠');
+T.onProg('dmis',1);T.onProg('wmis',1);ok(S.ev.p===1+T.EV_CATCH+T.EV_DM+T.EV_WM,'missioni riscosse: +'+T.EV_DM+' (giornaliera) e +'+T.EV_WM+' (settimanale)');
+{const p0=S.ev.p,t=[1,2,3,4,5,6,7,8,9].find(x=>elOf(x)===S.ev.el),o=[1,2,3,4,5,6,7,8,9].find(x=>elOf(x)!==S.ev.el);for(let k=0;k<T.EV_MRG;k++)T.onMerge(o);ok(S.ev.p===p0,'unioni di altri elementi: niente 💠');
+ for(let k=0;k<T.EV_MRG;k++)T.onMerge(t);ok(S.ev.p===p0+1,'ogni '+T.EV_MRG+' unioni dell\'elemento in festa: +1 💠')}
+{S.ev.tot=T.EVM[1].p;const t0=ch().t;ok(T.evMileOk(0)&&T.evMileOk(1)&&!T.evMileOk(2),'traguardi raggiunti con i 💠 guadagnati');const r=T.evMile(0);ok(r&&r.t===T.EVM[0].t&&ch().t===t0+r.t&&!T.evMileOk(0)&&T.evMile(0)===null,'traguardo riscosso una volta sola, biglietti consegnati');
+ const c0=S.c;T.evMile(1);ok(S.c>c0&&S.ev.b===2,'traguardo con monete')}
+// Spedizione e uovo della festa: 45 min – 7 h (sotto le 8 h), 💠 per l'evento, un video toglie 5 minuti
+{fresh();ok(T.EVX.every(x=>x.dur>30*60e3&&x.dur<8*3600e3)&&T.EVN.dur>30*60e3&&T.EVN.dur<8*3600e3,'durate della festa tra 30 minuti e 8 ore');
+ ok(T.EVX[0].pt/T.EVX[0].dur>T.EVX[2].pt/T.EVX[2].dur,'le spedizioni corte rendono un po\' di più all\'ora (chi torna spesso)');
+ ok(T.evxStart(1)&&!T.evxStart(0),'una spedizione della festa alla volta');const et=S.ev.fx.et;T.evSpeed('fx');ok(et-S.ev.fx.et===5*60e3,'video: -5 minuti (non un\'ora)');
+ ok(T.evxClaim()===0,'non si riscuote prima della fine');const p0=S.ev.p;S.ev.fx.et=Date.now()-1;ok(T.evxClaim()===T.EVX[1].pt&&S.ev.p===p0+T.EVX[1].pt&&S.ev.fx===null,'al ritorno: 💠 per l\'evento');
+ S.c=1e12;const c0=S.c;ok(T.evnBuy()&&S.c<c0&&!T.evnBuy(),'uovo della festa: costa monete, uno alla volta');S.ev.fn.et=Date.now()-1;ok(T.evnClaim()===T.EVN.pt,'uovo schiuso: 💠 +'+T.EVN.pt);
+ T.evxStart(2);const w=S.ev.wk;S.ev.wk=w-1;T.evCheck();ok(S.ev.fx&&S.ev.fx.q===2,'cambio settimana: la spedizione in corso non si perde')}
 const bb=S.ev.b;S.ev.p=300;S.ev.sp={};ok(T.evBuy(1)&&S.ev.p===300-T.evPrice(1),'negozio: acquisto scala i 💠');
 ok(S.ev.b===bb,'spendere 💠 non cancella le spille guadagnate');
 T.evAdd(0);ok(!T.evCan(1),'oggetto già comprato questa settimana');

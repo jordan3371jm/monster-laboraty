@@ -11,7 +11,7 @@ import fs from 'node:fs';
 import {fileURLToPath} from 'node:url';
 import {MAXT,WS} from '../src/data/config.js';
 import {S,setS,def} from '../src/core/state.js';
-import {eggInt,inc,spCost,UP,PK,earn,pgain,mergePairs,prestigeState,spT,freeCell} from '../src/game/economy.js';
+import {AE_COST,eggInt,inc,spCost,UP,PK,earn,pgain,mergePairs,prestigeState,spT,freeCell} from '../src/game/economy.js';
 import {fightTime,stageReward} from '../src/game/combat.js';
 
 const HOURS=+(process.env.SIM_HOURS||48),TOL=+(process.env.SIM_TOL||0.2);
@@ -36,6 +36,8 @@ function run(){
     // potenziamenti: i più utili per primi, solo se non tolgono l'evocazione di quel momento
     for(let i=0;i<UP.length;i++){const u=UP[i],l=S.up[u.k];if(i===2||UP[i].am)continue; // «Sonno profondo» serve solo offline; l'Unione automatica non serve a chi unisce a mano ogni secondo
       if(l<u.max&&S.c>=u.cost(l)*(i===0?1:2)){S.c-=u.cost(l);S.up[u.k]++}}
+    // Incubatrice automatica: si sblocca con AE_COST Essenze appena ci sono (poi i livelli si comprano con le monete)
+    if(!S.ae&&S.ess>=AE_COST&&S.bs>=10){S.ess-=AE_COST;S.ae=1}
     // albero delle Essenze: Avidità, Uova antiche, Bottino, Abilità, Sonno lungo
     for(const k of ['g','s','b','a','o']){const p=PK.find(x=>x.k===k),l=S.pk[k];if(l<p.max&&S.ess>=p.cost[l]){S.ess-=p.cost[l];S.pk[k]++}}
     // battaglia

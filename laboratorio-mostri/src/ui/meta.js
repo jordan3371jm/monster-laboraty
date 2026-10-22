@@ -14,6 +14,8 @@ import {track} from '../analytics.js';
 import {adThen} from './ads.js';
 import {burst,onTab,pickTab,setT,tabs,toast} from './common.js';
 import {ui} from './hud.js';
+import {buy} from '../platform.js';
+import {priceOf} from './shop.js';
 
 // ---- Pannelli della progressione permanente: Portale dei Campioni, Torre, Pass, Invasione, Album ----
 // Immagine e nome della forma attuale del campione (cambiano con le evoluzioni)
@@ -22,9 +24,9 @@ const pc=v=>Math.round(v*100)+'%';
 const skTxt=i=>{const c=CH[i],v=M.skVal(i);return tr('sk_'+c.sk).replace('{v}',c.sk==='stun'?v.toFixed(1):pc(v)).replace('{e}',EL[c.el])};
 const stars=s=>'★'.repeat(s)+'☆'.repeat(MAXSTAR-s);
 const gearTxt=g=>RAR[g.r]+' '+GEAR[g.s].ic+' +'+g.v+'% '+tr('gearE'+g.s);
-const rwTxt=r=>[r.t?'🎫 '+r.t:'',r.g!==undefined?RAR[r.g]+'🎒':'',r.card?'🃏':'',r.ch!==undefined?ci(r.ch,'sm'):''].filter(Boolean).join(' ');
+const rwTxt=r=>[r.c?'🪙':'',r.e?'🔮 '+r.e:'',r.t?'🎫 '+r.t:'',r.g!==undefined?RAR[r.g]+'🎒':'',r.card?'🃏':'',r.ch!==undefined?ci(r.ch,'sm'):''].filter(Boolean).join(' ');
 // Messaggio per ciò che si è appena ricevuto (biglietti, equipaggiamento, figurina, campione)
-function grantMsg(o){if(!o)return;const p=[];if(o.t)p.push('🎫 +'+o.t);if(o.gear)p.push(tr('gearGot')+' '+gearTxt(o.gear));if(o.cd)p.push(tr('cardGot')+' '+ALB[o.cd.a].c[o.cd.k]);
+function grantMsg(o){if(!o)return;const p=[];if(o.co)p.push('🪙 +'+fmt(o.co));if(o.e)p.push('🔮 +'+o.e);if(o.t)p.push('🎫 +'+o.t);if(o.gear)p.push(tr('gearGot')+' '+gearTxt(o.gear));if(o.cd)p.push(tr('cardGot')+' '+ALB[o.cd.a].c[o.cd.k]);
  if(o.chr)p.push(nm(o.chr.i)+' '+stars(o.chr.s));if(p.length)toast(p.join(' · '),1)}
 
 // ---- Portale ----
@@ -104,19 +106,28 @@ $('towB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)ret
  save(true);renderTow();ui()};
 
 // ---- Pass stagionale ----
-function renderPas(){M.psCheck();const p=S.ch.ps,lv=M.psLv(),xp=p.xp-lv*M.PS_XP;
+// Premium: «Sblocca il Premium» con un acquisto (prodotto pass_premium, solo dove la piattaforma lo vende) oppure, premio per premio,
+// PS_ADS video accanto a ogni premio premium già raggiunto (al 5° video il premio arriva da solo).
+let psBusy=false;
+function renderPas(){M.psCheck();const p=S.ch.ps,lv=M.psLv(),xp=p.xp-lv*M.PS_XP,pr=priceOf('pass_premium');
  let h='<div class="cs">'+tr('psLv')+' <b>'+lv+'/'+M.PS_LV+'</b> · '+M.psLeft()+' '+tr('psLeft')+'<small class="d">'+tr('psD')+'</small></div>'
-  +(lv<M.PS_LV?'<div class="bar"><i style="width:'+Math.round(xp/M.PS_XP*100)+'%"></i></div><small class="d" style="text-align:center">'+xp+' / '+M.PS_XP+'</small>':'')
-  +(p.prem?'':'<button class="b o" data-a="prem">'+tr('psUnl')+'</button>')+(M.psCan()?'<button class="b g" data-a="all">'+tr('psAll')+'</button>':'')
-  +'<div class="psh"><span>'+tr('psLv')+'</span><span>'+tr('psFree')+'</span><span>'+tr('psPrem')+(p.prem?'':' 🔒')+'</span></div>';
- for(let l=1;l<=M.PS_LV;l++){const fr=M.psRew(l,0),pr=M.psRew(l,1),ok=l<=lv,cell=(r,pm)=>{const got=(pm?p.cp:p.cl).includes(l);
-   return got?'<b class="rdy">'+tr('psDone')+'</b>':ok&&(!pm||p.prem)?'<button class="b g" data-a="cl" data-l="'+l+'" data-p="'+pm+'">'+rwTxt(r)+'</button>':'<span class="psr">'+rwTxt(r)+'</span>'};
-  h+='<div class="psl'+(ok?' ok':'')+(l===M.PS_LV?' big':'')+'"><b>'+l+'</b>'+cell(fr,0)+cell(pr,1)+'</div>'}
+  +(lv<M.PS_LV?'<div class="bar"><i style="width:'+Math.round(xp/M.PS_XP*100)+'%"></i></div><small class="d" style="text-align:center">'+xp+' / '+M.PS_XP+'</small>':'');
+ if(!p.prem)h+='<div class="psp"><b>👑 '+tr('psPremT')+'</b><small>'+tr('psPremD').replace('{n}',M.PS_ADS)+'</small>'
+  +(pr?'<button class="b g" data-a="buy"'+(psBusy?' disabled':'')+'>'+tr('psBuy')+' · '+pr+'</button>':'')+'</div>';
+ else h+='<div class="psp on"><b>👑 '+tr('psPremOn')+'</b></div>';
+ if(M.psCan())h+='<button class="b g" data-a="all">'+tr('psAll')+'</button>';
+ h+='<div class="psh"><span>'+tr('psLv')+'</span><span>'+tr('psFree')+'</span><span>👑 '+tr('psPrem')+'</span></div>';
+ for(let l=1;l<=M.PS_LV;l++){const fr=M.psRew(l,0),pm=M.psRew(l,1),ok=l<=lv,cell=(r,isP)=>{const got=(isP?p.cp:p.cl).includes(l);
+   if(got)return '<b class="rdy">'+tr('psDone')+'</b>';
+   if(isP&&!p.prem){const n=M.psAds(l);return '<div class="psa"><span class="psr">'+rwTxt(r)+'</span>'+(ok?'<button class="b o" data-a="pad" data-l="'+l+'">📺 '+n+'/'+M.PS_ADS+'</button><i class="pab"><em style="width:'+n/M.PS_ADS*100+'%"></em></i>':'<small>🔒</small>')+'</div>'}
+   return ok?'<button class="b g" data-a="cl" data-l="'+l+'" data-p="'+(isP?1:0)+'">'+rwTxt(r)+'</button>':'<span class="psr">'+rwTxt(r)+'</span>'};
+  h+='<div class="psl'+(ok?' ok':'')+(l===M.PS_LV?' big':'')+'"><b>'+l+'</b>'+cell(fr,0)+cell(pm,1)+'</div>'}
  setT('pasB',h)}
-$('pasB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a;
- if(a==='prem')adThen('pass',()=>{S.ch.ps.prem=1;track('pass_premium');toast('🎟️ '+tr('psPrem')+' ✓',1)});
+$('pasB').onclick=async e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a;
+ if(a==='buy'){if(psBusy)return;psBusy=true;renderPas();try{const g=await buy('pass_premium');if(g){sfx('win');toast('👑 '+tr('psPremOn'),1);track('pass_buy');burst($('pasB'),['👑','✨','🎟️'],16)}}catch(x){toast(tr('buyFail'))}psBusy=false}
+ else if(a==='pad'){const l=+b.dataset.l;adThen('pass',()=>{const r=M.psAd(l);if(!r)return;track('pass_ad',{l,n:r.n});if(r.got){grantMsg(r.got);sfx('win');if(r.got.chr&&r.got.chr.nw)reveal([r.got.chr])}else toast('📺 '+r.n+'/'+M.PS_ADS,1)}).then(()=>{renderPas();ui()});return}
  else if(a==='cl'){const o=M.psClaim(+b.dataset.l,+b.dataset.p);if(o){grantMsg(o);sfx('claim');if(o.chr&&o.chr.nw)reveal([o.chr])}}
- else if(a==='all'){let got=null;for(let l=1;l<=M.psLv();l++)for(const pm of [0,1]){const o=M.psClaim(l,pm);if(o){got=got||{};if(o.t)got.t=(got.t||0)+o.t;if(o.gear)got.gear=o.gear;if(o.cd)got.cd=o.cd;if(o.chr)got.chr=o.chr}}
+ else if(a==='all'){let got=null;for(let l=1;l<=M.psLv();l++)for(const pm of [0,1]){const o=M.psClaim(l,pm);if(o){got=got||{};for(const k of['t','e','co'])if(o[k])got[k]=(got[k]||0)+o[k];if(o.gear)got.gear=o.gear;if(o.cd)got.cd=o.cd;if(o.chr)got.chr=o.chr}}
   if(got){grantMsg(got);sfx('claim');if(got.chr&&got.chr.nw)reveal([got.chr])}}
  save(true);renderPas();ui()};
 

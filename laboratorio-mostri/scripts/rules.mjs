@@ -4,7 +4,7 @@ import {S,setS,def} from '../src/core/state.js';
 import {essBonus,essMult,offRate,slots,freeCell,UP} from '../src/game/economy.js';
 import {ELM,elOf,fightTime,offBattle,tAtk,tHp,advM,eEl,squad} from '../src/game/combat.js';
 import {BN,N} from '../src/data/config.js';
-import {PKR,pkrCost,mult,spCost} from '../src/game/economy.js';
+import {PKR,pkrCost,mult,spCost,prestigeState} from '../src/game/economy.js';
 let fails=0;const ok=(c,m)=>{console.log((c?'✓ ':'✗ ')+m);if(!c)fails++};
 const fresh=(o={})=>{setS({...def(),...o});S.tut=3};
 
@@ -15,7 +15,7 @@ let mono=true;for(let e=0;e<2e6;e=e*1.3+1)if(essBonus(e+1)<=essBonus(e))mono=fal
 ok(essMult(64000)<500&&essMult(7.7e6)<2e4,'senza esplosione: 64.000 Essenze → ×'+Math.round(essMult(64000))+', 7,7 milioni → ×'+Math.round(essMult(7.7e6))+' (prima ×6.400 e ×770.000)');
 
 // Offline: mai oltre il gioco attivo
-fresh();S.up.o=7;S.pk.o=5;ok(offRate()<1&&offRate()>.9,'tasso offline al massimo: '+offRate().toFixed(2)+' (< 1)');
+fresh();S.up.o=UP.find(u=>u.k==='o').max;S.pk.o=5;ok(offRate()<1&&offRate()>.9,'tasso offline al massimo: '+offRate().toFixed(2)+' (< 1)');
 
 // Elementi propri di ogni mostro
 ok(ELM.length>=26&&ELM.every(e=>e===0||e===1||e===2),'26 mostri, ognuno con un elemento valido');
@@ -62,6 +62,11 @@ fresh();S.g[0]=S.g[1]=S.g[2]=S.g[3]=12;const h0=tHp(),a0=tAtk(1);S.essT=1000;ok(
  ok(Math.abs(inc()/i0-2)<1e-9&&Math.abs(incBase()-i0)<1e-9,'il boost raddoppia inc() ma non incBase()');
  ok(Math.abs(rBase()-r0)<1e-9,'premi in minuti di guadagni uguali con e senza boost');
  const b1=offBattle(3600).n;ok(b1===b0&&S.boost>Date.now(),'battaglia offline senza boost ('+b0+' / '+b1+' livelli) e boost ripristinato dopo');
- fresh();ok(eggInt()===0,'incubatrice spenta al livello 0');S.up.f=1;ok(eggInt()===30,'incubatrice liv. 1: un uovo ogni 30s');
- S.up.f=UP.find(u=>u.k==='f').max;ok(eggInt()>4&&eggInt()<6,'incubatrice al massimo: un uovo ogni '+eggInt().toFixed(1)+'s')}
+ fresh();S.up.f=3;ok(eggInt()===0,'incubatrice spenta finché non si sblocca con le Essenze');S.ae=1;S.up.f=0;ok(eggInt()===30,'incubatrice sbloccata: un uovo ogni 30s');S.up.f=1;ok(eggInt()===29.5,'ogni livello: 0,5s in meno');
+ S.up.f=UP.find(u=>u.k==='f').max;ok(eggInt()===5,'incubatrice al massimo: un uovo ogni '+eggInt().toFixed(1)+'s')}
+{fresh();const t=Date.now()+200e3;S.boost=t;S.amAd=t;S.run=4e5;const x=prestigeState(S,2);
+ ok(x.boost===t&&x.amAd===t&&x.ess===S.ess+2,'Evocazione oscura: x2 e «Unione 5 minuti» guadagnati con un video non si perdono')}
+{fresh();const {mult:m0}=await import('../src/game/economy.js');const a=m0();S.up.l=10;ok(Math.abs(m0()/a-1.5)<1e-9,'Laboratorio: +5% a livello (10 livelli = ×1,5)');
+ S.up.l=0;S.sp=150;const c0=spCost();S.up.d=10;ok(Math.abs(spCost()/c0-Math.pow(.98,10))<.01,'Sconto uova: -2% a livello');
+ let ok2=true;for(const u of UP)for(let l=0;l<Math.min(u.max,60);l++)if(!(u.cost(l+1)>u.cost(l)))ok2=false;ok(ok2,'i costi dei potenziamenti crescono sempre')}
 process.exit(fails?1:0);

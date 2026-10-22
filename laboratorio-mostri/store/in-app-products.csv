@@ -9,3 +9,4 @@ ess_150,150 Essences,+150 Essences. Best value.,consumable,4.99
 coins_12h,Bag of coins,12 hours of income right away.,consumable,0.50
 coins_24h,Chest of coins,24 hours of income right away.,consumable,1.00
 income_x2,Income x2,Doubles all income forever.,non_consumable,19.99
+pass_premium,Premium Pass,Every premium reward of the Season Pass for the current season (28 days).,consumable,4.99
