@@ -27,7 +27,7 @@ const STEPS=+process.argv[2]||1500,SEEDS=+process.argv[3]||6;
 const now0=1.8e12,dn=Math.floor((now0-new Date().getTimezoneOffset()*60000)/864e5);
 const mid={c:5e5,g:[8,8,7,6,6,5,4,3,3,2,2,1,1,0,0,0,0,0,0,0],sp:30,up:{l:3,d:2,o:1,a:2},ess:6,essT:6,run:3e6,st:12,bs:12,tut:3,introSeen:1,disc:Array(26).fill(0).map((_,i)=>i<8?1:0),lt:2e7,
  dl:{d:-1,m:[],last:dn-1,st:6,dbl:1,lr:null,wk:-1,w:null,sh:1},pk:{s:1,a:1,o:0,g:1,b:1,i:1,w:1}};
-const late={...mid,c:1e20,g:[26,25,24,23,22,21,20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3],st:70,bs:70,wd:2,ess:300,essT:300,run:1e22,lt:1e25,up:{l:30,d:10,o:7,a:6,c:8},disc:Array(26).fill(1),
+const late={...mid,c:1e20,g:[39,38,37,36,35,34,33,32,31,30,29,28,27,26,25,24,23,22,21,20,19,18,17,16],st:70,bs:70,wd:3,ess:300,essT:300,run:1e22,lt:1e25,up:{l:30,d:10,o:7,a:6,c:8},disc:Array(39).fill(1),
  pk:{s:6,a:5,o:5,g:8,b:4,x:40,t:40,h:40,e:30,v:10,i:8,w:20},dl:{d:-1,m:[],last:dn-2,st:29,dbl:1,lr:null,wk:-1,w:null,sh:1,cl:[7,14],hp:1}};
 const SAVES=[null,mid,late,{...mid,tut:0},{...mid},{...late,c:50}];
 const NUM=['c','sp','ess','run','boost','st','bs','fm','ls','pt','essT','lt','wd'];
@@ -39,11 +39,11 @@ function check(t,tag){
  let s;try{s=t.S()}catch(e){return}if(!s)return;
  for(const k of NUM)if(typeof s[k]!=='number'||!isFinite(s[k]))bad(tag+': campo '+k+' non valido ('+s[k]+')');
  if(s.c<0)bad(tag+': monete negative '+s.c);if(s.ess<0)bad(tag+': Essenze negative '+s.ess);
- if(!Array.isArray(s.g)||s.g.some(x=>!Number.isInteger(x)||x<0||x>26))bad(tag+': griglia non valida');
- if(!Array.isArray(s.disc)||s.disc.length!==26)bad(tag+': disc non lungo 26 ('+(s.disc&&s.disc.length)+')');
+ if(!Array.isArray(s.g)||s.g.some(x=>!Number.isInteger(x)||x<0||x>39))bad(tag+': griglia non valida');
+ if(!Array.isArray(s.disc)||s.disc.length!==39)bad(tag+': disc non lungo 39 ('+(s.disc&&s.disc.length)+')');
  if(s.exp.run.length>1)bad(tag+': più spedizioni insieme');if(s.inc.r.length>3||new Set(s.inc.r.map(n=>n.k)).size!==s.inc.r.length)bad(tag+': nidi incoerenti');
  if(s.ord.list.length>4)bad(tag+': troppi ordini');if(s.ess>s.essT)bad(tag+': Essenze spendibili > ottenute ('+s.ess+'>'+s.essT+')');
- for(const o of s.ord.list)if(!Number.isFinite(o.et)||o.t<2||o.t>26)bad(tag+': ordine non valido '+JSON.stringify(o));
+ for(const o of s.ord.list)if(!Number.isFinite(o.et)||o.t<2||o.t>39)bad(tag+': ordine non valido '+JSON.stringify(o));
  for(const e of s.exp.run)if(!Number.isFinite(e.et)||e.et-e.st>8*3600e3+1)bad(tag+': spedizione non valida');
  if(s.boost-t.w.Date.now()>26*3600e3)bad(tag+': boost oltre 26 ore');
 }

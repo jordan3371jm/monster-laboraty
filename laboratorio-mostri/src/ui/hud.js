@@ -60,7 +60,7 @@ const xf=v=>v<100?v.toFixed(2):fmt(v);
 function ui(){const b=Date.now()<S.boost;
  $('coins').textContent='🪙 '+fmt(S.c);
  $('inc').textContent='+'+fmt(inc(),1)+tr('sec')+(b?'  ⚡x2 '+Math.ceil((S.boost-Date.now())/1000)+'s':'');
- $('ess').textContent=S.essT?'🔮 '+S.ess:'';$('ess').classList.toggle('n',PK.some(p=>S.pk[p.k]<p.max&&S.ess>=p.cost[S.pk[p.k]])||PKR.some(p=>(S.pk[p.k]||0)<p.max&&S.ess>=pkrCost(S.pk[p.k]||0)));$('app').classList.toggle('w2',S.wd>1);
+ $('ess').textContent=S.essT?'🔮 '+S.ess:'';$('ess').classList.toggle('n',PK.some(p=>S.pk[p.k]<p.max&&S.ess>=p.cost[S.pk[p.k]])||PKR.some(p=>(S.pk[p.k]||0)<p.max&&S.ess>=pkrCost(S.pk[p.k]||0)));$('app').classList.toggle('w2',S.wd===2);$('app').classList.toggle('w3',S.wd>2);
  const sc=spCost();setT('spawn',tr('spawn')+(S.pk.s?' '+E[S.pk.s]:'')+' 🪙 '+fmt(sc));$('spawn').disabled=S.c<sc;
  // Unione automatica: si sblocca per sempre con AM_COST Essenze (poi velocità e livello si potenziano con le monete)
  if(!S.am){setT('amB',`<i>🔄</i><span><b>${tr('amT')}</b><small>${tr('amD')}</small></span><strong>🔮 ${AM_COST}</strong>`);$('amB').disabled=S.ess<AM_COST}

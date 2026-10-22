@@ -1,14 +1,21 @@
 import {R,S} from './core/state.js';
 import {save} from './save.js';
 
-// ---- Audio (WebAudio, nessun file esterno) ----
+// ---- Audio (WebAudio) ----
+// Effetti: file CC0 di Kenney (public/sfx, licenza in LICENSE-kenney.txt), caricati alla prima interazione. Se un file non si carica
+// si usa il suono generato qui sotto. La musica di sottofondo è generata (sched). La vibrazione segue l'interruttore degli effetti.
 const AU={c:null,m:null,sg:null,mu:null,nb:null,plat:true,ad:false,next:0,step:0};
 const audible=()=>!!(S.sfxOn||S.musOn)&&AU.plat&&!AU.ad&&!R.PZ&&!document.hidden;
 function actx(){if(AU.c)return AU.c;const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;
  try{const c=AU.c=new C();AU.m=c.createGain();AU.sg=c.createGain();AU.mu=c.createGain();AU.sg.gain.value=.6;AU.mu.gain.value=.1;
   AU.sg.connect(AU.m);AU.mu.connect(AU.m);AU.m.connect(c.destination);
   const b=c.createBuffer(1,c.sampleRate*.3|0,c.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;AU.nb=b;
-  setInterval(sched,200);return c}catch(e){AU.c=null;return null}}
+  setInterval(sched,200);loadSfx(c);return c}catch(e){AU.c=null;return null}}
+const SFX={tap:.45,move:.6,spawn:.7,merge:.8,mall:.7,new:.7,hit:.5,ab:.6,win:.6,lose:.6,boss:.55,slam:.7,claim:.65,err:.5},BUF={};
+function loadSfx(c){for(const n in SFX)fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():null).then(a=>a&&new Promise((res,rej)=>c.decodeAudioData(a,res,rej))).then(b=>{if(b)BUF[n]=b}).catch(()=>{})}
+function play(n,rate=1){const c=AU.c,b=BUF[n];if(!c||!b)return false;try{const s=c.createBufferSource(),g=c.createGain();s.buffer=b;s.playbackRate.value=rate;g.gain.value=SFX[n];s.connect(g);g.connect(AU.sg);s.start()}catch(e){return false}return true}
+// vibrazione leggera sui telefoni (unione, mostro nuovo, colpo del boss)
+const buzz=p=>{try{if(S.sfxOn&&!document.hidden&&navigator.vibrate)navigator.vibrate(p)}catch(e){}};
 function aSync(){const c=AU.c;if(!c)return;
  try{audible()?c.resume&&c.resume():c.suspend&&c.suspend()}catch(e){}}
 function tone(f,d,ty,v,f2,t0,out){const c=AU.c;if(!c||!audible())return;const t=c.currentTime+(t0||0),o=c.createOscillator(),g=c.createGain();
@@ -18,7 +25,9 @@ function tone(f,d,ty,v,f2,t0,out){const c=AU.c;if(!c||!audible())return;const t=
 function noise(d,v,fc,t0){const c=AU.c;if(!c||!audible())return;const t=c.currentTime+(t0||0),s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();
  s.buffer=AU.nb;f.type='lowpass';f.frequency.value=fc||1500;g.gain.setValueAtTime(v||.2,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);
  s.connect(f);f.connect(g);g.connect(AU.sg);s.start(t);s.stop(t+d+.02)}
-function sfx(n,x){if(!audible()||!AU.c||!S.sfxOn)return;x=x||1;
+function sfx(n,x){if(n==='merge')buzz(12);else if(n==='new')buzz([20,40,30]);else if(n==='slam')buzz(60);
+ if(!audible()||!AU.c||!S.sfxOn)return;x=x||1;
+ if(play(n,n==='merge'?1+Math.min(x,20)*.035:1))return; // il mostro più alto suona più acuto
  if(n==='tap')tone(520,.07,'triangle',.25);
  else if(n==='move')tone(330,.09,'triangle',.25,440);
  else if(n==='spawn'){tone(300,.18,'sine',.35,760);noise(.06,.12,2500)}

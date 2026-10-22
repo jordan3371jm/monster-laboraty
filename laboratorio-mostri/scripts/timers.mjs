@@ -46,7 +46,7 @@ fresh();S.dl.st=6;ok(T.claimLong().length===0,'serie 6: nessun traguardo');
 S.dl.st=7;let g=T.claimLong();ok(g.length===1&&g[0].d===7&&T.grDone(7),'serie 7: traguardo consegnato');
 ok(T.claimLong().length===0,'e non due volte');
 S.dl.st=28;g=T.claimLong();ok(g.some(x=>x.mon)&&S.dl.mon===1&&S.dl.hp===1,'serie 28: Drago del Tempo e insegna');
-ok(S.disc.length===26&&S.disc.lastIndexOf(1)+1<=26,'il Drago NON finisce tra i 26 mostri (statistiche e trofei restano giusti)');
+ok(S.disc.length===39&&S.disc.lastIndexOf(1)+1<=39,'il Drago NON finisce tra i 39 mostri (statistiche e trofei restano giusti)');
 ok(Math.abs(T.stMul()-1.03)<1e-9,'bonus permanente della serie: +1% insegna +2% drago');
 const i0=inc();S.dl.mon=0;S.dl.hp=0;ok(inc()<i0,'il bonus entra davvero nei guadagni');
 

@@ -129,12 +129,12 @@ const dl0=o=>({d:-1,m:[],last:-1,st:0,dbl:1,lr:null,wk:-1,w:null,...o});
  ok(t.S().dl.sh===1&&t.S().pk.x===0&&t.S().an&&t.S().an.id.length>5,'vecchio salvataggio: scudo pronto, nuovi livelli a 0, ID analytics creato');
  ok(t.$('goal').classList.contains('on')&&/daily|giornaliero/i.test(t.$('goalT').textContent),'barra obiettivo: con il bonus pronto lo propone ('+t.$('goalT').textContent+')');
  t.click(t.$('goal'));ok(t.$('daily').classList.contains('on'),'toccando l\'obiettivo si apre la schermata giusta');}
-{const q={...base,ess:0,col:Array(8).fill(1),dl:dl0({last:dn})};
+{const q={...base,ess:0,col:Array(12).fill(1),dl:dl0({last:dn})};
  {const t=await boot({...q,ach:{...base.ach,pr:0}},{});
   ok(/Dark summoning|Evocazione oscura/.test(t.$('goalT').textContent),'senza premi da riscuotere e mai evocato: l\'obiettivo è la prima Evocazione oscura ('+t.$('goalT').textContent+')');}
  {const t=await boot(q,{});
   ok(/Discover|Scopri/.test(t.$('goalT').textContent)&&/level 7|livello 7/.test(t.$('goalT').textContent),'già evocato: l\'obiettivo è scoprire il prossimo mostro ('+t.$('goalT').textContent+')');}
- {const t=await boot({...q,disc:Array(26).fill(1)},{});
+ {const t=await boot({...q,disc:Array(39).fill(1)},{});
   ok(/boss/i.test(t.$('goalT').textContent),'tutti i mostri scoperti: l\'obiettivo è il boss ('+t.$('goalT').textContent+')');}}
 {const t=await boot({...base,tut:1},{});
  ok(!t.$('goal').classList.contains('on'),'durante il tutorial la barra obiettivo è nascosta');}
@@ -146,10 +146,10 @@ const dl0=o=>({d:-1,m:[],last:-1,st:0,dbl:1,lr:null,wk:-1,w:null,...o});
  ok(t.errs.length===0,'nessun errore JS '+t.errs.slice(0,2));}
 {const t=await boot({...base,g:[8,8,...z(18)],disc:Array(26).fill(0).map((_,i)=>i<8?1:0),dl:dl0({last:dn})},{});
  const cells=t.qa('#grid .c');t.click(cells[0]);t.click(cells[1]);
- ok(t.$('cele').classList.contains('on')&&!!t.q('#cele .ci')&&t.qa('#cele .pt').length>0,'mostro nuovo: scheda di festeggiamento con particelle');
  ok(t.qa('#grid .pt').length>0,'unione: particelle sulla griglia (non cancellate dal ridisegno)');
+ ok(t.$('cele').classList.contains('on')&&!!t.q('#cele .ci .evs .old')&&!!t.q('#cele .ci .evs .nw'),'mostro nuovo: scheda con l\'evoluzione (mostro di prima → mostro nuovo)');await t.adv(800);ok(t.qa('#cele .pt').length>0,'dopo il lampo dell\'evoluzione: particelle');
  const an=t.S().an;ok(an.f.first_merge>0&&an.ss===1&&an.d.length===1,'analytics: prima unione registrata (a '+an.f.first_merge+'s), 1 sessione, 1 giorno');
- await t.adv(2600);ok(!t.$('cele').classList.contains('on'),'la scheda sparisce da sola');
+ await t.adv(2200);ok(!t.$('cele').classList.contains('on'),'la scheda sparisce da sola');
  t.click(t.$('pr'));await t.adv(300);ok(t.S().an.id===an.id&&t.S().an.f.prestige>0,'analytics: ID e cronologia restano dopo l\'Evocazione oscura');
  ok(t.errs.length===0,'nessun errore JS '+t.errs.slice(0,2));}
 

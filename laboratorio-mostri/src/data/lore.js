@@ -28,7 +28,20 @@ const LORE={it:[
 ['Balena Stellare','Canta canzoni lente come le galassie. Le ascolta solo chi ha tempo.'],
 ['Vortice Distratto','Ha dimenticato perché gira. Non si ferma per orgoglio.'],
 ['Galassia Spiralata','Quattrocento miliardi di stelle e nemmeno una lavatrice.'],
-['Stella Cadente','Esaudisce i desideri a una condizione: sbrigati.']],
+['Stella Cadente','Esaudisce i desideri a una condizione: sbrigati.'],
+['Folletto di Brace','Accende le candeline alle feste. Poi le spegne: è più forte di lui.'],
+['Lumaca Lavica','Lenta come una lumaca, calda come la lava. Nessuno osa sorpassarla.'],
+['Granchio di Magma','Cammina di lato per evitare le responsabilità. Chele a 1200 gradi.'],
+['Lampada Lavica','Il soprammobile preferito del laboratorio. Rilassante da guardare, pericolosa da spolverare.'],
+['Gatto di Cenere','Ha nove vite e ne ha già bruciate sei. Fa le fusa di fumo.'],
+['Salamandra Fiammante','Prende il sole dentro il vulcano. Dice che al mare fa troppo freddo.'],
+['Golem d\'Ossidiana','Lucido, brillante e fierissimo. Si usa da solo come specchio.'],
+['Vulcano Brontolone','Erutta ogni volta che qualcuno dice «lunedì». Il personale sceglie bene le parole.'],
+['Pulcino Fenice','Rinasce dalle ceneri ogni mattina. Ma la mattina non è proprio il suo forte.'],
+['Cavaliere Fuso','Ha giurato di proteggere il laboratorio. L\'armatura si è sciolta il primo giorno.'],
+['Viverna di Cenere','Custodisce un tesoro di marshmallow bruciati. Nessuno lo vuole, ma comunque.'],
+['Titano Solare','Così luminoso che porta gli occhiali da sole anche di notte. E in casa.'],
+['Cuore del Vulcano','Il cuore più caldo del laboratorio. Letteralmente: 3000 gradi.']],
 en:[
 ['Suspicious Egg','Nobody remembers who laid it. The lab pretends not to notice.'],
 ['Germ Gary','Tiny but extremely confident. Already gave his number to every test tube.'],
@@ -55,7 +68,20 @@ en:[
 ['Star Whale','Sings songs as slow as galaxies. Only those with time to spare listen.'],
 ['Absent-minded Vortex','Forgot why it spins. Won\'t stop out of pride.'],
 ['Spiral Galaxy','Four hundred billion stars and not one washing machine.'],
-['Shooting Star','Grants wishes, on one condition: make it quick.']]};
+['Shooting Star','Grants wishes, on one condition: make it quick.'],
+['Ember Sprite','Lights the candles at birthday parties. Then blows them out: he just can\'t help it.'],
+['Lava Snail','Slow as a snail, hot as lava. Nobody dares to overtake him.'],
+['Magma Crab','Walks sideways to dodge responsibilities. Claws at 1200 degrees.'],
+['Lava Lamp','The lab\'s favourite decoration. Relaxing to watch, dangerous to dust.'],
+['Ash Cat','Has nine lives and has burned through six. Purrs smoke.'],
+['Fire Salamander','Sunbathes inside the volcano. Says the beach is too cold.'],
+['Obsidian Golem','Polished, shiny and very proud of it. Uses himself as a mirror.'],
+['Grumpy Volcano','Erupts whenever someone says "Monday". The staff choose their words carefully.'],
+['Phoenix Chick','Reborn from the ashes every morning. Still not a morning person.'],
+['Molten Knight','Swore to protect the lab. His armour melted on the first day.'],
+['Cinder Wyrm','Guards a treasure of burnt marshmallows. Nobody wants it, but still.'],
+['Sun Titan','So bright he wears sunglasses at night. Indoors, too.'],
+['Heart of the Volcano','The warmest heart in the lab. Literally: 3000 degrees.']]};
 // Altre lingue: in src/data/i18n (l'inglese fa da riserva)
 LORE.es=ES.lore;LORE.fr=FR.lore;LORE.zh=ZH.lore;
 export {LORE};

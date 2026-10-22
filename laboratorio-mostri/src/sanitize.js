@@ -17,7 +17,7 @@ function sanitize(d){
  for(const k of ['c','sp','ess','run','boost','fm','ls','pt','essT','lt'])S[k]=fin(S[k],d[k]);
  S.c=Math.max(0,S.c);S.ess=Math.max(0,S.ess);S.boost=Math.min(S.boost,Date.now()+24*3600e3); // il boost non supera 24 ore (ripara anche i salvataggi creati con il vecchio errore delle 1000 ore)
  safeMult(); // prima di tutto: se il tasso è rotto niente funziona
- S.st=Math.floor(fin(S.st,1,1));S.introSeen=S.introSeen?1:0;S.bs=Math.floor(fin(S.bs,1,1));S.tut=Math.floor(fin(S.tut,0,0,3));S.wd=fin(S.wd,1,1,2)|0||1;
+ S.st=Math.floor(fin(S.st,1,1));S.introSeen=S.introSeen?1:0;S.bs=Math.floor(fin(S.bs,1,1));S.tut=Math.floor(fin(S.tut,0,0,3));S.wd=fin(S.wd,1,1,3)|0||1;
  S.sfxOn=S.sfxOn?1:0;S.musOn=S.musOn?1:0;if(!['auto','en','it','es','fr','zh'].includes(S.lp))S.lp='auto';
  S.g=S.g.map(t=>Number.isInteger(t)&&t>0&&t<=MAXT?t:0);
  const gv=Array.isArray(S.gv)?S.gv:[];S.gv=S.g.map((t,i)=>t&&gv[i]?1:0); // varianti dorate: solo sulle celle occupate

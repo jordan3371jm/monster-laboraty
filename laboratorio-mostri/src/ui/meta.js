@@ -76,7 +76,7 @@ $('porB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)ret
  renderPor();ui()};
 
 // ---- Torre giornaliera ----
-const twEmo=f=>{const w=W[S.wd>1?1:0],s=M.twStage(f);return ico(M.twBoss(f)?w.tw[(f/5)%w.tw.length|0]:w.en.n[s%3])};
+const twEmo=f=>{const w=W[Math.min(W.length,S.wd)-1],s=M.twStage(f);return ico(M.twBoss(f)?w.tw[(f/5)%w.tw.length|0]:w.en.n[s%3])};
 function renderTow(){M.twCheck();const tw=S.ch.tw;
  let h='<div class="cs">'+tr('twTries')+': <b>'+tw.tries+'/'+M.TW_TRIES+'</b> · '+tr('twBest')+': <b>'+tw.best+'</b> · '+tr('twRec')+': <b>'+tw.rec+'</b></div><small class="d" style="text-align:center">'+tr('twD')+'</small>';
  if(R.twRes){const r=R.twRes;h+='<div class="twf'+(r.win?' w':' l')+'"><div class="twv"><span>'+(S.ch.ld.length?S.ch.ld.map(i=>ci(i)).join(''):'🧪')+'</span><b>VS</b><span>'+twEmo(r.f)+'</span></div>'

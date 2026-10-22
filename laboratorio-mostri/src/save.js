@@ -28,7 +28,7 @@ async function load(){const c=[],st=brSt();
   S.tr={...d.tr,...obj(v.tr)};S.pk={...d.pk,...obj(v.pk)};S.ach={...d.ach,...obj(v.ach)};S.an={...d.an,...obj(v.an)};if(!Array.isArray(S.an.d))S.an.d=[];if(!S.an.f||typeof S.an.f!=='object')S.an.f={};
   if(!Array.isArray(S.disc))S.disc=d.disc;S.disc=S.disc.map(x=>x?1:0);while(S.disc.length<MAXT)S.disc.push(0);S.disc.length=MAXT; // solo i 26 mostri: il Drago del Tempo vive in S.dl.mon
   if(!Array.isArray(S.col))S.col=d.col;S.col=S.col.map(x=>x?1:0);while(S.col.length<NR)S.col.push(0);S.col.length=NR;
-  if(Math.max(0,...S.g)>WS||S.disc[WS])S.wd=2;
+  for(let w=1;w<3;w++)if(Math.max(0,...S.g)>WS*w||S.disc[WS*w])S.wd=Math.max(S.wd,w+1); // mondo raggiunto (anche dai vecchi salvataggi)
   R.trC=Object.keys(S.tr).length;
   const mx=Math.max(0,...S.g);for(let t=1;t<=mx;t++)S.disc[t-1]=1;sanitize(d);
   // Spedizioni e uova hanno un orario di fine: a gioco chiuso restano pronte da riscuotere. Il campione dell'evento scorre dall'ultimo salvataggio (col tetto offline); gli ordini scaduti si chiudono.

@@ -21,7 +21,28 @@ function pairIdx(){const g=S.g;for(let t=1;t<MAXT;t++){const ix=[];g.forEach((v,
 const rar=t=>{const q=(t-1)%13;return q<4?0:q<8?1:q<11?2:3};
 const grid=$('grid');
 for(let i=0;i<N;i++){const d=document.createElement('div');d.className='c';d.dataset.i=i;grid.appendChild(d)}
-grid.onclick=e=>{const c=e.target.closest('.c');if(c)tap(+c.dataset.i)};
+grid.onclick=e=>{if(Date.now()-dragEnd<350)return;const c=e.target.closest('.c');if(c)tap(+c.dataset.i)};
+// ---- Trascinare per unire (come nei merge più giocati): si prende un mostro e lo si lascia su un altro uguale (unione)
+// o su una cella vuota (spostamento). Il tocco su due celle continua a funzionare.
+let drag=null,dragEnd=0;
+const cellAt=(x,y)=>{const el=document.elementFromPoint(x,y);const c=el&&el.closest&&el.closest('#grid .c');return c&&c.style.display!=='none'?c:null};
+grid.addEventListener('pointerdown',e=>{const c=e.target.closest('.c');if(!c||!S.g[+c.dataset.i]||e.button>0)return;
+ drag={i:+c.dataset.i,x:e.clientX,y:e.clientY,id:e.pointerId,on:false,gh:null,tg:null}});
+addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id)return;
+ if(!drag.on){if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<12)return; // sotto i 12px è un tocco
+  drag.on=true;const c=grid.children[drag.i],r=c.getBoundingClientRect(),g=document.createElement('div');g.className='dg';
+  g.innerHTML=c.innerHTML;g.style.fontSize=getComputedStyle(c).fontSize;g.style.width=r.width+'px';g.style.height=r.height+'px';g.style.setProperty('--h',getComputedStyle(c).getPropertyValue('--h'));
+  document.body.appendChild(g);drag.gh=g;c.classList.add('dragf');R.sel=-1;draw();sfx('tap')}
+ drag.gh.style.left=e.clientX+'px';drag.gh.style.top=e.clientY+'px';
+ const t=cellAt(e.clientX,e.clientY);if(t!==drag.tg){if(drag.tg)drag.tg.classList.remove('dt','dtm');drag.tg=t;
+  if(t&&+t.dataset.i!==drag.i){const j=+t.dataset.i;t.classList.add(S.g[j]===S.g[drag.i]&&S.g[j]<MAXT?'dtm':'dt')}}},{passive:true});
+const endDrag=e=>{if(!drag||(e&&e.pointerId!==drag.id))return;const d=drag;drag=null;if(!d.on)return;dragEnd=Date.now();
+ d.gh.remove();grid.children[d.i].classList.remove('dragf');if(d.tg)d.tg.classList.remove('dt','dtm');
+ const t=e&&e.type==='pointerup'?cellAt(e.clientX,e.clientY):null;
+ if(t&&+t.dataset.i!==d.i&&S.g[d.i]){const j=+t.dataset.i,g=S.g;
+  if(g[j]&&g[j]!==g[d.i]){[g[j],g[d.i]]=[g[d.i],g[j]];[S.gv[j],S.gv[d.i]]=[S.gv[d.i],S.gv[j]];R.sel=-1;sfx('move');save();draw()} // mostri diversi: si scambiano di posto
+  else{R.sel=d.i;tap(j);if(R.sel>=0){R.sel=-1;draw()}}}else draw()};
+addEventListener('pointerup',endDrag);addEventListener('pointercancel',endDrag);
 function pop(i,n=6){const el=grid.children[i];el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');if(n)burst(grid,['✨','⭐','💫'],n,{x:el.offsetLeft+el.offsetWidth/2,y:el.offsetTop+el.offsetHeight/2})} // le particelle stanno nella griglia, non nella cella: draw() riscrive il contenuto delle celle
 function drop(i){const el=grid.children[i];el.classList.remove('drop','pop');void el.offsetWidth;el.classList.add('drop');burst(grid,['💧','✨'],3,{x:el.offsetLeft+el.offsetWidth/2,y:el.offsetTop+el.offsetHeight*.8})}
 // Ogni AD_MERGES unioni (a mano, «Unisci tutto» o automatiche) parte un interstitial (la piattaforma ne tiene almeno 60s tra uno e l'altro)

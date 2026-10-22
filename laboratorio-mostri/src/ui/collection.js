@@ -17,10 +17,10 @@ import {addT} from '../game/meta.js';
 import {albClick,albHtml} from './meta.js';
 
 function disc(t){if(!S.disc[t-1]){S.disc[t-1]=1;if(t>1){if(t>=5)addT(1); // ogni mostro nuovo dal livello 5 vale un biglietto del Portale
- toast(tr('newm')+' '+E[t-1]+(t>=5?' · 🎫 +1':''),1);sfx('new');if(t>=3)celebrate(t)}}if(t>WS&&S.wd<2)newWorld()} // t>WS e non ===: una fusione perfetta può saltare il primo mostro del mondo 2
-function newWorld(){S.wd=2;R.wbInter='world';track('world2');give(rBase()*10,3);sfx('win');
- openWB('<div class="wbi">🌌</div><div class="wbh">'+tr('wNew')+'</div><div class="dc">'+tr('w1n')+'</div><div class="dc">'+tr('wDesc')+'</div><div class="dc">'+tr('wRew')+'</div><button class="b g" data-a="wc">'+tr('wbOk')+'</button>')}
-const CR=[{c:1,e:0},{c:2,e:1},{c:4,e:2},{c:10,e:5},{c:25,e:3},{c:50,e:5},{c:100,e:8},{c:250,e:15}],colCoins=r=>Math.floor(rBase()*2*CR[r].c);
+ toast(tr('newm')+' '+E[t-1]+(t>=5?' · 🎫 +1':''),1);sfx('new');if(t>=3)celebrate(t)}}const w=Math.min(3,Math.ceil(t/WS));if(w>S.wd)newWorld(w)} // t>WS e non ===: una fusione perfetta può saltare il primo mostro del mondo 2
+function newWorld(w=2){S.wd=w;R.wbInter='world';track('world'+w);give(rBase()*10,3);sfx('win');
+ openWB('<div class="wbi">'+['🧪','🌌','🌋'][w-1]+'</div><div class="wbh">'+tr('wNew')+'</div><div class="dc">'+tr('w'+(w-1)+'n')+'</div><div class="dc">'+tr('wDesc')+'</div><div class="dc">'+tr('wRew')+'</div><button class="b g" data-a="wc">'+tr('wbOk')+'</button>')}
+const CR=[{c:1,e:0},{c:2,e:1},{c:4,e:2},{c:10,e:5},{c:25,e:3},{c:50,e:5},{c:100,e:8},{c:250,e:15},{c:500,e:10},{c:1000,e:15},{c:2500,e:25},{c:6000,e:40}],colCoins=r=>Math.floor(rBase()*2*CR[r].c);
 // 4 righe per mondo: r>>2 = mondo, r&3 = riga nel mondo
 const rowT=r=>{const a=[],w=r>>2,q=r&3;for(let k=0;k<4;k++){const t=w*WS+q*4+k+1;if(t<=(w+1)*WS)a.push(t)}return a};
 const rowOk=r=>rowT(r).every(t=>S.disc[t-1]);

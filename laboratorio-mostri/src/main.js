@@ -19,10 +19,11 @@ import {initShop} from './ui/shop.js';
 
 import './style.css';
 import {initCoins} from './ui/coin.js';
+import {initMonsters} from './ui/monsters.js';
 import {bootProgress,preload} from './preload.js';
 
 // Le immagini iniziano a caricarsi subito, in parallelo all'avvio del Bridge e al caricamento del salvataggio
-const pre=preload(bootProgress);initCoins();
+const pre=preload(bootProgress);initMonsters();initCoins();
 
 // Salvataggio periodico e sincronizzazione audio
 setInterval(()=>save(),5000);
