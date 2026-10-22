@@ -248,9 +248,10 @@ function ordersExpire(){ordTick()}
 // Accelerazione con pubblicità con premio: -1 ora su una spedizione o su un uovo (si chiama dentro adThen)
 const SPEED=HOUR;
 function expSpeed(i){const e=S.exp.run[i];if(!e)return false;e.et-=SPEED;return true}
-function nidSpeed(i){const n=S.inc.r[i];if(!n)return false;n.st-=SPEED;return true}
+const NID_SPEED=5*MIN; // nidi: un video toglie 5 minuti (come i timer della festa), le spedizioni un'ora
+function nidSpeed(i){const n=S.inc.r[i];if(!n)return false;n.st-=NID_SPEED;return true}
 
-export {SEC,MIN,HOUR,DAY,OFF_CAP,SPEED,since,timersTick,ordersExpire,
+export {SEC,MIN,HOUR,DAY,OFF_CAP,SPEED,NID_SPEED,since,timersTick,ordersExpire,
  EXP,EXPN,expDur,expPow,expVal,expGain,expCoins,expLeft,expReady,expStart,expClaim,expSpeed,
  NEST,NID,nidK,nidMax,nidCost,nidDur,nidLeft,nidProg,nidGain,nidBusy,nidBuy,nidHatch,nidSpeed,
  EXCL,isExcl,GR,stMul,grDone,claimLong,onProg,
