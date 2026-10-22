@@ -189,8 +189,11 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  t.click(t.$('tExp'));t.click(t.qa('#tmTabs .b')[2]);ok(/📜/.test(t.$('tmB').textContent)||t.qa('#tmB .ms').length>=2,'ordini: visibili nel pannello');
  t.click(t.$('tmClose'));t.click(t.$('mall'));await t.adv(300);t.click(t.$('tExp'));await t.adv(300);
  ok(t.errs.length===0,'ordini: «Unisci tutto» non genera errori');}
-{const t=await boot({...base,introSeen:1,dl:{d:-1,m:[],last:dn2,st:2,dbl:1,lr:null},ev:{wk:Math.floor((dn2+3)/7),el:0,p:500,tot:0,b:0,ok:1,x:0,m:null,got:0,cl:[],sp:{}}},{});
+{const t=await boot({...base,introSeen:1,dl:{d:-1,m:[],last:dn2,st:2,dbl:1,lr:null},ev:{wk:Math.floor((dn2+3)/7),el:0,p:500,tot:120,b:0,ok:1,x:0,m:null,got:0,cl:[],sp:{}}},{});
  t.click(t.$('tExp'));await t.adv(300);t.click(t.qa('#tmTabs .b')[3]);const n0=t.qa('#grid .c.f').length;
+ ok(!!t.q('#tmB .evh')&&t.qa('#tmB .evst').length===3&&t.qa('#tmB .evmi').length===6&&t.qa('#tmB .evsi').length===6&&!/NaN|undefined/.test(t.$('tmB').textContent),'evento: festa, 3 modi per guadagnare 💠, 6 traguardi e negozio');
+ ok(t.qa('#tmB [data-a=em]').length===2&&/Avventure|Adventures/.test(t.$('tmT').textContent),'evento: 2 traguardi pronti con 120 💠 guadagnati; il pannello si chiama Avventure');
+ {const tk=t.S().ch?t.S().ch.t:0;t.click(t.q('#tmB [data-a=em]'));await t.adv(300);ok(t.S().ev.cl.includes(0)&&t.S().ch.t===tk+2&&t.qa('#tmB [data-a=em]').length===1,'evento: traguardo riscosso (🎫 +2)')}
  t.click(t.q('#tmB [data-a=eb][data-i="5"]'));await t.adv(300);ok(t.qa('#grid .c.f').length===n0+1,'evento: il campione è UN mostro in più (non riempie il laboratorio)');
  const b0=t.S().boost;t.click(t.q('#tmB [data-a=eb][data-i="0"]'));await t.adv(300);ok(t.S().boost-1.8e12<2*3600e3,'evento: ⚡ dà 60 minuti, non 1000 ore');
  ok(t.errs.length===0,'evento: nessun errore JS '+t.errs.slice(0,2));}
@@ -242,6 +245,14 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  await t.adv(20500);ok(t.S().g.filter(x=>x===7).length===1,'le coppie di livello alto si uniscono anche loro (fino al livello 7)');
  t.click(t.$('a1'));await t.adv(300);ok(t.calls.includes('rw:boost')&&t.S().boost-1.8e12>=290e3,'x2 per 5 minuti');
  ok(t.errs.length===0,'video: nessun errore JS '+t.errs.slice(0,2));}
+// --- Pass: premio 👑 con 5 video (senza acquisto)
+{const rw={};const adv=calls=>({advertisement:{on:(e,cb)=>{if(e==='rewarded_state_changed')rw.cb=cb},showInterstitial:()=>Promise.resolve(),showRewarded:p=>{calls.push('rw:'+p);Promise.resolve().then(()=>{rw.cb('opened');rw.cb('rewarded');rw.cb('closed')})}}});
+ const t=await boot({...base,introSeen:1,dl:dl0({last:dn}),ch:{ps:{o:dn,s:0,xp:2*230+10,cl:[],cp:[],prem:0,dd:-1,dm:0,dw:0}}},{bridge:true,bx:adv});await t.adv(600);
+ t.click(t.$('tPas'));ok(t.qa('#pasB [data-a=pad]').length===2&&/0\/5/.test(t.q('#pasB [data-a=pad]').textContent)&&!t.q('#pasB [data-a=buy]'),'pass: 📺 0/5 accanto ai premi 👑 raggiunti (senza prezzo niente acquisto)');
+ const t0=t.S().ch.t;for(let k=0;k<5;k++){t.click(t.q('#pasB [data-a=pad][data-l="1"]'));await t.adv(300)}
+ ok(t.S().ch.ps.cp.includes(1)&&t.S().ch.t>t0&&t.calls.filter(c=>c==='rw:pass').length===5,'pass: dopo 5 video il premio 👑 del livello 1 è consegnato');
+ ok(t.qa('#pasB [data-a=pad]').length===1,'pass: resta solo il video per il livello 2');
+ ok(t.errs.length===0,'pass: nessun errore JS '+t.errs.slice(0,2));}
 
 // --- Unione automatica: si sblocca per sempre con 5 Essenze, poi una coppia ogni 15s; velocità e livello si comprano con le monete
 {const t=await boot({...base,c:1e6,ess:6,essT:10,pk:{s:0,a:0,o:0,g:0,b:0},up:{l:0,d:0,o:0,a:0,c:0,f:0,m:0},g:[1,1,1,1,1,1,1,1,1,1,2,2,...z(8)],introSeen:1,dl:{d:-1,m:[],last:dn2,st:2,dbl:1,lr:null}},{});await t.adv(600);
@@ -258,8 +269,8 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  ok(t.errs.length===0,'unione automatica: nessun errore JS '+t.errs.slice(0,2));}
 
 // --- Playgama Bridge (simulato): messaggi, acquisti, account e condivisione
-{const mock=calls=>({payments:{isSupported:true,getCatalog:async()=>[{id:'tickets_10',price:'20 Gam'},{id:'income_x2',price:'250 Gam'},{id:'sconosciuto',price:'1'}],
-  getPurchases:async()=>[{id:'income_x2',orderId:'o1'}],purchase:async id=>{calls.push('buy:'+id);return{id,orderId:'o2'}},consumePurchase:async id=>{calls.push('consume:'+id)}},
+{const mock=calls=>({payments:{isSupported:true,getCatalog:async()=>[{id:'tickets_10',price:'20 Gam'},{id:'income_x2',price:'250 Gam'},{id:'pass_premium',price:'300 Gam'},{id:'sconosciuto',price:'1'}],
+  getPurchases:async()=>[{id:'income_x2',orderId:'o1'}],purchase:async id=>{calls.push('buy:'+id);return{id,orderId:'o-'+id}},consumePurchase:async id=>{calls.push('consume:'+id)}},
  player:{isAuthorizationSupported:true,isAuthorized:false,name:'',authorize:async()=>{calls.push('auth')}},
  social:{isShareSupported:true,share:async()=>{calls.push('share')},isRateSupported:false,rate:async()=>{}},
  leaderboards:{type:'in_game',setScore:async(id,v)=>{calls.push('lb:'+id+':'+v)}},achievements:{isSupported:true,unlock:async id=>{calls.push('ach:'+id)}},analytics:{send:ev=>calls.push('an:'+ev)}});
@@ -267,10 +278,13 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  ok(t.calls.includes('msg:gameplay_started'),'Playgama: gameplay_started dopo il caricamento');
  ok(t.S().iap.x2===1&&t.calls.includes('lb:best_stage:9'),'Playgama: acquisto permanente «Guadagni ×2» ripristinato all\'avvio, classifica del livello record');
  ok(t.$('tShop').style.display!=='none','negozio: il pulsante 🛒 compare se ci sono i pagamenti');
- t.click(t.$('tShop'));ok(t.qa('#shopB [data-id]').length===10&&t.qa('#shopB [data-id]:not([disabled])').length===1&&/20 Gam/.test(t.$('shopB').textContent)&&t.q('#shopB [data-id=income_x2]').disabled,'negozio: tutti i prodotti, compra solo quelli con un prezzo, «Guadagni ×2» già posseduto');
+ t.click(t.$('tShop'));ok(t.qa('#shopB [data-id]').length===11&&t.qa('#shopB [data-id]:not([disabled])').length===2&&/20 Gam/.test(t.$('shopB').textContent)&&t.q('#shopB [data-id=income_x2]').disabled,'negozio: tutti i prodotti, compra solo quelli con un prezzo, «Guadagni ×2» già posseduto');
  const t0=JSON.parse(t.w.localStorage.getItem('ml_save_v1')).ch.t||0;t.click(t.q('#shopB [data-id=tickets_10]'));await t.adv(400);
  ok(t.calls.includes('buy:tickets_10')&&t.calls.includes('consume:tickets_10')&&t.S().ch.t===t0+10,'negozio: 10 biglietti consegnati e acquisto consumato');
- t.click(t.$('shopClose'));t.click(t.$('n1'));await t.adv(8000);
+ t.click(t.$('shopClose'));
+ t.click(t.$('tPas'));ok(/300 Gam/.test(t.q('#pasB [data-a=buy]').textContent),'pass: «Sblocca tutto» col prezzo della piattaforma');t.click(t.q('#pasB [data-a=buy]'));await t.adv(400);
+ ok(t.S().ch.ps.prem===1&&t.calls.includes('buy:pass_premium')&&t.calls.includes('consume:pass_premium')&&!t.q('#pasB [data-a=pad]'),'pass: Premium comprato, niente più video '+[t.S().ch.ps.prem,t.calls.includes('buy:pass_premium'),t.calls.includes('consume:pass_premium'),!!t.q('#pasB [data-a=pad]')]);t.click(t.$('pasClose'));
+ t.click(t.$('n1'));await t.adv(8000);
  ok(t.calls.some(c=>/^msg:level_started:9/.test(c))&&t.calls.some(c=>/^msg:level_completed:9/.test(c)),'Playgama: level_started / level_completed sul livello record');
  ok(t.calls.some(c=>/^msg:player_got_achievement/.test(c))&&t.calls.some(c=>/^ach:/.test(c)),'Playgama: trofeo → player_got_achievement e obiettivo della piattaforma');
  ok(t.calls.some(c=>/^an:/.test(c)),'Playgama: eventi di analytics inviati alla piattaforma');
@@ -279,7 +293,7 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  t.click(t.q('[data-a=login]'));t.click(t.q('[data-a=soc][data-v=share]'));await t.adv(300);ok(t.calls.includes('auth')&&t.calls.includes('share'),'accesso e condivisione chiamano il Bridge');
  ok(t.errs.length===0,'Playgama: nessun errore JS '+t.errs.slice(0,2));}
 {const t=await boot({...base},{});ok(t.$('tShop').style.display!=='none','il negozio 🛒 si vede sempre (anche senza pagamenti)');t.click(t.$('tShop'));
- ok(t.$('shop').classList.contains('on')&&t.qa('#shopB [data-id][disabled]').length===10&&!!t.q('#shopB [data-a=ad]'),'senza pagamenti: prodotti visibili ma non acquistabili, biglietto gratis con video');}
+ ok(t.$('shop').classList.contains('on')&&t.qa('#shopB [data-id][disabled]').length===11&&!!t.q('#shopB [data-a=ad]'),'senza pagamenti: prodotti visibili ma non acquistabili, biglietto gratis con video');}
 
 // --- app di Playgama: Bridge che arriva tardi → si collega e recupera il salvataggio della piattaforma (più tempo di gioco)
 {const t=await boot({...base,g:[1,1,...z(18)],c:50,pt:10,introSeen:1,dl:dl0({last:dn})},{});await t.adv(1500);

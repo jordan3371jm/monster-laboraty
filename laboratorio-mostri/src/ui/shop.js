@@ -44,4 +44,5 @@ $('shopB').onclick=async e=>{
  try{const g=await buy(id);if(g){sfx('win');toast('🛒 '+tr('bought')+(what(g)?' '+what(g):''),1);track('iap',{id});save(true)}}
  catch(x){toast(tr('buyFail'))}
  busy=false;renderShop();ui()};
-export {initShop,renderShop,offerCheck};
+const priceOf=id=>{const p=CAT.find(x=>x.id===id);return p?String(p.price):''}; // prezzo dal catalogo della piattaforma ('' se non in vendita)
+export {initShop,renderShop,offerCheck,priceOf};

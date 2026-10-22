@@ -2,7 +2,7 @@ import {MAXT,E,EXCL_EMO} from '../data/config.js';
 import {R,S} from '../core/state.js';
 import {dayNum,freeCell,incBase,pgain,rBase,setEvMul} from './economy.js';
 import {elOf,squad} from './combat.js';
-import {busy,expMulCh} from './meta.js';
+import {addT,busy,expMulCh} from './meta.js';
 
 // ---- Iniezione di dipendenza (lato timers) ----
 // economy.mult() deve applicare i bonus dei «motivi per tornare», ma non può importare questo modulo
@@ -92,8 +92,6 @@ const weekLeft=()=>7-(dayNum()+3)%7;
 const evElNow=()=>((weekNum()%3)+3)%3;
 const evOn=()=>num(S.ev.wk,-1)===weekNum();
 const evKey=()=>'e'+weekNum();
-const evGoal=()=>Math.floor(120+40*Math.min(20,num(S.ach.pr,0)));
-const evNeed=()=>Math.ceil(evGoal()/(1+frac(S.ev.x)));          // spilla dell'evento: serve meno progresso
 const evShop=()=>{const s=S.ev.sp[evKey()];return Array.isArray(s)?s:[]};
 const evBought=i=>evShop().includes(i);
 const evPrice=i=>Math.ceil(SH[i].c/(1+frac(S.ev.x)));
@@ -106,19 +104,28 @@ function evEggGive(){const t=1;
  const g=nidGain({t});addC(g.c);addE(g.e);return 'coins'}
 function evCheck(){const w=weekNum(),prev=num(S.ev.wk,-1);
  if(prev!==w){const part=prev>=0&&prev===w-1&&num(S.ev.ok,0)>=1;       // chi ha partecipato alla settimana scorsa riceve un uovo dell'evento
-  S.ev.wk=w;S.ev.el=evElNow();S.ev.p=0;S.ev.tot=0;S.ev.b=0;S.ev.ok=0;S.ev.x=0;S.ev.m=null;S.ev.sp={};S.ev.got=0;
+  S.ev.wk=w;S.ev.el=evElNow();S.ev.p=0;S.ev.tot=0;S.ev.b=0;S.ev.ok=0;S.ev.x=0;S.ev.m=null;S.ev.sp={};S.ev.got=0;S.ev.cl=[];S.ev.mc=0;
   if(part){evEggGive();S.ev.got=1;R.evEgg=1}
   if(prev>=0&&w-prev>1)R.evNew=0;                                   // tornati dopo molte settimane: niente avviso «nuovo evento» (l'evento corrente è già iniziato da tempo)
   else if(prev>=0)R.evNew=1}                                        // il primo avvio non mostra l'avviso «nuovo evento»
  if(!S.ev.m||num(S.ev.m.wk,-1)!==w)S.ev.m={wk:w,t:evChampTier(),lv:5+(Math.abs(w>>>2)%3),left:0};
  if(!Array.isArray(S.ev.cl))S.ev.cl=[];if(!S.ev.sp||typeof S.ev.sp!=='object')S.ev.sp={}}
-// 1 💠 per ogni 👻💎 catturato. Ogni evGoal 💠 GUADAGNATE (anche se poi spese) = una spilla = +6h di campione.
+// Come si guadagnano i 💠 (valuta dell'evento): EV_CATCH per ogni 👻💎 catturato, 1 ogni EV_MRG unioni che creano un mostro
+// dell'elemento in festa, EV_DM per ogni missione giornaliera riscossa ed EV_WM per una settimanale.
+const EV_CATCH=2,EV_MRG=10,EV_DM=5,EV_WM=25;
 function evAdd(n){if(!evOn()||!(n>0))return;
  S.ev.p=num(S.ev.p,0)+n;S.ev.tot=num(S.ev.tot,0)+n;S.ev.ok=(S.ev.ok||0)+1;
- const was=num(S.ev.b,0),now=Math.floor(S.ev.tot/evNeed());
- if(now>was){S.ev.b=now;S.ach.we=(S.ach.we||0)+(now-was);
-  if(S.an.f.week_event===undefined)S.an.f.week_event=Math.max(1,Math.round((Date.now()-S.an.fs)/1000));
-  if(S.ev.m)S.ev.m.left=num(S.ev.m.left,0)+(now-was)*6*HOUR}}
+ if(S.an.f.week_event===undefined)S.an.f.week_event=Math.max(1,Math.round((Date.now()-S.an.fs)/1000))}
+// Unione che crea il livello t: se è dell'elemento in festa conta verso il prossimo 💠
+function evMerge(t){if(!evOn()||elOf(t)!==S.ev.el)return;S.ev.mc=num(S.ev.mc,0)+1;if(S.ev.mc>=EV_MRG){S.ev.mc-=EV_MRG;evAdd(1)}}
+// Traguardi della festa: premi per i 💠 GUADAGNATI nella settimana (anche se poi spesi nel negozio). Si riscuotono con un tocco.
+// t biglietti, co monete (× 5 minuti di guadagni), e Essenze, boost minuti di x2, egg uovo dell'evento nel nido
+const EVM=[{p:30,t:2},{p:100,co:4},{p:200,e:2,t:2},{p:350,boost:30,t:3},{p:550,co:12,e:2},{p:800,egg:1,e:3,t:5}];
+const evMileOk=i=>!!EVM[i]&&evOn()&&num(S.ev.tot,0)>=EVM[i].p&&!(S.ev.cl||[]).includes(i);
+function evMile(i){if(!evMileOk(i))return null;const m=EVM[i];S.ev.cl=[...(S.ev.cl||[]),i];S.ev.b=S.ev.cl.length;S.ach.we=(S.ach.we||0)+1;
+ const out={t:m.t||0,e:m.e||0,c:m.co?Math.floor(rBase()*m.co):0,boost:m.boost||0,egg:0};
+ if(out.c)addC(out.c);addE(out.e);addT(out.t);if(out.boost)S.boost=Math.max(Date.now(),S.boost)+out.boost*MIN;if(m.egg)out.egg=evEggGive()==='egg'?1:0;
+ return out}
 function evBuy(i){const it=SH[i];if(!evCan(i))return false;
  S.ev.p-=evPrice(i);S.ev.sp[evKey()]=[...evShop(),i];
  if(it.boost)S.boost=Math.max(Date.now(),S.boost)+it.boost*MIN;          // MIN è già in ms
@@ -163,7 +170,7 @@ function ordFill(){if(S.tut<3||!S.g.some(Boolean))return;const l=ordList(),nx=S.
 const ordFree=()=>{const nx=Array.isArray(S.ord.nx)?S.ord.nx:S.ord.nx=[];nx.push(Date.now()+ORD_WAIT);nx.sort((a,b)=>a-b);nx.length=Math.min(nx.length,ORD_Q)};
 const ordOk=o=>!o.c&&!!o.d;
 // Da chiamare a ogni unione con il livello APPENA creato (tocco, «Unisci tutto», unione automatica). Ritorna true se un ordine è diventato riscuotibile.
-function onMerge(t){let hit=false;
+function onMerge(t){let hit=false;evMerge(t);
  for(const o of ordList())if(!o.c&&!o.d&&Date.now()<=o.et&&(o.k==='at'?t>=o.t:t===o.t)){o.d=1;hit=true}
  return hit}
 // Essenze: una piccola quota di quelle del prestigio, mai un premio fisso
@@ -193,7 +200,7 @@ function calcEvMul(){let m=elBonus()*evMonBonus()*stMul();
 // 1) Le missioni chiamano prog('event') per ogni 👻💎 catturato: durante l'evento vale anche come progresso della settimana
 //    (missions.js, dentro prog(), richiama onProg() subito dopo aver avanzato le missioni).
 // 2) Ogni unione chiama onMerge(livello): se l'ordine richiede proprio quel livello diventa riscuotibile (vedi sopra).
-function onProg(t,n){if(t==='event'&&n>0)evAdd(n)}
+function onProg(t,n){if(!(n>0))return;if(t==='event')evAdd(n*EV_CATCH);else if(t==='dmis')evAdd(n*EV_DM);else if(t==='wmis')evAdd(n*EV_WM)}
 setEvMul(calcEvMul); // economy.js lo invoca dentro mult(): niente import circolare
 
 // ---- Segnali dentro il gioco: campanella (il portale web non ha push), barra obiettivo, finestra «bentornato» ----
@@ -203,7 +210,7 @@ const bells=()=>{const out=[];
  for(const e of expReady())out.push({a:'xb',i:S.exp.run.indexOf(e),k:'exp_'+EXP[e.q].k,ic:EXP[e.q].ic});
  S.inc.r.forEach((n,i)=>{if(nidLeft(n)<=0)out.push({a:'hb',i,k:'nidRdy',ic:NID[n.t].ic})});
  ordList().forEach((o,i)=>{if(ordOk(o))out.push({a:'ob',i,k:'ordRdy',ic:'📜'})});
- if(evOn()&&SH.some((_,i)=>evCan(i)))out.push({a:'goEv',k:'evGo',ic:'🎪'});
+ if(evOn()&&(SH.some((_,i)=>evCan(i))||EVM.some((_,i)=>evMileOk(i))))out.push({a:'goEv',k:'evGo',ic:'🎪'});
  return out};
 // Obiettivo a tempo da mostrare subito: prima le cose pronte (premi da riscuotere), poi la prossima scadenza
 function goal(){const b=bells();if(b.length)return{...b[0],p:1,gk:GKEY[b[0].a]||'soon'};
@@ -234,6 +241,6 @@ export {SEC,MIN,HOUR,DAY,OFF_CAP,SPEED,since,timersTick,ordersExpire,
  EXP,EXPN,expDur,expPow,expVal,expGain,expCoins,expLeft,expReady,expStart,expClaim,expSpeed,
  NEST,NID,nidK,nidMax,nidCost,nidDur,nidLeft,nidProg,nidGain,nidBusy,nidBuy,nidHatch,nidSpeed,
  EXCL,isExcl,GR,stMul,grDone,claimLong,onProg,
- ELN,EXCL_IC,weekNum,weekLeft,evElNow,evOn,evKey,evGoal,evNeed,evShop,evBought,evPrice,evCan,evCheck,evAdd,evBuy,elBonus,evMonBonus,evClock,evChampTier,SH,
+ ELN,EXCL_IC,weekNum,weekLeft,evElNow,evOn,evKey,EV_CATCH,EV_MRG,EV_DM,EV_WM,EVM,evMileOk,evMile,evMerge,evShop,evBought,evPrice,evCan,evCheck,evAdd,evBuy,elBonus,evMonBonus,evClock,evChampTier,SH,
  ORDT,ORD_DUR,ORD_Q,ORD_WAIT,ordLv,ordList,ordLeft,ordFill,ordOk,ordClaim,ordReward,ordTick,onMerge,ordReach,
  bells,goal,horizon,fmtT};

@@ -112,6 +112,9 @@
         },
         {
             "id": "income_x2"
+        },
+        {
+            "id": "pass_premium"
         }
     ],
     "leaderboards": [

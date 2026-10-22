@@ -1,7 +1,8 @@
 import {AU} from './audio.js';
 import {R,S} from './core/state.js';
 import {give,incBase} from './game/economy.js';
-import {addT} from './game/meta.js';
+import {addT,ch,psBuy,psCheck} from './game/meta.js';
+const passOn=()=>{psCheck();return!!ch().ps.prem};
 
 // ---- Playgama Bridge: tutte le chiamate alla piattaforma passano da qui ----
 // Senza Bridge (in locale, o se non si è inizializzato) ogni funzione non fa nulla e restituisce un valore neutro.
@@ -48,16 +49,17 @@ const PROD={
  starter_pack:{ic:'🎁',t:30,e:30,h:4,perm:'st'},
  tickets_10:{ic:'🎫',t:10},tickets_60:{ic:'🎫',t:60},tickets_150:{ic:'🎫',t:150},
  ess_10:{ic:'🔮',e:10},ess_60:{ic:'🔮',e:60},ess_150:{ic:'🔮',e:150},
- coins_12h:{ic:'🪙',h:12},coins_24h:{ic:'💰',h:24},income_x2:{ic:'📈',perm:'x2'}};
+ coins_12h:{ic:'🪙',h:12},coins_24h:{ic:'💰',h:24},income_x2:{ic:'📈',perm:'x2'},
+ pass_premium:{ic:'🎟️',pass:1}}; // pass: Premium del Pass stagionale per la stagione in corso (si ricompra a ogni stagione)
 // (S.iap.na, il vecchio «Niente pubblicità», non è più in vendita ma resta valido per chi lo avesse)
 const payOn=()=>safe(b=>!!(b.payments&&b.payments.isSupported),false);
 async function catalog(){if(!payOn())return[];try{const c=await B().payments.getCatalog();return(Array.isArray(c)?c:[]).filter(p=>p&&PROD[p.id]&&p.price!=null&&!/undefined|NaN/.test(String(p.price)))}catch(e){return[]}} // solo i prodotti con un prezzo vero (creati nel pannello)
-const owned=id=>{const p=PROD[id];return!!(p&&p.perm&&S.iap[p.perm])};
+const owned=id=>{const p=PROD[id];return!!(p&&(p.perm&&S.iap[p.perm]||p.pass&&passOn()))};
 // Consegna: i permanenti una volta sola (flag in S.iap), i consumabili una volta per ordine (S.iap.got evita doppioni)
 function grant(id,pur){const p=PROD[id];if(!p)return null;
  if(p.perm){if(S.iap[p.perm])return null;S.iap[p.perm]=1}
  else{const k=pur&&(pur.orderId||pur.externalId||pur.purchaseToken);if(k){if(S.iap.got.includes(String(k)))return null;S.iap.got.push(String(k));if(S.iap.got.length>60)S.iap.got.shift()}}
- const c=p.h?Math.max(incBase()*3600*p.h,1000*p.h):0;give(c,p.e||0);addT(p.t||0);return{...p,c}}
+ const c=p.h?Math.max(incBase()*3600*p.h,1000*p.h):0;give(c,p.e||0);addT(p.t||0);if(p.pass)psBuy();return{...p,c}}
 async function buy(id){if(!payOn()||!PROD[id]||owned(id))return null;
  const pur=await B().payments.purchase(id);const g=grant(id,pur||{});if(!PROD[id].perm)later(B().payments.consumePurchase(id));return g}
 // All'avvio: ripristina i permanenti e consegna i consumabili rimasti in sospeso (pagati ma non consumati)

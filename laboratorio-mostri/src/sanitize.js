@@ -1,7 +1,7 @@
 import {S} from './core/state.js';
 import {E,MAXT} from './data/config.js';
 import {PK,PKR,UP,mult} from './game/economy.js';
-import {GR,NID,NEST,ORD_DUR,ORD_Q,ORD_WAIT,SH} from './game/timers.js';
+import {EVM,GR,NID,NEST,ORD_DUR,ORD_Q,ORD_WAIT,SH} from './game/timers.js';
 import {sanCh} from './game/meta.js';
 
 // ---- Difesa da salvataggi rovinati (null, testo al posto di numeri, tipi sbagliati): senza questo un solo campo storto bloccava l'avvio per sempre ----
@@ -58,5 +58,5 @@ function sanitize(d){
  const ev=obj(S.ev);const sp=obj(ev.sp);const spo={};for(const key in sp)if(Array.isArray(sp[key]))spo[key]=ints(sp[key]).filter(i=>i>=0&&i<SH.length).slice(0,SH.length);
  S.ev={wk:Math.floor(fin(ev.wk,-1,-1,1e9)),el:Math.floor(fin(ev.el,0,0,2)),p:Math.floor(fin(ev.p,0)),tot:Math.floor(fin(ev.tot,0)),b:Math.floor(fin(ev.b,0)),ok:Math.floor(fin(ev.ok,0)),
   x:Math.min(.6,fin(ev.x,0,0,.6)),got:ev.got?1:0,m:ev.m&&typeof ev.m==='object'?{wk:Math.floor(fin(ev.m.wk,-1,-1,1e9)),t:lv(ev.m.t)||2,lv:Math.floor(fin(ev.m.lv,5,1,MAXT)),left:Math.floor(fin(ev.m.left,0,0,30*86400e3))}:null,
-  cl:ints(arr(ev.cl)).filter(i=>i>=0&&i<SH.length),sp:spo}}
+  cl:ints(arr(ev.cl)).filter((i,j,a)=>i>=0&&i<EVM.length&&a.indexOf(i)===j),mc:Math.floor(fin(ev.mc,0,0,99)),sp:spo}}
 export {sanitize,obj,fin,num0};

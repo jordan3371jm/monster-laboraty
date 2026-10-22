@@ -51,7 +51,15 @@ const D0=Date.now;const at=ms=>{Date.now=()=>ms};const back=()=>{Date.now=D0};
 // Pass: tetto giornaliero per unioni e vittorie, livelli e premi
 {fresh();M.psAdd(1000,'m');M.psAdd(1000,'w');ok(M.ch().ps.xp===120,'unioni e vittorie: al massimo 60 PE al giorno ciascuna');
  M.psAdd(30*M.PS_XP);ok(M.psLv()===30,'livello massimo 30');ok(M.psClaim(1,1)===null,'premium bloccato senza sblocco');
- const r=M.psClaim(30,0);ok(r&&r.chr&&CH[r.chr.i].ex==='ps','livello 30: campione esclusivo 🦚');ok(M.psClaim(30,0)===null,'un premio si riscuote una volta sola')}
+ const r=M.psClaim(30,0);ok(r&&r.chr&&CH[r.chr.i].ex==='ps','livello 30: campione esclusivo 🦚');ok(M.psClaim(30,0)===null,'un premio si riscuote una volta sola')
+ // premium a video: PS_ADS video per ogni premio 👑, solo per i livelli raggiunti
+ {const t0=M.ch().t;for(let k=1;k<M.PS_ADS;k++){const x=M.psAd(2);ok(x&&x.n===k&&!x.got,'video '+k+'/'+M.PS_ADS+' per il premio 👑 del livello 2')}
+  const x=M.psAd(2);ok(x&&x.got&&M.ch().ps.cp.includes(2)&&M.ch().t>t0,'al '+M.PS_ADS+'° video il premio 👑 arriva da solo');ok(M.psAd(2)===null,'premio 👑 già preso: niente altri video')}
+ // premi più ricchi: ogni livello gratis dà qualcosa, i premium hanno anche Essenze e monete
+ {let e=0,c=0;for(let l=1;l<=M.PS_LV;l++){const r=M.psRew(l,1);e+=r.e||0;c+=r.c||0}ok(e>=15&&c>=40,'premium: '+e+' Essenze e monete in tutta la stagione')}
+ {const e0=S.essT,c0=S.c;const o=M.grant({e:2,c:3});ok(S.essT===e0+2&&S.c>c0&&o.co>0,'grant: Essenze e monete consegnate')}
+ // acquisto: Premium attivo per la stagione, poi i premi 👑 si riscuotono normalmente
+ M.psBuy();ok(M.ch().ps.prem===1&&M.psClaim(3,1)!==null&&M.psAd(4)===null,'Premium comprato: premi 👑 riscuotibili, niente video')}
 // Invasione: attiva solo nel fine settimana, punti, classifica, premio a fine evento
 {fresh();S.bs=20;const d=dayNum(),dw=((d+3)%7+7)%7,sat=(d+(5-dw+7)%7)*864e5+new Date().getTimezoneOffset()*6e4;
  at(sat+12*3600e3);ok(M.ivOn(),'sabato: invasione attiva');ok(eHp(7)>Math.floor(30*Math.pow(1.45,6)),'durante l\'invasione i nemici hanno più vita');
