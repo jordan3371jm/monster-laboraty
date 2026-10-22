@@ -174,10 +174,8 @@ html,body{font-family:ui-rounded,"SF Pro Rounded","Nunito","Varela Round","Segoe
   radial-gradient(ellipse at 50% 120%,hsl(var(--h) 80% 50% / .55),transparent 65%),
   linear-gradient(hsl(var(--h) 45% 18%),hsl(var(--h) 55% 9%));
  background-size:100% 100%,100% 200%,100% 200%,100% 200%,100% 100%,100% 100%;
- animation:bub 4s linear infinite;
  box-shadow:inset 0 0 0 1px #ffffff14,inset 0 -10px 22px hsl(var(--h) 90% 45% / .35),inset 0 8px 14px #0007,0 4px 0 hsl(var(--h) 50% 12%),0 0 14px hsl(var(--h) 85% 50% / .3)}
-@keyframes bub{to{background-position:0 0,0 -200%,0 -200%,0 -200%,0 0,0 0}}
-.c:nth-child(3n).f{animation-duration:5.2s}.c:nth-child(3n+1).f{animation-duration:3.4s}
+/* (le bolle sono ferme: animare background-position ridisegnava tutte le vasche a ogni fotogramma; si muovono onda e mostro, che usano transform) */
 /* liquido luminoso sul fondo con onda */
 .c.f::before{content:'';position:absolute;left:-50%;width:200%;aspect-ratio:1;top:68%;border-radius:42%;background:linear-gradient(hsl(var(--h) 90% 62% / .45),hsl(var(--h) 90% 40% / .25));animation:wave 7s linear infinite;pointer-events:none}
 .c:nth-child(even).f::before{animation-duration:9s;animation-direction:reverse}
@@ -194,10 +192,9 @@ html,body{font-family:ui-rounded,"SF Pro Rounded","Nunito","Varela Round","Segoe
 .c:active{transform:scale(.95)}
 /* rarità */
 .c.f[data-r="1"]{border-color:hsl(var(--h) 85% 62%)}
-.c.f[data-r="2"]{border-color:#d58bff;animation:bub 4s linear infinite,epic 2.2s ease-in-out infinite alternate}
-.c.f[data-r="3"]{border-color:#ffd36b;animation:bub 4s linear infinite,leg 1.6s ease-in-out infinite alternate}
+.c.f[data-r="2"]{border-color:#d58bff}
+.c.f[data-r="3"]{border-color:#ffd36b}
 .c.f[data-r="3"] i{filter:drop-shadow(0 4px 4px #000b) drop-shadow(0 0 12px #ffd36b)}
-@keyframes epic{to{box-shadow:inset 0 0 0 1px #ffffff22,inset 0 -10px 26px #b45cff88,0 4px 0 #2a0f45,0 0 22px #c06bffaa}}
 @keyframes leg{from{border-color:#ffd36b}to{border-color:#fff6c8;box-shadow:inset 0 0 0 1px #fff4,inset 0 -12px 30px #ffb02e99,0 4px 0 #4a2a00,0 0 28px #ffc23acc}}
 .c.f[data-r="3"]::after{background:linear-gradient(#ffe48a,#d08a10);color:#3a2000}
 .pop::before{display:none}
@@ -229,7 +226,7 @@ html,body{font-family:ui-rounded,"SF Pro Rounded","Nunito","Varela Round","Segoe
 #mall{box-shadow:0 4px 0 #0b3a48,0 6px 14px #1b6f8655}
 #spawn{font-size:15px}
 #spawn:not(:disabled)::after{content:'';position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(100deg,transparent,#ffffff55,transparent);transform:skewX(-20deg);animation:shine 2.8s ease-in-out infinite;pointer-events:none}
-@keyframes shine{0%,55%{left:-60%}100%{left:130%}}
+@keyframes shine{0%,55%{transform:translateX(0) skewX(-20deg)}100%{transform:translateX(475%) skewX(-20deg)}} /* transform e non left: niente ricalcolo del layout a ogni fotogramma */
 nav button{font-weight:800;border:1px solid #ffffff14;transition:transform .15s}
 nav button.on{background:linear-gradient(#8a4ff0,#4b1fa0);box-shadow:0 0 16px #7a3fe0aa,inset 0 1px 0 #ffffff44;transform:translateY(-2px)}
 .tb{background:linear-gradient(#ffffff16,#ffffff08);font-weight:700}
@@ -376,7 +373,6 @@ html:lang(zh),html:lang(zh) body{font-family:ui-rounded,"PingFang SC","Hiragino 
 .c{border:1px solid #ffffff10;background:#ffffff06;border-radius:16px}
 .c.f{box-shadow:inset 0 0 0 1px #ffffff10,inset 0 -8px 18px hsl(var(--h) 90% 45% / .28),0 3px 0 hsl(var(--h) 50% 10%)}
 .c.f::before{opacity:.7}
-.c.f[data-r="2"],.c.f[data-r="3"]{animation:bub 4s linear infinite}
 .c::after{font-size:11px}
 .row{gap:8px}
 #spawn{font-size:16px;padding:14px 8px}

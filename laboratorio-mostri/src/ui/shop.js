@@ -35,7 +35,7 @@ function renderShop(){const left=sadLeft(),price={};CAT.forEach(p=>price[p.id]=S
  +Object.keys(PROD).filter(id=>!hidden(id)).map(id=>{const d=PROD[id],own=owned(id),pr=price[id],off=!own&&!pr,of=id==='starter_pack'&&!own;
   return '<button class="b sh'+(off?' off':'')+(of?' ofr':'')+'" data-id="'+id+'"'+(own||busy||off?' disabled':'')+'><i>'+d.ic+'</i><span><b>'+tr('p_'+id)+'</b><small>'+tr('p_'+id+'_d')+(of?'<em class="oft">⏳ '+tr('ofLeft').replace('{t}',fmtLeft(ofLeft()))+'</em>':'')+'</small></span><strong>'+(own?'✓ '+tr('owned'):off?'—':pr)+'</strong></button>'}).join('')
  +'<div class="dc">'+(CAT.length?tr('shopNote'):tr('shopOff'))+'</div>')}
-async function initShop(){try{const got=await restore();if(got.length){toast('🛒 '+got.map(what).filter(Boolean).join(' · ')||tr('bought'),1);save(true)}}catch(e){}
+async function initShop(){try{const got=await restore();if(got.length){toast('🛒 '+(got.map(what).filter(Boolean).join(' · ')||tr('bought')),1);save(true)}}catch(e){}
  CAT=await catalog();catReady=true;if($('shop').classList.contains('on'))renderShop();ui()}
 $('tShop').onclick=()=>{renderShop();$('shop').classList.add('on')};$('shopClose').onclick=()=>$('shop').classList.remove('on');
 $('shopB').onclick=async e=>{

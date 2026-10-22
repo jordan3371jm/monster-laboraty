@@ -13,7 +13,7 @@ const def=()=>{const g=Array(N).fill(0);g[0]=1;g[1]=1;return{c:30,g,gv:Array(N).
  sq:[],an:{id:'',fs:0,d0:0,ss:0,ls:0,d:[],f:{}},introSeen:0,ch:null,ul:[],iap:{x2:0,na:0,st:0,got:[],os:0},amAd:0,mga:0,sad:{d:-1,n:0}}};
 // ess = Essenze spendibili, essT = Essenze ottenute in totale (danno il +10% anche se spese)
 // exp/inc/ord = timer a scopo di ritorno: restano attivi anche dopo l'Evocazione oscura (come le missioni giornaliere)
-const KEEP=['ess','essT','st','bs','fm','disc','col','sfxOn','musOn','lp','pt','tut','dl','lt','wd','tr','pk','ach','an','exp','inc','ord','ev','introSeen','ch','ul','am','iap','sad'];
+const KEEP=['ess','essT','st','bs','fm','disc','col','sfxOn','musOn','lp','pt','tut','dl','lt','wd','tr','pk','ach','an','exp','inc','ord','ev','introSeen','ch','ul','am','iap','sad','boost','amAd']; // boost e amAd: x2 e «Unione 5 minuti» guadagnati con un video restano anche dopo l'Evocazione oscura
 const S={};
 function setS(x){for(const k in S)delete S[k];Object.assign(S,x)}
 setS(def());

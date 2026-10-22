@@ -317,8 +317,9 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  t.jump(73*3600e3);await t.adv(600);t.click(t.$('shopClose'));t.click(t.$('tShop'));ok(!t.q('#shopB [data-id=starter_pack]'),'dopo 72 ore il Pacchetto iniziale non è più in vendita');}
 
 // --- salvataggi rovinati: l'avvio non deve rompersi (prima la pagina restava bianca per sempre)
-for(const [nome,sv] of [['sq null',{sq:null}],['campi null',{c:null,up:null,pk:'x',tr:5,dl:{m:null,w:7}}],['celle sporche',{g:['a',null,99,-3,2,1]}],['numeri NaN',{st:'9',bs:null,essT:'много',tut:77}]]){
+for(const [nome,sv] of [['sq null',{sq:null}],['campi null',{c:null,up:null,pk:'x',tr:5,dl:{m:null,w:7}}],['celle sporche',{g:['a',null,99,-3,2,1]}],['numeri NaN',{st:'9',bs:null,essT:'много',tut:77}],['missioni sporche',{dl:{d:-1,m:[],last:-1,st:0,wk:Math.floor((dn+3)/7),wl:[{t:'merge',n:'x',p:null},{t:'win',n:-5,p:1e9}],mo:'?',ml:[{t:'days',n:NaN,p:'a'}]}}]]){
  const t=await boot(sv);
  ok(!!t.$('coins').textContent&&t.errs.length===0&&t.$('coins').textContent.indexOf('NaN')<0,'salvataggio rovinato ('+nome+'): il gioco parte');
+ if(nome==='missioni sporche'){t.click(t.$('tMis'));t.click(t.qa('#misTabs .b')[1]);ok(!/NaN|undefined/.test(t.$('misB').textContent)&&t.S().dl.wl.every(m=>m.n>=1&&m.p>=0&&m.p<=m.n),'missioni sporche: ripulite, niente NaN nella schermata')}
 }
 process.exit(fails?1:0);

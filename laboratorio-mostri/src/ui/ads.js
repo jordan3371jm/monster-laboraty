@@ -1,3 +1,4 @@
+import {AU} from '../audio.js';
 import {$} from '../core/dom.js';
 import {R,S} from '../core/state.js';
 import {fmt} from '../core/util.js';
@@ -14,7 +15,8 @@ function rewarded(pl){return new Promise(res=>{const b=window.bridge;
  if(!R.inited||!b||!b.advertisement||typeof b.advertisement.showRewarded!=='function'){res('unavailable');return}
  let done=false;const fin=r=>{if(done)return;done=true;R.pend=null;res(r)};R.pend=fin;
  try{Promise.resolve(b.advertisement.showRewarded(pl)).catch(()=>fin('failed'))}catch(e){fin('failed')}
- setTimeout(()=>fin('failed'),60000)})}
+ // rete di sicurezza se l'SDK non risponde mai: dopo 60s si rinuncia, ma solo se il video non è a schermo (uno lungo, o la schermata finale, non perde il premio)
+ const wd=()=>{if(done)return;if(AU.ad)setTimeout(wd,15000);else fin('failed')};setTimeout(wd,60000)})}
 function inter(place){if(S.iap.na)return;track('ad_inter',{place});try{const b=window.bridge;if(R.inited&&b&&b.advertisement&&b.advertisement.showInterstitial)Promise.resolve(b.advertisement.showInterstitial(place||'prestige')).catch(()=>{})}catch(e){}}
 async function adThen(pl,fn){if(R.pend)return;const r=await rewarded(pl);if(r==='rewarded'){track('ad_'+pl);fn();save(true)}else if(r!=='closed')toast(trv('noad'));renderDaily();ui()}
 async function watch(kind){if(R.pend)return;const r=await rewarded(kind);

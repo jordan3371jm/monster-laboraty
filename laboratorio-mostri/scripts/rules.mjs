@@ -4,7 +4,7 @@ import {S,setS,def} from '../src/core/state.js';
 import {essBonus,essMult,offRate,slots,freeCell,UP} from '../src/game/economy.js';
 import {ELM,elOf,fightTime,offBattle,tAtk,tHp,advM,eEl,squad} from '../src/game/combat.js';
 import {BN,N} from '../src/data/config.js';
-import {PKR,pkrCost,mult,spCost} from '../src/game/economy.js';
+import {PKR,pkrCost,mult,spCost,prestigeState} from '../src/game/economy.js';
 let fails=0;const ok=(c,m)=>{console.log((c?'✓ ':'✗ ')+m);if(!c)fails++};
 const fresh=(o={})=>{setS({...def(),...o});S.tut=3};
 
@@ -64,4 +64,6 @@ fresh();S.g[0]=S.g[1]=S.g[2]=S.g[3]=12;const h0=tHp(),a0=tAtk(1);S.essT=1000;ok(
  const b1=offBattle(3600).n;ok(b1===b0&&S.boost>Date.now(),'battaglia offline senza boost ('+b0+' / '+b1+' livelli) e boost ripristinato dopo');
  fresh();ok(eggInt()===0,'incubatrice spenta al livello 0');S.up.f=1;ok(eggInt()===30,'incubatrice liv. 1: un uovo ogni 30s');
  S.up.f=UP.find(u=>u.k==='f').max;ok(eggInt()>4&&eggInt()<6,'incubatrice al massimo: un uovo ogni '+eggInt().toFixed(1)+'s')}
+{fresh();const t=Date.now()+200e3;S.boost=t;S.amAd=t;S.run=4e5;const x=prestigeState(S,2);
+ ok(x.boost===t&&x.amAd===t&&x.ess===S.ess+2,'Evocazione oscura: x2 e «Unione 5 minuti» guadagnati con un video non si perdono')}
 process.exit(fails?1:0);

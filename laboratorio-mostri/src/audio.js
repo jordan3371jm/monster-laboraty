@@ -15,7 +15,8 @@ const SFX={tap:.45,move:.6,spawn:.7,merge:.8,mall:.7,new:.7,hit:.5,ab:.6,win:.6,
 function loadSfx(c){for(const n in SFX)fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arrayBuffer():null).then(a=>a&&new Promise((res,rej)=>c.decodeAudioData(a,res,rej))).then(b=>{if(b)BUF[n]=b}).catch(()=>{})}
 function play(n,rate=1){const c=AU.c,b=BUF[n];if(!c||!b)return false;try{const s=c.createBufferSource(),g=c.createGain();s.buffer=b;s.playbackRate.value=rate;g.gain.value=SFX[n];s.connect(g);g.connect(AU.sg);s.start()}catch(e){return false}return true}
 // vibrazione leggera sui telefoni (unione, mostro nuovo, colpo del boss)
-const buzz=p=>{try{if(S.sfxOn&&!document.hidden&&navigator.vibrate)navigator.vibrate(p)}catch(e){}};
+// solo dopo il primo tocco del giocatore (prima il browser la blocca e scrive un errore in console, es. per i premi al ritorno)
+const buzz=p=>{try{const ua=navigator.userActivation;if(S.sfxOn&&!document.hidden&&navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate(p)}catch(e){}};
 function aSync(){const c=AU.c;if(!c)return;
  try{audible()?c.resume&&c.resume():c.suspend&&c.suspend()}catch(e){}}
 function tone(f,d,ty,v,f2,t0,out){const c=AU.c;if(!c||!audible())return;const t=c.currentTime+(t0||0),o=c.createOscillator(),g=c.createGain();

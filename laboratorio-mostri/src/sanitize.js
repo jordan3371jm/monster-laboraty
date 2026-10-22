@@ -30,7 +30,9 @@ function sanitize(d){
  S.tr=obj(S.tr);S.an=obj(S.an);
  const dl=S.dl;if(!Array.isArray(dl.m))dl.m=[];dl.m=dl.m.filter(m=>m&&typeof m==='object');dl.w=dl.w&&typeof dl.w==='object'?dl.w:null;
  for(const k of['wl','ml'])dl[k]=Array.isArray(dl[k])?dl[k].filter(m=>m&&typeof m==='object'&&typeof m.t==='string'):[];
- for(const k of ['d','last','wk'])dl[k]=fin(dl[k],-1,-1e9,1e15);
+ // missioni: obiettivo almeno 1, progresso tra 0 e l'obiettivo (un numero sporco dava barre NaN e missioni mai completabili)
+ for(const k of['m','wl','ml'])dl[k]=dl[k].filter(m=>typeof m.t==='string').slice(0,8).map(m=>{const n=Math.floor(fin(m.n,1,1,1e9));return{...m,n,p:Math.floor(fin(m.p,0,0,n)),c:m.c?1:0}});
+ for(const k of ['d','last','wk','mo'])dl[k]=fin(dl[k],-1,-1e9,1e15);
  dl.st=Math.floor(fin(dl.st,0,0,1e6));
  for(const k of ['sh','cl2','mon','hp'])dl[k]=Math.floor(fin(dl[k],k==='sh'?1:0,0,1e6));
  dl.dbl=dl.dbl?1:0;dl.lr=dl.lr&&typeof dl.lr==='object'?{c:fin(dl.lr.c,0),e:fin(dl.lr.e,0)}:null;
