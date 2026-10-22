@@ -24,17 +24,25 @@ const pc=v=>Math.round(v*100)+'%';
 const skTxt=i=>{const c=CH[i],v=M.skVal(i);return tr('sk_'+c.sk).replace('{v}',c.sk==='stun'?v.toFixed(1):pc(v)).replace('{e}',EL[c.el])};
 const stars=s=>'★'.repeat(s)+'☆'.repeat(MAXSTAR-s);
 const gearTxt=g=>RAR[g.r]+' '+GEAR[g.s].ic+' +'+g.v+'% '+tr('gearE'+g.s);
-const rwTxt=r=>[r.c?'🪙':'',r.e?'🔮 '+r.e:'',r.t?'🎫 '+r.t:'',r.g!==undefined?RAR[r.g]+'🎒':'',r.card?'🃏':'',r.ch!==undefined?ci(r.ch,'sm'):''].filter(Boolean).join(' ');
+const rwTxt=r=>[r.tm?'📘 '+r.tm:'',r.c?'🪙':'',r.e?'🔮 '+r.e:'',r.t?'🎫 '+r.t:'',r.g!==undefined?RAR[r.g]+'🎒':'',r.card?'🃏':'',r.ch!==undefined?ci(r.ch,'sm'):''].filter(Boolean).join(' ');
 // Messaggio per ciò che si è appena ricevuto (biglietti, equipaggiamento, figurina, campione)
-function grantMsg(o){if(!o)return;const p=[];if(o.co)p.push('🪙 +'+fmt(o.co));if(o.e)p.push('🔮 +'+o.e);if(o.t)p.push('🎫 +'+o.t);if(o.gear)p.push(tr('gearGot')+' '+gearTxt(o.gear));if(o.cd)p.push(tr('cardGot')+' '+ALB[o.cd.a].c[o.cd.k]);
+function grantMsg(o){if(!o)return;const p=[];if(o.tm)p.push('📘 +'+o.tm);if(o.co)p.push('🪙 +'+fmt(o.co));if(o.e)p.push('🔮 +'+o.e);if(o.t)p.push('🎫 +'+o.t);if(o.gear)p.push(tr('gearGot')+' '+gearTxt(o.gear));if(o.cd)p.push(tr('cardGot')+' '+ALB[o.cd.a].c[o.cd.k]);
  if(o.chr)p.push(nm(o.chr.i)+' '+stars(o.chr.s));if(p.length)toast(p.join(' · '),1)}
 
 // ---- Portale ----
-function chCard(i,extra){const s=M.star(i),c=CH[i];
- return '<button class="chc r'+c.r+(s?' f':'')+(R.chSel===i?' sl':'')+'" data-a="sel" data-i="'+i+'"'+(extra||'')+'><i'+(s?'':' class="u"')+'>'+ci(i)+'</i><small>'+(s?stars(s).replace(/☆/g,''):'?')+'</small>'+(M.leaders().includes(i)?'<b class="cr">👑</b>':'')+(M.busy(i)?'<b class="cr">🧭</b>':'')+'</button>'}
+function chCard(i,extra){const s=M.star(i),c=CH[i],up=s&&M.ch().tm>0&&M.lvl(i)<M.lvCap(i);
+ return '<button class="chc r'+c.r+(s?' f':'')+(R.chSel===i?' sl':'')+'" data-a="sel" data-i="'+i+'"'+(extra||'')+'><i'+(s?'':' class="u"')+'>'+ci(i)+'</i><small>'+(s?stars(s).replace(/☆/g,''):'?')+'</small>'
+  +(s?'<em class="lvb">'+M.lvl(i)+'</em><u class="elb">'+EL[c.el]+'</u>':'')+(M.leaders().includes(i)?'<b class="cr">👑</b>':'')+(M.busy(i)?'<b class="cr">🧭</b>':'')+(M.ch().gym.s.includes(i)?'<b class="cr gy">🏋️</b>':'')+(up?'<i class="dot on"></i>':'')+'</button>'}
+// Livello del campione: barra dell'esperienza, Tomi da usare, limite delle stelle, Palestra
+function lvBlock(i){const s=M.star(i),L=M.lvl(i),cap=M.lvCap(i),c=M.ch(),need=M.xpNeed(i),inG=c.gym.s.includes(i);
+ let h='<div class="clv"><div class="clh"><b>'+tr('chLv')+' '+L+'<small>/'+cap+'</small></b><span>⚡ '+fmt(M.cPow(i))+'</span></div>';
+ if(L<cap)h+='<div class="bar"><i style="width:'+Math.min(100,M.xpOf(i)/need*100)+'%"></i></div><small class="d">'+M.xpOf(i)+' / '+need+' XP · 📘 = '+M.TOME_XP+' XP</small>'
+  +'<div class="row3"><button class="b g" data-a="lv1" data-i="'+i+'"'+(c.tm<1?' disabled':'')+'>📘 ×1</button><button class="b g" data-a="lv10" data-i="'+i+'"'+(c.tm<1?' disabled':'')+'>📘 ×10</button><button class="b o" data-a="lvm" data-i="'+i+'"'+(c.tm<1?' disabled':'')+'>📘 '+tr('lvMax')+' ('+Math.min(c.tm,M.tomesToCap(i))+')</button></div>';
+ else h+='<small class="d">'+(s<MAXSTAR?tr('lvCapTxt').replace('{s}',s+1).replace('{l}',cap+M.LV_STAR):tr('lvMaxed'))+'</small>';
+ return h+'<button class="b" data-a="gym" data-i="'+i+'">🏋️ '+tr(inG?'gymOut':'gymIn')+'</button></div>'}
 function detail(i){const c=CH[i],s=M.star(i),lead=S.ch.ld.includes(i),eq=S.ch.eq[i]||[0,0,0];
  let h='<div class="chd r'+c.r+'"><div class="chh"><i>'+ci(i)+'</i><div><b>'+nm(i)+'</b><small>'+RAR[c.r]+' '+tr('rar'+c.r)+' · '+EL[c.el]+'</small><small class="st">'+stars(s)+'</small>'+(s&&s<MAXSTAR?'<small>'+tr('pullCp').replace('{a}',M.cps(i)).replace('{b}',M.needCp(i))+'</small>':'')+'</div></div>'
-  +'<div class="xr">✨ '+skTxt(i)+'</div><div class="xr">👑 '+tr('chLeadB').replace('{v}',pc(M.LEADB[c.r]*M.sMul(i)))+'</div>'
+  +(s?lvBlock(i):'')+'<div class="xr">✨ '+skTxt(i)+'</div><div class="xr">👑 '+tr('chLeadB').replace('{v}',pc(M.LEADB[c.r]*M.sMul(i)*M.lMul(i)))+'</div>'
   +(c.f.length>1?'<div class="evl">'+c.f.map((k,j)=>'<span class="'+(s>=evoAt(c)[j]?'on':'')+'">'+mImg(k)+'<small>★'+evoAt(c)[j]+'</small></span>').join('<b>›</b>')+'</div>':'')
   +(c.ex?'<small class="d">'+tr({iv:'exIv',ps:'exPs',tw:'exTw'}[c.ex])+'</small>':'');
  if(!s)return h+'</div>';
@@ -46,7 +54,7 @@ function detail(i){const c=CH[i],s=M.star(i),lead=S.ch.ld.includes(i),eq=S.ch.eq
  return h+'</div>'}
 // Portale in tre schede: Evoca, Campioni (capisquadra, scheda del campione, tutti i campioni), Equipaggiamento
 let porTab=0;
-const porDots=()=>[!M.freeLeft()||M.ch().t>=1,0,0];
+const porDots=()=>{const c=M.ch(),own=Object.keys(c.own).map(Number);return[!M.freeLeft()||c.t>=1,(c.tm>0&&own.some(i=>M.lvl(i)<M.lvCap(i)))||(own.length>0&&c.gym.s.includes(-1)),0]};
 function renderPor(){const c=M.ch(),fl=M.freeLeft(),al=M.adLeft();
  tabs('porTabs',['🌀','🦸','🎒'].map((ic,k)=>'<b>'+ic+'</b><small>'+tr(['tbPull','tbCh','tbGear'][k])+'</small>'),porTab,porDots());
  let h='<div class="cs">🎫 <b>'+c.t+'</b> '+tr('porTk')+'<small class="d">'+tr('porPity').replace('{n}',Math.max(1,PITY_R-c.pr)).replace('{m}',Math.max(1,PITY_L-c.pl))+'</small></div>'
@@ -55,10 +63,17 @@ function renderPor(){const c=M.ch(),fl=M.freeLeft(),al=M.adLeft();
   +'<small class="d" style="text-align:center">'+tr('porOdds')+'</small>';
  if(porTab===0){setT('porB',h);ttick('porB');return}
  h='';
- if(porTab===1){h+='<div class="dh">'+tr('porLd')+'</div><small class="d" style="text-align:center">'+tr('porLdD')+'</small><div class="lds">'
+ if(porTab===1){M.gymTick();const g=c.gym;
+ // in alto: Tomi e Palestra (2 posti: tocca un posto per mettere il campione selezionato, toccalo di nuovo per toglierlo)
+ h+='<div class="gymr"><div class="tmc"><b>📘 '+fmt(c.tm)+'</b><small>'+tr('tmName')+'</small></div>'+[0,1].map(k=>{const i=g.s[k];
+   return '<button class="gys'+(i>=0?' f':'')+'" data-a="gs" data-k="'+k+'">'+(i>=0?'<i>'+ci(i,'sm')+'</i><small>'+tr('chLv')+' '+M.lvl(i)+' · +'+M.GYM_XP+' XP/h</small>':'<i>🏋️</i><small>'+tr(R.chSel>=0&&M.star(R.chSel)?'gymPut':'gymEmpty')+'</small>')+'</button>'}).join('')+'</div>';
+ h+='<div class="dh">'+tr('porLd')+'</div><small class="d" style="text-align:center">'+tr('porLdD')+'</small><div class="lds">'
   +[0,1].map(k=>{const i=c.ld[k];return i===undefined?'<div class="chc e"><small>'+tr('porEmpty')+'</small></div>':chCard(i)}).join('')+'</div>';
  if(R.chSel>=0&&CH[R.chSel])h+=detail(R.chSel);
- h+='<div class="dh">'+tr('porAll')+' · '+Object.keys(c.own).length+'/'+CH.length+'</div><div class="chg">'+CH.map((_,i)=>chCard(i)).join('')+'</div>';
+ // elenco: filtri per elemento e ordine (rarità / livello / potenza), prima i posseduti
+ const F=R.chF??-1,O=R.chO||0,ids=CH.map((_,i)=>i).filter(i=>F<0||CH[i].el===F).sort((a,b)=>(!!M.star(b)-!!M.star(a))||(O===1?M.lvl(b)-M.lvl(a):O===2?M.cPow(b)-M.cPow(a):0)||CH[b].r-CH[a].r||a-b);
+ h+='<div class="dh">'+tr('porAll')+' · '+Object.keys(c.own).length+'/'+CH.length+'</div><div class="chf">'+['✳️','🔥','💧','🌿'].map((x,k)=>'<button class="b'+(F===k-1?' on':'')+'" data-a="cf" data-v="'+(k-1)+'">'+x+'</button>').join('')
+  +'<span></span>'+[tr('soRar'),tr('soLv'),tr('soPow')].map((x,k)=>'<button class="b'+(O===k?' on':'')+'" data-a="co" data-v="'+k+'">'+x+'</button>').join('')+'</div><div class="chg">'+ids.map(i=>chCard(i)).join('')+'</div>';
  setT('porB',h);ttick('porB');return}
  h+='<div class="dh">'+tr('gearT')+'</div><small class="d" style="text-align:center">'+tr('gearOnly')+'</small>';
  if(c.gear.length){const on={};for(const k in c.eq)c.eq[k].forEach(id=>{if(id)on[id]=k});
@@ -77,6 +92,10 @@ $('porB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)ret
  if(a==='x1')reveal(M.pullT(1));else if(a==='x10')reveal(M.pullT(10));else if(a==='free')reveal(M.pullFree());
  else if(a==='ad')adThen('pull',()=>reveal(M.pullAd()));
  else if(a==='sel'){R.chSel=R.chSel===i?-1:i;R.gearSl=-1;sfx('tap')}
+ else if(a==='lv1'||a==='lv10'||a==='lvm'){const n=M.useTomes(i,a==='lv1'?1:a==='lv10'?10:1e9);if(n){sfx('claim');burst($('porB'),['📘','✨'],6);track('ch_lv',{i,l:M.lvl(i)});save()}}
+ else if(a==='gym'){const g=M.ch().gym,k=g.s.indexOf(i);if(k>=0)M.gymSet(k,-1);else{const f=g.s.indexOf(-1);M.gymSet(f>=0?f:0,i)}sfx('tap');save()}
+ else if(a==='gs'){const k=+b.dataset.k,g=M.ch().gym;if(R.chSel>=0&&M.star(R.chSel)&&g.s[k]!==R.chSel)M.gymSet(k,R.chSel);else if(g.s[k]>=0)M.gymSet(k,-1);sfx('tap');save()}
+ else if(a==='cf'){R.chF=+b.dataset.v;sfx('tap')}else if(a==='co'){R.chO=+b.dataset.v;sfx('tap')}
  else if(a==='lead'||a==='unlead'){M.setLeader(i,a==='lead');sfx('claim');save()}
  else if(a==='slot'){const s=+b.dataset.s;R.gearSl=R.gearSl===s?-1:s;sfx('tap')}
  else if(a==='eq'){M.equip(R.chSel,+b.dataset.id);sfx('claim');save()}
@@ -104,6 +123,24 @@ $('towB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)ret
  else if(a==='pick'){if(M.twPick(b.dataset.k)){R.twRes=null;sfx('claim')}}
  else if(a==='quit'){M.twQuit();R.twRes=null;sfx('tap')}
  save(true);renderTow();ui()};
+
+// ---- Prove dei Campioni (Mondo 2): solo campioni, fino a 3. Si vince con abbastanza potenza; premi alla prima vittoria ----
+let triRes=null;
+function renderTri(){const c=M.ch(),n=(c.tri.best||0)+1,team=M.triTeam(),need=M.triNeed(n),pow=M.triPow(n,team),el=M.triEl(n),rw=M.triRew(n);
+ let h='<small class="d" style="text-align:center">'+tr('triD')+'</small>';
+ if(triRes){const r=triRes;h+='<div class="twf'+(r.win?' w':' l')+'"><div class="wbh">'+tr(r.win?'triWin':'triLose').replace('{n}',r.n)+'</div><div class="bar"><i style="width:'+Math.min(100,r.p/r.need*100)+'%"></i></div><small class="d">⚡ '+fmt(r.p)+' / '+fmt(r.need)+'</small>'+(r.win?'<div class="dc">'+rwTxt(r.rw)+'</div>':'<div class="dc">'+tr('triHint')+'</div>')+'</div>'}
+ h+='<div class="trh e'+el+'"><div><small>'+tr('triStage')+'</small><b>'+n+(M.triBoss(n)?' 👑':'')+'</b></div><div class="tre">'+EL[el]+'</div><div><small>'+tr('triNeed')+'</small><b>⚡ '+fmt(need)+'</b></div></div>';
+ h+='<div class="dh">'+tr('triTeam')+' · ⚡ '+fmt(pow)+'</div><div class="trt">'+[0,1,2].map(k=>{const i=team[k];if(i===undefined)return '<div class="chc e"><small>'+tr('porEmpty')+'</small></div>';
+   const adv=M.elAdv(CH[i].el,el);return chCard(i,' data-t="1"').replace('</button>','<small class="adv'+(adv>1?' up':adv<1?' dn':'')+'">'+(adv>1?'▲':adv<1?'▼':'')+' ⚡'+fmt(Math.round(M.cPow(i)*adv))+'</small></button>')}).join('')+'</div>'
+  +'<div class="bar big"><i style="width:'+Math.min(100,pow/need*100)+'%"></i></div>'
+  +'<button class="b '+(pow>=need?'g':'o')+'" data-a="fight"'+(pow?'':' disabled')+'>'+tr('triGo').replace('{n}',n)+'</button><small class="d" style="text-align:center">'+tr('triRw')+': '+rwTxt(rw)+'</small>';
+ const own=Object.keys(c.own).map(Number).sort((a,b)=>M.cPow(b)-M.cPow(a));
+ h+='<div class="dh">'+tr('triPick')+'</div><div class="chg">'+own.map(i=>chCard(i,' data-t="1"')).join('')+'</div>';
+ setT('triB',h)}
+$('triB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a;
+ if(a==='sel'){M.triSet(+b.dataset.i);triRes=null;sfx('tap')}
+ else if(a==='fight'){const r=M.triFight();if(r){triRes=r;sfx(r.win?'win':'lose');if(r.win){burst($('triB'),['⚔️','✨','📘'],14);track('trial',{n:r.n});if(r.rw)grantMsg(r.rw)}}}
+ save(true);renderTri();ui()};
 
 // ---- Pass stagionale ----
 // Premium: «Sblocca il Premium» con un acquisto (prodotto pass_premium, solo dove la piattaforma lo vende) oppure, premio per premio,
@@ -145,6 +182,14 @@ $('invB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)ret
  if(b.dataset.a==='claim'){const o=M.ivClaim();if(o){toast('🏆 '+tr('ivGot').replace('{n}',o.rank),1);grantMsg(o);sfx('win');if(o.chr&&o.chr.nw)reveal([o.chr]);track('invasion',{rank:o.rank})}}
  save(true);renderInv();ui()};
 
+// ---- Collezioni dei campioni (scheda «Campioni» della Collezione) ----
+function csHtml(){const c=M.ch();let h='<small class="d" style="text-align:center">'+tr('csD').replace('{n}',M.csDone()).replace('{p}',Math.round((M.csMul()-1)*100))+'</small>';
+ M.CSETS.forEach(s=>{const n=M.csHave(s),tot=s.ids.length;
+  h+='<div class="css"><div class="xh"><span>'+s.ic+' '+tr('cs_'+s.k)+'</span><span>'+n+'/'+tot+'</span></div><div class="csg">'+s.ids.map(i=>chCard(i,' disabled')).join('')+'</div><div class="bar"><i style="width:'+n/tot*100+'%"></i></div><div class="csr">'
+   +[0,1].map(t=>{const got=(c.cs||[]).includes(s.k+t),ok=M.csOk(s,t);return got?'<b class="rdy" style="text-align:center">✓ '+(t?tr('csAll'):tr('csHalf'))+'</b>':'<button class="b'+(ok?' g':'')+'" data-a="csc" data-k="'+s.k+'" data-t="'+t+'"'+(ok?'':' disabled')+'>'+(t?tr('csAll'):tr('csHalf'))+' ('+M.csTier(s,t)+') · '+rwTxt(M.csRew(t))+'</button>'}).join('')+'</div></div>'});
+ return h}
+function csClick(b){if(b.dataset.a!=='csc')return false;const o=M.csClaim(b.dataset.k,+b.dataset.t);if(o){grantMsg(o);sfx('win');save(true)}return true}
+
 // ---- Album di figurine (dentro la Collezione) ----
 function albHtml(){M.ch();let h='<div class="wh">'+tr('albT')+'</div><small class="d" style="text-align:center">'+tr('albD')+'</small>';
  ALB.forEach((al,a)=>{const n=M.albHave(a),dup=M.albDup(a),done=M.albDone(a);
@@ -161,8 +206,9 @@ onTab('porTabs',k=>{porTab=k;R.gearSl=-1;sfx('tap');renderPor()});$('porClose').
 $('bTow').onclick=open('tow',()=>{R.twRes=null;renderTow()});$('towClose').onclick=()=>$('tow').classList.remove('on');
 $('tPas').onclick=open('pas',renderPas);$('pasClose').onclick=()=>$('pas').classList.remove('on');
 $('bInv').onclick=open('inv',renderInv);$('invClose').onclick=()=>$('inv').classList.remove('on');
+$('bTri').onclick=open('tri',()=>{triRes=null;renderTri()});$('triClose').onclick=()=>$('tri').classList.remove('on');
 // Ridisegno dei pannelli aperti (dal ciclo dell'interfaccia)
-function metaUi(){if($('por').classList.contains('on'))renderPor();if($('tow').classList.contains('on')&&!R.twRes)renderTow();if($('pas').classList.contains('on'))renderPas();if($('inv').classList.contains('on'))renderInv()}
-function metaLang(){$('porT').textContent=tr('porT');$('towT').textContent=tr('twT');$('pasT').textContent=tr('psT');$('invT').textContent=tr('ivT');
- ['porClose','towClose','pasClose','invClose'].forEach(id=>$(id).textContent=tr('close'));$('bTow').innerHTML=tr('bTow')+'<i class="dot"></i>';$('bInv').innerHTML=tr('bInv')+'<i class="dot"></i>'}
-export {ci,grantMsg,reveal,renderPor,renderTow,renderPas,renderInv,albHtml,albClick,albNew,metaUi,metaLang,nm,skTxt,stars,gearTxt};
+function metaUi(){if($('por').classList.contains('on'))renderPor();if($('tow').classList.contains('on')&&!R.twRes)renderTow();if($('pas').classList.contains('on'))renderPas();if($('inv').classList.contains('on'))renderInv();if($('tri').classList.contains('on'))renderTri()}
+function metaLang(){$('porT').textContent=tr('porT');$('towT').textContent=tr('twT');$('pasT').textContent=tr('psT');$('invT').textContent=tr('ivT');$('triT').textContent='🏟️ '+tr('triT');
+ ['porClose','towClose','pasClose','invClose','triClose'].forEach(id=>$(id).textContent=tr('close'));$('bTow').innerHTML=tr('bTow')+'<i class="dot"></i>';$('bInv').innerHTML=tr('bInv')+'<i class="dot"></i>';$('bTri').innerHTML='🏟️ '+tr('triT')+'<i class="dot"></i>'}
+export {csHtml,csClick,ci,grantMsg,reveal,renderPor,renderTow,renderPas,renderInv,albHtml,albClick,albNew,metaUi,metaLang,nm,skTxt,stars,gearTxt};

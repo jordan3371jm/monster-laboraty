@@ -32,7 +32,8 @@ const spCost=()=>Math.floor(10*Math.pow(2,S.pk.s)*Math.pow(1.07,S.sp)*Math.pow(1
 // le monete restano utili per tutta la partita invece di finire i potenziamenti in fretta.
 const LAB_UP=.05,DISC_UP=.02,OFF_UP=.02;
 const UP=[{k:'l',max:500,cost:l=>Math.floor(50*Math.pow(1.3,l))},{k:'d',max:40,cost:l=>Math.floor(100*Math.pow(1.55,l))},{k:'o',max:25,cost:l=>Math.floor(150*Math.pow(1.6,l))},{k:'a',max:20,am:1,cost:l=>Math.floor(250*Math.pow(1.5,l))},{k:'c',max:8,cost:l=>Math.floor(1500*Math.pow(3.5,l))},
- {k:'f',max:50,ae:1,cost:l=>Math.floor(5000*Math.pow(1.42,l))},{k:'m',max:MAXT-2,am:1,cost:l=>Math.floor(400*Math.pow(2.8,l))}]; // f: Incubatrice automatica (uova gratis a intervalli, vedi eggInt)
+ {k:'f',max:50,ae:1,cost:l=>Math.floor(5000*Math.pow(1.42,l))},{k:'m',max:MAXT-2,am:1,cost:l=>Math.floor(400*Math.pow(2.8,l))},
+ {k:'n',max:15,off:1,cost:l=>Math.floor(3000*Math.pow(1.7,l))}]; // n: «Laboratorio notturno» (unione e incubatrice automatiche a gioco chiuso più veloci) // f: Incubatrice automatica (uova gratis a intervalli, vedi eggInt)
 // a, m: potenziamenti dell'Unione automatica (am: si vedono solo dopo averla sbloccata con AM_COST Essenze, per sempre in S.am).
 // Ogni amInt() secondi si uniscono due mostri uguali qualsiasi (la coppia più bassa presente), fino al livello amMax():
 // 15s → 5s (-0,5s a livello). Il massimo parte dal livello delle uova evocate (anche con «Uova antiche») e sale di 1 a livello.
@@ -45,6 +46,9 @@ const PK=[{k:'s',ic:'🥚',max:12,cost:[2,4,8,16,32,64,128,256,512,1024,2048,409
 const PKR=[{k:'x',ic:'⚗️',max:60},{k:'t',ic:'🗡️',max:60},{k:'h',ic:'🛡️',max:60},{k:'e',ic:'🥚',max:40},{k:'v',ic:'👻',max:15},{k:'w',ic:'🧺',max:20}],pkrCost=l=>Math.ceil(3*Math.pow(1.22,l));
 // Incubatrice automatica: secondi tra un uovo gratis e l'altro (0 = spenta). Le uova gratis non alzano il prezzo di quelle comprate.
 // Si sblocca per sempre con AE_COST Essenze (S.ae): da lì un uovo ogni EGG_T0 secondi, -0,5s per livello di «Incubatrice automatica» (fino a 5s).
+// A gioco chiuso unione e incubatrice automatiche lavorano molto più piano: un'azione ogni offAutoInt() secondi (5 minuti),
+// -12s per livello di «Laboratorio notturno» fino a 2 minuti. Valgono le stesse regole (livello massimo dell'unione, celle libere).
+const OFF_AUTO=300,offAutoInt=()=>Math.max(120,OFF_AUTO-12*(S.up.n||0));
 const AE_COST=5,EGG_T0=30,eggInt=()=>S.ae?Math.max(5,EGG_T0-.5*S.up.f)*HK.egg():0;
 const trN=()=>R.trC,spT=()=>1+S.pk.s; // livello delle uova evocate
 const earn=c=>{S.c+=c;S.run+=c;S.lt+=c};
@@ -66,4 +70,4 @@ function prestigeState(old,p){const x=def();KEEP.forEach(k=>x[k]=old[k]);x.ord={
  x.ess=old.ess+p;x.essT=old.essT+p;x.ach.pr++;
  const s0=1+x.pk.s;x.g[0]=x.g[1]=s0;for(let t=1;t<=s0;t++)x.disc[t-1]=1; // perk «Uova antiche»
  return x}
-export {LAB_UP,DISC_UP,OFF_UP,AE_COST,EGG_T0,AMV_INT,AMV_MS,AD_MERGES,AM_COST,amInt,amMax,PG1,pgN,GOLD,setHook,eggInt,incBase,essBonus,essMult,offRate,slots,freeCell,PG,mult,val,inc,spCost,UP,PK,PKR,pkrCost,trN,spT,earn,rBase,give,dayNum,pgain,mergePairs,prestigeState,setEvMul};
+export {OFF_AUTO,offAutoInt,LAB_UP,DISC_UP,OFF_UP,AE_COST,EGG_T0,AMV_INT,AMV_MS,AD_MERGES,AM_COST,amInt,amMax,PG1,pgN,GOLD,setHook,eggInt,incBase,essBonus,essMult,offRate,slots,freeCell,PG,mult,val,inc,spCost,UP,PK,PKR,pkrCost,trN,spT,earn,rBase,give,dayNum,pgain,mergePairs,prestigeState,setEvMul};

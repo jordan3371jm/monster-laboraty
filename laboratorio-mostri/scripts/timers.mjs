@@ -109,9 +109,9 @@ fresh();S.g=[8,7,6,5,4,3,2,1,...Array(20).fill(0)];S.ord.tier=3;T.ordTick();for(
 fresh();S.g=[8,7,6,5,4,3,2,1,...Array(20).fill(0)];T.ordTick();S.ord.n=5;S.ord.tier=3;T.expStart(0);
 const p=prestigeState(S,1);ok(p.ord.list.length===0&&p.ord.n===5&&p.ord.tier===3&&p.exp.run.length===1,'prestigio: ordini aperti azzerati, grado e spedizioni restano');
 
-// --- Pubblicità: spedizioni -1 ora, nidi -5 minuti
-fresh();S.g=[5,4,3,...Array(25).fill(0)];T.expStart(1);const l0=T.expLeft(S.exp.run[0]);T.expSpeed(0);ok(Math.abs(l0-T.expLeft(S.exp.run[0])-3600e3)<50,'acceleratore spedizione: -1h');
-S.c=1e9;T.nidBuy(1);const nl=T.nidLeft(S.inc.r[0]);T.nidSpeed(0);ok(Math.abs(nl-T.nidLeft(S.inc.r[0])-300e3)<50,'acceleratore uovo nel nido: -5 minuti');
+// --- Pubblicità: spedizioni e nidi -20 minuti
+fresh();S.g=[5,4,3,...Array(25).fill(0)];T.expStart(1);const l0=T.expLeft(S.exp.run[0]);T.expSpeed(0);ok(Math.abs(l0-T.expLeft(S.exp.run[0])-1200e3)<50,'acceleratore spedizione: -20 minuti');
+S.c=1e9;T.nidBuy(1);const nl=T.nidLeft(S.inc.r[0]);T.nidSpeed(0);ok(Math.abs(nl-T.nidLeft(S.inc.r[0])-1200e3)<50,'acceleratore uovo nel nido: -20 minuti');
 
 // --- Salvataggio rovinato
 fresh();S.exp={run:[{q:9,st:'a',et:null,v:'x'},null,5]};S.inc={r:[{t:99},{t:1,st:Date.now()*3}],h:'q',nes:9,k:'z'};S.ord={list:[{t:'a',k:5},7],n:null};S.ev={wk:'x',m:5,sp:{a:'b'},cl:'q'};

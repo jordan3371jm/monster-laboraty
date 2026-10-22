@@ -12,7 +12,7 @@ import {adThen} from './ads.js';
 import {onTab,pickTab,setT,tabs,toast} from './common.js';
 import {ui} from './hud.js';
 import {track} from '../analytics.js';
-import {addT,psAdd} from '../game/meta.js';
+import {addT,addTm,psAdd} from '../game/meta.js';
 
 // Le missioni (giornaliere, settimanali, mensili) hanno una schermata tutta loro (#mis, pulsante 📋); la logica è in game/missions.js.
 // Il pannello #daily resta per il bonus giornaliero e il calendario della serie.
@@ -24,8 +24,8 @@ function claimD(){const i=dailyInfo();if(!i.can)return;const e=i.done===6?1:0;if
  if(i.done===6)S.dl.sh=1;track('first_daily');track('daily_claim',{streak:S.dl.st});S.dl.lr={c:i.coins,e};S.dl.dbl=0;give(i.coins,e);addT(e?2:1);psAdd(30);prog('bonus',1);toast('🎁 🪙 +'+fmt(i.coins)+(e?' 🔮 +1':'')+' 🎫 +'+(e?2:1));sfx('claim');setTimeout(()=>got.forEach(g=>toast('🔥 '+tr('stkGot').replace('{d}',g.d).replace('{c}',fmt(g.c)).replace('{x}',(g.e?' · 🔮 +'+g.e:'')+(g.mon?' · 🐲':'')),1)),900);save(true)}
 // Riscuoti la missione i della lista k (0 giorno, 1 settimana, 2 mese); x=2 dopo il video. Le missioni riscosse fanno avanzare quelle più lunghe.
 function claim(k,i,x){const m=(lists()[k]||[])[i];if(!m||m.c||m.p<m.n)return;m.c=1;const r=REW[k],c=Math.floor(rBase()*r.c*x),t=r.t*x;
- give(c,r.e);addT(t);psAdd(r.pe);if(k<2)prog(k?'wmis':'dmis',1);track('mission',{k,t:m.t});
- toast('🪙 +'+fmt(c)+(r.e?' · 🔮 +'+r.e:'')+' · 🎫 +'+t,k>0);sfx(k?'win':'claim');save(true)}
+ give(c,r.e);addT(t);addTm(r.tm);psAdd(r.pe);if(k<2)prog(k?'wmis':'dmis',1);track('mission',{k,t:m.t});
+ toast('🪙 +'+fmt(c)+(r.e?' · 🔮 +'+r.e:'')+' · 🎫 +'+t+(r.tm?' · 📘 +'+r.tm:''),k>0);sfx(k?'win':'claim');save(true)}
 const mText=m=>tr('m_'+m.t).replace('{n}',fmt(m.n)).replace('{e}',m.el===undefined?'':EL[m.el]);
 function renderDaily(){const i=dailyInfo();let h='<div class="dc">🔥 '+tr('streak')+': <b>'+i.st+'</b> '+tr('days')+'</div><div class="dc">'+(i.sv?tr('shieldUse'):S.dl.sh?tr('shieldOn'):tr('shieldOff'))+'</div><div class="pips">';
  for(let k=0;k<7;k++)h+='<div class="pip'+(k<i.done?' done':'')+(i.can&&k===i.done?' cur':'')+'">'+(k===6?'🔮':'')+'x'+(1+.4*k).toFixed(1)+'</div>';
@@ -52,7 +52,7 @@ function renderMis(){const l=lists()[tab]||[],r=REW[tab];
  let h='<div class="dc">⏳ '+tr('misNew').replace('{t}',left(tab))+'</div>';
  if(tab)h+='<div class="dc"><small>'+tr(tab>1?'misMInfo':'misWInfo')+'</small></div>';
  const done=l.filter(m=>m.c).length;h+='<div class="dh">'+done+'/'+l.length+' ✓</div>';
- l.forEach((m,i)=>{const ok=m.p>=m.n,c=Math.floor(rBase()*r.c),rw='🪙 '+fmt(c)+(r.e?' · 🔮 '+r.e:'')+' · 🎫 '+r.t;
+ l.forEach((m,i)=>{const ok=m.p>=m.n,c=Math.floor(rBase()*r.c),rw='🪙 '+fmt(c)+(r.e?' · 🔮 '+r.e:'')+' · 🎫 '+r.t+(r.tm?' · 📘 '+r.tm:'');
   h+='<div class="ms'+(tab?' wk':'')+(ok?' ok':'')+'"><div>'+mText(m)+'<small>'+fmt(m.p)+'/'+fmt(m.n)+'</small><small class="d">'+rw+'</small><div class="bar"><i style="width:'+m.p/m.n*100+'%"></i></div></div><div class="mb">'
   +(m.c?'<b>✓ '+tr('claimed')+'</b>':ok?'<button class="b g" data-a="c" data-i="'+i+'">'+tr('claim')+'</button><button class="b o" data-a="x" data-i="'+i+'">📺 x2</button>':'')+'</div></div>'});
  setT('misB',h)}

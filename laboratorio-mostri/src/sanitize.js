@@ -3,6 +3,7 @@ import {E,MAXT} from './data/config.js';
 import {PK,PKR,UP,mult} from './game/economy.js';
 import {EVM,GR,NID,NEST,ORD_DUR,ORD_Q,ORD_WAIT,SH} from './game/timers.js';
 import {sanCh} from './game/meta.js';
+import {UB} from './game/combat.js';
 
 // ---- Difesa da salvataggi rovinati (null, testo al posto di numeri, tipi sbagliati): senza questo un solo campo storto bloccava l'avvio per sempre ----
 const num0=x=>typeof x==='number'&&isFinite(x)?x:Date.now();
@@ -28,6 +29,7 @@ function sanitize(d){
  S.am=S.am?1:0;S.ae=S.ae?1:0;{const q=obj(S.sad);S.sad={d:Math.floor(fin(q.d,-1)),n:Math.floor(fin(q.n,0,0,99))}}S.amAd=Math.min(fin(S.amAd,0),Date.now()+3*3e5);S.mga=Math.floor(fin(S.mga,0,0,1e6));{const q=obj(S.iap);S.iap={x2:q.x2?1:0,na:q.na?1:0,st:q.st?1:0,os:Math.min(fin(q.os,0,0),Date.now()),got:arr(q.got).filter(k=>typeof k==='string').slice(-60)}}
  S.sq=Array.isArray(S.sq)?S.sq.filter(t=>Number.isInteger(t)&&t>0&&t<=MAXT).slice(0,4):[];
  for(const u of UP)S.up[u.k]=Math.floor(fin(S.up[u.k],0,0,u.max));
+ {const q=obj(S.ub);S.ub={};for(const u of UB)S.ub[u.k]=Math.floor(fin(q[u.k],0,0,u.max))}
  const pk=obj(S.pk);S.pk={...d.pk};for(const p of PK)S.pk[p.k]=Math.floor(fin(pk[p.k],0,0,p.max));for(const p of PKR)S.pk[p.k]=Math.floor(fin(pk[p.k],0,0,p.max));
  S.ach={...d.ach,...obj(S.ach)};for(const k in S.ach)S.ach[k]=fin(S.ach[k],0);
  S.tr=obj(S.tr);S.an=obj(S.an);

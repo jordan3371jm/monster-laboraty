@@ -1,6 +1,6 @@
 import {sfx} from '../audio.js';
 import {$} from '../core/dom.js';
-import {S} from '../core/state.js';
+import {R,S} from '../core/state.js';
 import {tr} from '../data/text.js';
 import {PK,PKR,pkrCost} from '../game/economy.js';
 import {save} from '../save.js';
@@ -20,8 +20,9 @@ function renderTree(){let h='<div class="cs">🔮 <b>'+S.ess+'</b><small class="
   h+='<div class="ms'+(m?' ok':'')+'"><div>'+p.ic+' <b>'+tr('pr_'+p.k)+'</b> · '+tr('lvl')+' '+l+(l?' · '+eff(p.k,l):'')+'<small class="d">'+tr('pr_'+p.k+'d')+'</small></div><div class="mb">'
   +(m?'<b>'+tr('max')+'</b>':'<button class="b'+(ok?' g':'')+'" data-a="pr" data-k="'+p.k+'"'+(ok?'':' disabled')+'>🔮 '+c+'</button><button class="b" data-a="prm" data-k="'+p.k+'"'+(ok?'':' disabled')+'>'+tr('buyMax')+'</button>')+'</div></div>'});
  setT('tBody',h)}
-const openTree=()=>{$('ups').classList.remove('on');renderTree();$('tree').classList.add('on')};
-$('ess').onclick=openTree;$('treeB').onclick=openTree;$('tClose').onclick=()=>$('tree').classList.remove('on');
+// L'albero sta nella scheda «Essenze» dei Potenziamenti (prima era una finestra a parte)
+const openTree=()=>{R.tabGo=2;$('n2').click()};
+$('ess').onclick=openTree;
 $('tBody').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a;
  if(a==='pk'){const p=PK.find(x=>x.k===b.dataset.k);if(!p)return;const l=S.pk[p.k];
   if(l>=p.max||S.ess<p.cost[l])return;S.ess-=p.cost[l];S.pk[p.k]++;sfx('claim');track('perk',{k:p.k,l:S.pk[p.k]});save(true);renderTree();ui()}

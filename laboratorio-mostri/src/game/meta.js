@@ -7,19 +7,43 @@ import {setCK,tAtk,tHp,elOf} from './combat.js';
 // pass stagionale, Invasione dei boss e album di figurine. Tutto in S.ch. Niente interfaccia qui: la usano ui/meta.js e i test.
 const HOUR=3600e3,LDMAX=2,FREE_CD=8*HOUR,AD_MAX=2;
 const defCh=()=>({t:0,own:{},cp:{},ld:[],pr:0,pl:0,n:0,free:0,adD:-1,adN:0,gear:[],eq:{},nid:1,
- tw:{d:-1,tries:3,run:0,f:1,best:0,rec:0,buf:[],ch:null},ps:{o:-1,s:-1,xp:0,cl:[],cp:[],prem:0,dd:-1,dm:0,dw:0,av:{}},man:0,iv:{wk:-1,pts:0,cl:0,b:1},cards:Array(18).fill(0),alb:[0,0]});
+ tw:{d:-1,tries:3,run:0,f:1,best:0,rec:0,buf:[],ch:null},ps:{o:-1,s:-1,xp:0,cl:[],cp:[],prem:0,dd:-1,dm:0,dw:0,av:{}},man:0,iv:{wk:-1,pts:0,cl:0,b:1},cards:Array(18).fill(0),alb:[0,0],
+ lv:{},xp:{},tm:0,gym:{s:[-1,-1],t:[0,0]},tri:{best:0,team:[]},cs:[]});
 const C=()=>S.ch||(S.ch=defCh());   // stato nuovo o azzerato: si crea al primo uso
 
 // ---- Campioni ----
 const star=i=>C().own[i]||0;
 const form=i=>CH[i].f[evoIdx(CH[i],Math.max(1,star(i)))]; // nome dell'immagine della forma attuale
 const sMul=i=>1+.25*(Math.max(1,star(i))-1);                 // ★1 → ×1, ★5 → ×2
-const skVal=i=>CH[i].v*sMul(i);
+// ---- Livelli dei campioni (1-100) ----
+// Le stelle sbloccano il livello massimo (★1 → 20, ★2 → 40 … ★5 → 100). L'esperienza NON arriva da battaglie o monete:
+// Tomi 📘 (spedizioni, Torre, Prove dei Campioni, Pass, missioni, evento, doppioni a ★5, collezioni) e Palestra (allenamento lento
+// che continua anche a gioco chiuso). I campioni più rari salgono più piano ma ogni livello vale di più.
+const LV_STAR=20,MAXLV=100,TOME_XP=100,RXM=[1,1.4,1.9,2.6,3],LVP=[.02,.025,.03,.035,.04];
+const lvl=i=>star(i)?Math.max(1,Math.min(MAXLV,Math.floor(C().lv[i]||1))):0;
+const lvCap=i=>LV_STAR*Math.max(1,star(i));
+const xpNeed=(i,l=lvl(i))=>Math.floor(40*Math.pow(1.035,l-1)*RXM[CH[i].r]);
+const xpOf=i=>Math.max(0,C().xp[i]||0);
+const lMul=i=>1+(Math.max(1,lvl(i))-1)*LVP[CH[i].r];        // potenza del livello: comune ×2,98 al 100, leggendario ×4,47
+// Esperienza a un campione: sale di livello finché c'è esperienza e non tocca il limite delle stelle (al limite l'eccesso si perde)
+function giveXp(i,x){const c=C();if(!star(i)||!(x>0))return 0;let l=lvl(i),p=xpOf(i)+x,up=0;
+ while(l<lvCap(i)&&p>=xpNeed(i,l)){p-=xpNeed(i,l);l++;up++}
+ if(l>=lvCap(i))p=0;c.lv[i]=l;c.xp[i]=Math.floor(p);return up}
+// Tomi che servono per arrivare al limite attuale
+const tomesToCap=i=>{if(!star(i))return 0;let x=-xpOf(i);for(let l=lvl(i);l<lvCap(i);l++)x+=xpNeed(i,l);return Math.max(0,Math.ceil(x/TOME_XP))};
+function useTomes(i,n){const c=C();n=Math.min(Math.floor(n),c.tm,tomesToCap(i));if(n<1)return 0;c.tm-=n;giveXp(i,n*TOME_XP);return n}
+const addTm=n=>{if(n>0)C().tm+=Math.floor(n)};
+// ---- Palestra: 2 posti, ogni campione allenato prende GYM_XP esperienza all'ora (anche a gioco chiuso, senza tetto offline) ----
+const GYM_N=2,GYM_XP=30;
+function gymTick(){const g=C().gym,n=Date.now();for(let k=0;k<GYM_N;k++){const i=g.s[k];if(i<0||!star(i)){g.s[k]=-1;continue}
+ const h=Math.max(0,n-(g.t[k]||n))/36e5;const x=Math.floor(h*GYM_XP);if(x>0){giveXp(i,x);g.t[k]=(g.t[k]||n)+x/GYM_XP*36e5}if(!g.t[k])g.t[k]=n}}
+function gymSet(k,i){const g=C().gym;gymTick();if(k<0||k>=GYM_N)return false;if(i>=0&&(!star(i)||g.s.includes(i)))return false;g.s[k]=i;g.t[k]=Date.now();return true}
+const skVal=i=>CH[i].v*sMul(i)*(1+.25*(lMul(i)-1));   // anche le abilità crescono col livello, ma piano (un quarto)
 const busy=i=>Array.isArray(S.exp&&S.exp.run)&&S.exp.run.some(e=>e&&e.c===i);   // in spedizione: non guida la squadra
 const leaders=()=>C().ld.filter(i=>star(i)>0&&!busy(i));
 const sk=(k,el)=>leaders().reduce((s,i)=>s+(CH[i].sk===k&&(el===undefined||CH[i].el===el)?skVal(i):0),0);
 const LEADB=[.05,.1,.18,.3,.35];                                 // forza base che un capo dà alla squadra, per rarità
-const leadAtk=()=>leaders().reduce((s,i)=>s+LEADB[CH[i].r]*sMul(i),0);
+const leadAtk=()=>leaders().reduce((s,i)=>s+LEADB[CH[i].r]*sMul(i)*lMul(i),0)*csMul();
 const gearOf=i=>(C().eq[i]||[]).map(id=>C().gear.find(g=>g.id===id)).filter(Boolean);
 const gearB=k=>leaders().reduce((s,i)=>s+gearOf(i).reduce((a,g)=>a+(GEAR[g.s].k===k?g.v/100:0),0),0);
 const albB=k=>ALB.reduce((s,a,i)=>s+(C().alb[i]&&a.b===k?a.v:0),0);
@@ -43,7 +67,7 @@ function rollRar(){const c=C();c.pr++;c.pl++;if(c.pl>=PITY_L)return 3;
 // ben sotto 1 per evocazione: con 1,7 di media (vecchi valori) chi aveva tutto a ★5 otteneva evocazioni infinite.
 const needCp=i=>3*Math.max(1,star(i)),cps=i=>C().cp[i]||0;
 function giveCh(i){const c=C(),s=star(i);
- if(s>=MAXSTAR){const back=[0,0,1,2,3][CH[i].r],co=Math.floor(rBase()*[.3,.6,1.2,2.5,3][CH[i].r]);c.t+=back;earn(co);return{i,s,back,co}}
+ if(s>=MAXSTAR){const back=[0,0,1,2,3][CH[i].r],co=Math.floor(rBase()*[.3,.6,1.2,2.5,3][CH[i].r]),tm=[3,5,8,12,15][CH[i].r];c.t+=back;c.tm+=tm;earn(co);return{i,s,back,co,tm}} // doppioni a ★5: anche Tomi
  if(s){const cp=cps(i)+1;if(cp>=needCp(i)){c.own[i]=s+1;delete c.cp[i];return{i,s:s+1,up:1,evo:evoIdx(CH[i],s+1)>evoIdx(CH[i],s)}}c.cp[i]=cp;return{i,s,cp,need:needCp(i)}} // evo: ha cambiato forma
  c.own[i]=1;
  {if(c.ld.length<LDMAX)c.ld.push(i);
@@ -105,12 +129,46 @@ function twFight(){const c=C(),tw=c.tw;if(!tw.run||tw.ch)return null;const f=tw.
  if(!res.win){tw.run=0;tw.ch=null;return{...res,f}}
  const rw={f};if(f>tw.best){tw.best=f;tw.rec=Math.max(tw.rec,f);
   rw.c=Math.floor(rBase()*.3*(1+.1*f)*(1+twBuf('gold')));earn(rw.c);rw.t=(f%3===0?1:0)+(twBoss(f)?2:0);addT(rw.t); // biglietti ogni 3 piani (+2 ai boss)
+  rw.tm=1+(twBoss(f)?2:0);addTm(rw.tm); // Tomi per i campioni a ogni piano nuovo
   if(f%3===0)rw.g=addGear(gearRar(Math.min(.5,f*.03)));if(f%2===0)rw.card=addCard()}
  const TWX=CH.findIndex(x=>x.ex==='tw');if(tw.rec>=20&&TWX>=0&&!star(TWX))rw.chr=giveCh(TWX); // campione speciale della Torre
  tw.f++;const pick=[...BUFS].sort(()=>Math.random()-.5).slice(0,3).map(b=>b.k);tw.ch=pick;
  return{...res,f,rw}}
 function twPick(k){const tw=C().tw;if(!tw.ch||!tw.ch.includes(k))return false;tw.buf.push(k);tw.ch=null;return true}
 function twQuit(){const tw=C().tw;tw.run=0;tw.ch=null}
+
+// ---- Prove dei Campioni (si sbloccano arrivando al Mondo 2): combattono SOLO i campioni, fino a 3 ----
+// Potenza di un campione = base per rarità × stelle × livello × equipaggiamento × collezioni completate; contro l'elemento
+// del nemico vale il vantaggio (🔥>🌿>💧>🔥): ×1,3 a favore, ×0,8 contro. Si vince se la squadra raggiunge la potenza richiesta.
+// Premi solo alla prima vittoria di ogni prova (Tomi sempre, biglietti ed equipaggiamento ogni 5, Essenze ogni 10): per salire
+// bisogna far crescere i campioni, non ripetere le prove.
+const TRI_N=3,CPB=[10,16,26,40,48];
+const gearMul=i=>1+gearOf(i).reduce((a,g)=>a+g.v/100,0)/2;
+const cPow=i=>star(i)?Math.round(CPB[CH[i].r]*sMul(i)*lMul(i)*gearMul(i)*csMul()):0;
+const triEl=n=>(n*7)%3,triBoss=n=>n%5===0;
+const triNeed=n=>Math.round(14*Math.pow(1.11,n-1)*(triBoss(n)?1.35:1));
+const elAdv=(a,d)=>(a-d+3)%3===1?1.3:(d-a+3)%3===1?.8:1;   // stessa ruota degli elementi della battaglia (vedi combat.advM)
+function triTeam(){const c=C(),own=Object.keys(c.own).map(Number);let t=(c.tri.team||[]).filter(i=>star(i)).slice(0,TRI_N);
+ if(!t.length)t=own.sort((a,b)=>cPow(b)-cPow(a)).slice(0,TRI_N);return t}
+const triPow=(n,t=triTeam())=>Math.round(t.reduce((s,i)=>s+cPow(i)*elAdv(CH[i].el,triEl(n)),0));
+const triRew=n=>({tm:3+Math.floor(n/5),...(n%5===0?{t:2,g:Math.min(3,1+Math.floor(n/15))}:{}),...(n%10===0?{e:1}:{})});
+function triSet(i){const c=C(),t=triTeam().slice();if(!star(i))return false;const k=t.indexOf(i);if(k>=0)t.splice(k,1);else{if(t.length>=TRI_N)t.shift();t.push(i)}c.tri.team=t;return true}
+function triFight(){const c=C(),n=(c.tri.best||0)+1,p=triPow(n),need=triNeed(n);if(!p)return null;
+ if(p<need)return{n,win:false,p,need};c.tri.best=n;const rw=grant(triRew(n));return{n,win:true,p,need,rw}}
+
+// ---- Collezioni dei campioni: gruppi per elemento, per rarità e degli speciali. A metà e al completo si riscuote un premio;
+// ogni collezione completata dà +3% di potenza a tutti i campioni (capisquadra e Prove). ----
+const CSETS=[{k:'f',ic:'🔥',ids:CH.map((_,i)=>i).filter(i=>!CH[i].ex&&CH[i].el===0)},{k:'w',ic:'💧',ids:CH.map((_,i)=>i).filter(i=>!CH[i].ex&&CH[i].el===1)},
+ {k:'n',ic:'🌿',ids:CH.map((_,i)=>i).filter(i=>!CH[i].ex&&CH[i].el===2)},{k:'r',ic:'🔵',ids:CH.map((_,i)=>i).filter(i=>CH[i].r===1)},
+ {k:'e',ic:'🟣',ids:CH.map((_,i)=>i).filter(i=>CH[i].r===2)},{k:'l',ic:'🟡',ids:CH.map((_,i)=>i).filter(i=>CH[i].r===3)},{k:'x',ic:'🔴',ids:CH.map((_,i)=>i).filter(i=>CH[i].ex)}];
+const csHave=s=>s.ids.filter(i=>star(i)).length;
+const csTier=(s,t)=>t?s.ids.length:Math.ceil(s.ids.length/2);   // t: 0 metà, 1 completa
+const csRew=t=>t?{t:15,tm:20,e:2}:{t:5,tm:5};
+const csOk=(s,t)=>csHave(s)>=csTier(s,t)&&!(C().cs||[]).includes(s.k+t);
+function csClaim(k,t){const s=CSETS.find(x=>x.k===k);if(!s||!csOk(s,t))return null;C().cs=[...(C().cs||[]),s.k+t];return grant(csRew(t))}
+const csDone=()=>CSETS.filter(s=>(C().cs||[]).includes(s.k+1)).length;
+function csMul(){return 1+.03*csDone()}
+const csCan=()=>CSETS.some(s=>csOk(s,0)||csOk(s,1));
 
 // ---- Pass stagionale: 28 giorni, 30 livelli. I PE arrivano giocando (con un tetto giornaliero per unioni e vittorie) ----
 const PS_LV=30,PS_XP=230,PS_LEN=28,PS_CAP=60;
@@ -125,8 +183,8 @@ function psAdd(n,k){psCheck();const p=C().ps,d=dayNum();if(p.dd!==d){p.dd=d;p.dm
  if(n>0)p.xp=Math.min(PS_LV*PS_XP,p.xp+n)}
 const SEASON_CH=CH.findIndex(c=>c.ex==='ps');
 // Premi (più ricchi di prima): t biglietti, g equipaggiamento (rarità), card figurina, ch campione, e Essenze, c monete (× 5 minuti di guadagni)
-const psRew=(l,prem)=>prem?(l%10===0?{g:3,e:4,t:5}:l%5===0?{g:l>=15?3:2,e:2}:l%2===0?{t:3,c:6}:{t:3}):
- (l===PS_LV?{ch:SEASON_CH,e:3}:l%10===0?{t:3,e:1}:l%5===0?{g:l>=20?2:1,t:1}:l%3===0?{card:1,c:3}:{t:l<10?2:3});
+const psRew=(l,prem)=>prem?(l%10===0?{g:3,e:4,t:5,tm:10}:l%5===0?{g:l>=15?3:2,e:2}:l%2===0?{t:3,c:6,tm:4}:{t:3}):
+ (l===PS_LV?{ch:SEASON_CH,e:3}:l%10===0?{t:3,e:1}:l%5===0?{g:l>=20?2:1,t:1}:l%3===0?{card:1,c:3}:l%2===0?{t:2,tm:2}:{t:l<10?2:3});
 // Premium: si compra (prodotto «pass_premium», vale per la stagione in corso) oppure si sblocca un premio alla volta con PS_ADS video
 const PS_ADS=5;
 const psAds=l=>{psCheck();return Math.max(0,Math.floor(Number(C().ps.av[l])||0))};
@@ -135,7 +193,7 @@ function psAd(l){psCheck();const p=C().ps;if(p.prem||l<1||l>psLv()||p.cp.include
  if(n<PS_ADS){p.av[l]=n;return{n}}delete p.av[l];p.cp.push(l);return{n,got:grant(psRew(l,1))}}
 const psBuy=()=>{psCheck();C().ps.prem=1};
 // Consegna un premio (pass, invasione…): biglietti, pezzo d'equipaggiamento, figurina, campione
-function grant(r){const out={...r};if(r.t)addT(r.t);if(r.e)give(0,r.e);if(r.c){out.co=Math.floor(rBase()*r.c);earn(out.co)}if(r.g!==undefined)out.gear=addGear(r.g);if(r.card)out.cd=addCard();if(r.ch!==undefined)out.chr=giveCh(r.ch);return out}
+function grant(r){const out={...r};if(r.t)addT(r.t);if(r.tm)addTm(r.tm);if(r.e)give(0,r.e);if(r.c){out.co=Math.floor(rBase()*r.c);earn(out.co)}if(r.g!==undefined)out.gear=addGear(r.g);if(r.card)out.cd=addCard();if(r.ch!==undefined)out.chr=giveCh(r.ch);return out}
 function psClaim(l,prem){psCheck();const p=C().ps,list=prem?p.cp:p.cl;if(l<1||l>psLv()||list.includes(l)||(prem&&!p.prem))return null;list.push(l);return grant(psRew(l,prem))}
 const psCan=()=>{psCheck();const p=C().ps,lv=psLv();for(let l=1;l<=lv;l++)if(!p.cl.includes(l)||(p.prem&&!p.cp.includes(l)))return true;return false};
 
@@ -180,6 +238,14 @@ function sanCh(x){const d=defCh(),o=x&&typeof x==='object'&&!Array.isArray(x)?x:
  const iv=o.iv&&typeof o.iv==='object'?o.iv:{};c.iv={wk:Math.floor(fin(iv.wk,-1,-1,1e9)),pts:Math.floor(fin(iv.pts,0)),cl:iv.cl?1:0,b:Math.floor(fin(iv.b,1,1))};
  c.cards=d.cards.map((_,k)=>Math.floor(fin(Array.isArray(o.cards)?o.cards[k]:0,0,0,999)));
  c.alb=[0,1].map(a=>Array.isArray(o.alb)&&o.alb[a]&&c.cards.slice(a*9,a*9+9).every(n=>n>0)?1:0);
+ // livelli: tra 1 e il limite delle stelle; esperienza mai negativa; Tomi, Palestra, Prove e collezioni
+ const lv=o.lv&&typeof o.lv==='object'?o.lv:{},xp=o.xp&&typeof o.xp==='object'?o.xp:{};c.lv={};c.xp={};
+ for(const k in c.own){const cap=LV_STAR*c.own[k];c.lv[k]=Math.floor(fin(lv[k],1,1,cap));const x=Math.floor(fin(xp[k],0,0,1e9));if(x&&c.lv[k]<cap)c.xp[k]=x}
+ c.tm=Math.floor(fin(o.tm,0,0,1e7));
+ {const g=o.gym&&typeof o.gym==='object'?o.gym:{},s=Array.isArray(g.s)?g.s:[],t=Array.isArray(g.t)?g.t:[],seen=new Set();
+  c.gym={s:[0,1].map(k=>{const i=s[k];if(Number.isInteger(i)&&c.own[i]&&!seen.has(i)){seen.add(i);return i}return -1}),t:[0,1].map(k=>fin(t[k],0,0,Date.now()))}}
+ {const t=o.tri&&typeof o.tri==='object'?o.tri:{};c.tri={best:Math.floor(fin(t.best,0,0,1e5)),team:(Array.isArray(t.team)?t.team:[]).filter(i=>Number.isInteger(i)&&c.own[i]).filter((i,j,a)=>a.indexOf(i)===j).slice(0,TRI_N)}}
+ c.cs=(Array.isArray(o.cs)?o.cs:[]).filter(k=>typeof k==='string'&&/^[a-z][01]$/.test(k)).filter((k,j,a)=>a.indexOf(k)===j);
  return c}
 
 // Collegamenti col resto del gioco (niente import circolari: combat ed economy espongono dei ganci)
@@ -187,7 +253,9 @@ setCK('el',el=>1+sk('atkEl',el));setCK('atk',atkMul);setCK('hp',hpMul);
 setHook('inc',incMul);setHook('egg',()=>Math.max(.5,1-sk('egg')));
 setCK('ehp',()=>ivOn()?1.25:1);
 
-export {LEADB,form,needCp,cps,C as ch,expMulCh,defCh,sanCh,LDMAX,FREE_CD,AD_MAX,star,sMul,skVal,busy,leaders,sk,leadAtk,gearOf,atkMul,hpMul,incMul,goldMul,cdMul,luckAdd,bossStun,slamMul,bossMul,setLeader,
+export {LV_STAR,MAXLV,TOME_XP,lvl,lvCap,xpNeed,xpOf,lMul,giveXp,tomesToCap,useTomes,addTm,GYM_N,GYM_XP,gymTick,gymSet,
+ TRI_N,cPow,triEl,triBoss,triNeed,triTeam,triPow,triRew,triSet,triFight,elAdv,CSETS,csHave,csTier,csRew,csOk,csClaim,csDone,csMul,csCan,
+ LEADB,form,needCp,cps,C as ch,expMulCh,defCh,sanCh,LDMAX,FREE_CD,AD_MAX,star,sMul,skVal,busy,leaders,sk,leadAtk,gearOf,atkMul,hpMul,incMul,goldMul,cdMul,luckAdd,bossStun,slamMul,bossMul,setLeader,
  rollRar,giveCh,pull1,pullT,pullFree,pullAd,freeLeft,adLeft,addT,gearRar,addGear,salvage,equip,unequip,autoEquip,SALV,
  addCard,albHave,albDone,albDup,albClaim,albTrade,ALB_T,
  TW_TRIES,BUFS,twCheck,twStage,twBoss,twSim,twStart,twFight,twPick,twQuit,twBuf,

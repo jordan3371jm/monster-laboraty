@@ -4,7 +4,7 @@ import {R,S} from '../core/state.js';
 import {fmt,hueOf} from '../core/util.js';
 import {E,MAXT,N} from '../data/config.js';
 import {tr,trv} from '../data/text.js';
-import {AD_MERGES,amMax,earn,eggInt,freeCell,incBase,mergePairs,slots,spCost,spT} from '../game/economy.js';
+import {AD_MERGES,offAutoInt,amMax,earn,eggInt,freeCell,incBase,mergePairs,slots,spCost,spT} from '../game/economy.js';
 import {onMerge} from '../game/timers.js';
 import {save} from '../save.js';
 import {disc} from './collection.js';
@@ -77,4 +77,12 @@ $('spawn').onclick=()=>{const c=spCost(),i=freeCell();if(i<0){sfx('err');return 
 function autoEgg(dt){const iv=eggInt();if(!iv){R.eggT=0;return}if((R.eggT+=dt)<iv)return;const i=freeCell();if(i<0){R.eggT=iv;return}
  R.eggT=0;const t=spT();S.g[i]=t;S.gv[i]=0;for(let k=1;k<=t;k++)S.disc[k-1]=1;goldRoll(i,GOLD_P);draw();drop(i)}
 $('mall').onclick=()=>{if(Date.now()<R.mallT)return;if(mergeAll())R.mallT=Date.now()+Math.max(5,20-S.up.a)*1000;else{sfx('err');toast(trv('nomerge'))}ui()};
-export {draw,pop,mergeAll,rar,autoEgg};
+// A gioco chiuso (o con la scheda in secondo piano): unione e incubatrice automatiche fanno un'azione ogni offAutoInt() secondi.
+// Il resto dei secondi si conserva (R.oA) per la volta dopo. Ritorna quante unioni e quante uova ha fatto.
+function offAuto(secs){if(!S.am&&!S.ae){R.oA=0;return{m:0,e:0}}R.oA=(R.oA||0)+secs;const iv=offAutoInt();let n=Math.floor(R.oA/iv);if(!n)return{m:0,e:0};
+ R.oA-=n*iv;n=Math.min(n,200);let m=0,e=0;
+ for(let k=0;k<n;k++){
+  if(S.ae){const i=freeCell();if(i>=0){const t=spT();S.g[i]=t;S.gv[i]=0;for(let q=1;q<=t;q++)S.disc[q-1]=1;e++}}
+  if(S.am){const r=mergePairs(S.g,S.gv,amMax(),1);r.forEach(x=>{disc(x.t);onMerge(x.t)});m+=r.length}}
+ if(m){prog('merge',m);S.ach.mg+=m}if(m||e)draw();return{m,e}}
+export {draw,pop,mergeAll,rar,autoEgg,offAuto};

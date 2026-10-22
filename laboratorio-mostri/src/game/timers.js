@@ -2,7 +2,7 @@ import {MAXT,E,EXCL_EMO} from '../data/config.js';
 import {R,S} from '../core/state.js';
 import {dayNum,freeCell,incBase,pgain,rBase,setEvMul} from './economy.js';
 import {elOf,squad} from './combat.js';
-import {addT,busy,expMulCh} from './meta.js';
+import {addT,addTm,busy,expMulCh,giveXp,gymTick} from './meta.js';
 
 // ---- Iniezione di dipendenza (lato timers) ----
 // economy.mult() deve applicare i bonus dei «motivi per tornare», ma non può importare questo modulo
@@ -27,7 +27,8 @@ const since=t=>{const n=Date.now();return Math.max(0,Math.min(OFF_CAP,n-Math.min
 // Il premio scala con la forza della squadra e coi guadagni correnti: l'appuntamento conviene sempre di più.
 // es = quota delle Essenze che otterresti ora con l'Evocazione oscura (pgain): crescono coi progressi, non sono un guadagno fisso a ogni viaggio
 const EXP=[{k:'s',ic:'🌿',dur:HOUR,mul:1,es:0},{k:'m',ic:'🗺️',dur:4*HOUR,mul:2.3,es:.04},{k:'l',ic:'🌌',dur:8*HOUR,mul:3.6,es:.1}];
-const EXPN=1;                             // una sola spedizione alla volta: scegliere la durata è una decisione
+const EXPN=1,EXP_TM=[1,2,4],EXP_CXP=60; // Tomi 📘 al ritorno e esperienza all'ora per il campione che accompagna
+                            // una sola spedizione alla volta: scegliere la durata è una decisione
 // «Cesta dei timer» (perk w): -2% tempi di spedizioni e uova per livello, con lo stesso tetto del 40% delle uova
 const wMul=()=>Math.max(.4,1-.02*(S.pk.w||0));
 const expDur=q=>Math.round(EXP[q].dur*wMul());
@@ -41,9 +42,10 @@ function expStart(q,c=-1){if(R.PZ)return false;if(!EXP[q]||S.exp.run.length>=EXP
  S.exp.run.push({q,st:Date.now(),et:Date.now()+expDur(q),v,c:expMulCh(c)>1?c:-1});return true}
 const expGain=q=>Math.floor(pgain()*EXP[q].es),expCoins=v=>Math.floor(v*.8);
 function expClaim(i){const run=S.exp.run,e=run&&run[i];if(!e||expLeft(e)>0)return null;run.splice(i,1);
- const c=expCoins(e.v),es=expGain(e.q);addC(c);addE(es);S.ach.ex=(S.ach.ex||0)+1;
+ const c=expCoins(e.v),es=expGain(e.q),tm=EXP_TM[e.q];addC(c);addE(es);addTm(tm);S.ach.ex=(S.ach.ex||0)+1;
+ const xp=e.c>=0?Math.round(EXP[e.q].dur/36e5*EXP_CXP):0;if(xp)giveXp(e.c,xp); // il campione che accompagna fa esperienza
  if(S.an.f.first_expedition===undefined)S.an.f.first_expedition=Math.max(1,Math.round((Date.now()-S.an.fs)/1000));
- return{c,e:es,q:e.q}}
+ return{c,e:es,q:e.q,tm,xp}}
 
 // ---- 2) UOVA A TEMPO: incubi uova rare (10m → 8h) per monete ed Essenze ----
 // Il nido è legato al tipo d'uovo: ogni uovo ha il suo posto, così i timer restano stabili anche se ne compri uno nuovo.
@@ -131,13 +133,13 @@ function evSpeed(k){const x=S.ev[k];if(!x)return false;x.et=Math.max(Date.now(),
 function evMerge(t){if(!evOn()||elOf(t)!==S.ev.el)return;S.ev.mc=num(S.ev.mc,0)+1;if(S.ev.mc>=EV_MRG){S.ev.mc-=EV_MRG;evAdd(1)}}
 // Traguardi della festa: premi per i 💠 GUADAGNATI nella settimana (anche se poi spesi nel negozio). Si riscuotono con un tocco.
 // t biglietti, co monete (× 5 minuti di guadagni), e Essenze, boost minuti di x2, egg uovo dell'evento nel nido
-const EVM=[{p:30,t:2},{p:100,co:4},{p:200,e:2,t:2},{p:350,boost:30,t:3},{p:550,co:12,e:2},{p:800,egg:1,e:3,t:5}];
+const EVM=[{p:30,t:2},{p:100,co:4,tm:3},{p:200,e:2,t:2},{p:350,boost:30,t:3,tm:5},{p:550,co:12,e:2},{p:800,egg:1,e:3,t:5,tm:10}];
 const evMileOk=i=>!!EVM[i]&&evOn()&&num(S.ev.tot,0)>=EVM[i].p&&!(S.ev.cl||[]).includes(i);
 function evMile(i){if(!evMileOk(i))return null;const m=EVM[i];S.ev.cl=[...(S.ev.cl||[]),i];S.ev.b=S.ev.cl.length;S.ach.we=(S.ach.we||0)+1;
  const out={t:m.t||0,e:m.e||0,c:m.co?Math.floor(rBase()*m.co):0,boost:m.boost||0,egg:0};
- if(out.c)addC(out.c);addE(out.e);addT(out.t);if(out.boost)S.boost=Math.max(Date.now(),S.boost)+out.boost*MIN;if(m.egg)out.egg=evEggGive()==='egg'?1:0;
+ out.tm=m.tm||0;if(out.c)addC(out.c);addE(out.e);addT(out.t);addTm(out.tm);if(out.boost)S.boost=Math.max(Date.now(),S.boost)+out.boost*MIN;if(m.egg)out.egg=evEggGive()==='egg'?1:0;
  return out}
-function evBuy(i){const it=SH[i];if(!evCan(i))return false;
+function evBuy(i){const it=SH[i];if(!evCan(i))return false;if(it.tm)addTm(it.tm);
  S.ev.p-=evPrice(i);S.ev.sp[evKey()]=[...evShop(),i];
  if(it.boost)S.boost=Math.max(Date.now(),S.boost)+it.boost*MIN;          // MIN è già in ms
  if(it.co)addC(Math.floor(rBase()*it.co));
@@ -156,7 +158,7 @@ function evMonBonus(){const m=S.ev.m;if(!m||!(num(m.left,0)>0)||!S.g.some(t=>t==
 function evClock(ms){if(!evOn())return;const m=S.ev.m;if(m&&m.left>0)m.left=Math.max(0,m.left-ms)}
 // Negozio dell'evento: cosa comprare con 💠
 const SH=[{ic:'⚡',c:60,boost:60,k:'ev_b1'},{ic:'🪙',c:40,co:3,k:'ev_b2'},{ic:'🔮',c:90,ess:3,k:'ev_b3'},
- {ic:'🥚',c:150,egg:1,k:'ev_b4'},{ic:'🎖️',c:200,hp:1,k:'ev_b5'},{ic:'⭐',c:300,champ:7*DAY,k:'ev_b6'}];
+ {ic:'🥚',c:150,egg:1,k:'ev_b4'},{ic:'🎖️',c:200,hp:1,k:'ev_b5'},{ic:'⭐',c:300,champ:7*DAY,k:'ev_b6'},{ic:'📘',c:80,tm:10,k:'ev_b7'}]; // in fondo: l'indice è salvato
 
 // ---- 5) ORDINI DI UNIONE: richieste a tempo («crea un mostro di livello 8 entro 5 minuti») ----
 // Un ordine si completa quando UNA UNIONE (fatta dopo la sua nascita) produce il livello richiesto: «almeno X» oppure «esattamente X».
@@ -243,12 +245,12 @@ const fmtT=ms=>{ms=Math.max(0,Math.round(ms/1000));const h=Math.floor(ms/3600),m
 
 // Ogni tick: cambia l'evento della settimana, scorre il tempo del campione, scadono/nascono gli ordini.
 // Spedizioni e uova usano un orario di fine fisso (nessun conteggio da aggiornare): a gioco chiuso restano semplicemente «pronte».
-function timersTick(){const n=Date.now(),dt=Math.max(0,Math.min(OFF_CAP,n-num(R.lastO,n)));R.lastO=n;evCheck();evClock(dt);ordTick()}
+function timersTick(){const n=Date.now(),dt=Math.max(0,Math.min(OFF_CAP,n-num(R.lastO,n)));R.lastO=n;evCheck();evClock(dt);ordTick();if(S.ch)gymTick()}
 function ordersExpire(){ordTick()}
-// Accelerazione con pubblicità con premio: -1 ora su una spedizione o su un uovo (si chiama dentro adThen)
-const SPEED=HOUR;
+// Accelerazione con pubblicità con premio: -20 minuti su una spedizione o su un uovo (si chiama dentro adThen)
+const SPEED=20*MIN; // spedizioni: un video toglie 20 minuti
 function expSpeed(i){const e=S.exp.run[i];if(!e)return false;e.et-=SPEED;return true}
-const NID_SPEED=5*MIN; // nidi: un video toglie 5 minuti (come i timer della festa), le spedizioni un'ora
+const NID_SPEED=20*MIN; // nidi: un video toglie 20 minuti (i timer della festa 5)
 function nidSpeed(i){const n=S.inc.r[i];if(!n)return false;n.st-=NID_SPEED;return true}
 
 export {SEC,MIN,HOUR,DAY,OFF_CAP,SPEED,NID_SPEED,since,timersTick,ordersExpire,

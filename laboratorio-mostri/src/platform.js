@@ -67,6 +67,15 @@ async function restore(){if(!payOn())return[];let list=[];try{list=await B().pay
  const out=[];for(const pur of Array.isArray(list)?list:[]){const id=pur&&pur.id;if(!PROD[id])continue;const g=grant(id,pur);if(g)out.push(g);if(!PROD[id].perm)later(B().payments.consumePurchase(id))}
  return out}
 
+// ---- Notifiche (Bridge «notifications»): la piattaforma le mostra quando il giocatore è uscito dal gioco ----
+// Oggi le supporta solo MSN (su Playgama e quasi ovunque isSupported è false): senza supporto non succede nulla e restano
+// la campanella e il pallino dentro il gioco. Gli id sono mappati nel config (notifications: exp_ready, egg_ready).
+// Annullare non è supportato da nessuna piattaforma: si programmano solo notifiche sicure (fine di un timer appena partito).
+const notifOn=()=>safe(b=>!!(b.notifications&&b.notifications.isSupported),false);
+function notify(id,title,description,delaySec){if(!notifOn())return;safe(b=>later(b.notifications.schedule({id,title:String(title).slice(0,60),description:String(description).slice(0,200),delaySeconds:Math.max(60,Math.min(604800,Math.round(delaySec))),payload:id})))}
+// Il gioco è stato aperto da una notifica? (platform.payload) → id della notifica o ''
+const launchPayload=()=>safe(b=>String(b.platform&&b.platform.payload||''),'');
+
 // ---- Account e social ----
 const player=()=>safe(b=>{const p=b.player;return p?{can:!!p.isAuthorizationSupported,on:!!p.isAuthorized,name:p.name||''}:null},null);
 const authorize=()=>safe(b=>Promise.resolve(b.player.authorize()),null)||Promise.reject();
@@ -74,4 +83,4 @@ const SOC=[['share','isShareSupported'],['addToHomeScreen','isAddToHomeScreenSup
 const socials=()=>safe(b=>b.social?SOC.filter(([f,k])=>b.social[k]&&typeof b.social[f]==='function').map(([f])=>f):[],[]);
 const social=(f,o)=>safe(b=>Promise.resolve(b.social[f](o)),null)||Promise.reject();
 
-export {banner,bannerMenu,msg,syncPlay,levelStart,levelDone,levelFail,achieve,lbScore,aSend,PROD,payOn,catalog,owned,buy,restore,grant,player,authorize,socials,social};
+export {notify,notifOn,launchPayload,banner,bannerMenu,msg,syncPlay,levelStart,levelDone,levelFail,achieve,lbScore,aSend,PROD,payOn,catalog,owned,buy,restore,grant,player,authorize,socials,social};

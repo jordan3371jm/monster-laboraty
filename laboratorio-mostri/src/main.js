@@ -8,13 +8,13 @@ import {startFight} from './ui/battle.js';
 import {applyLang,ui} from './ui/hud.js';
 import {draw} from './ui/lab.js';
 import {dailyInfo,dayCheck,openDaily} from './ui/missions.js';
-import {drawTimers,openIntro} from './ui/timers.js';
+import {drawTimers,openIntro,openTm} from './ui/timers.js';
 import {ordersExpire} from './game/timers.js';
 import {tutDraw} from './ui/tutorial.js';
 import {initAnalytics} from './analytics.js';
 import {LANGS,pickLang} from './data/text.js';
 import {has,ulMigrate} from './game/unlocks.js';
-import {lbScore,syncPlay} from './platform.js';
+import {launchPayload,lbScore,syncPlay} from './platform.js';
 import {initShop} from './ui/shop.js';
 
 import './style.css';
@@ -53,7 +53,8 @@ function hookBridge(){R.inited=true;
  // pausa della piattaforma: gioco e audio fermi, il tempo in pausa non conta
  try{window.bridge.platform.on(ev('PAUSE_STATE_CHANGED','pause_state_changed'),p=>{R.PZ=!!p;if(R.PZ)save(true);else{R.lastT=Date.now();R.lastO=Date.now()}aSync();syncPlay()})}catch(e){}}
 // Dopo game_ready: gameplay_started, classifica del livello record, acquisti da ripristinare e catalogo del negozio
-function ready(){try{if(R.inited)window.bridge.platform.sendMessage('game_ready')}catch(e){}syncPlay();lbScore();initShop()}
+function ready(){try{if(R.inited)window.bridge.platform.sendMessage('game_ready')}catch(e){}syncPlay();lbScore();initShop()
+ if(/^(exp|egg)_ready$/.test(launchPayload())&&has('exp'))setTimeout(openTm,1500)} // aperto da una notifica «spedizione/uovo pronto»: si va alle Avventure
 const redraw=()=>{ulMigrate();dayCheck();startFight();applyLang();tutDraw();aSync();draw();drawTimers();ui()};
 async function boot(){
  try{if(await waitBridge(5000)){initP=Promise.resolve(window.bridge.initialize());

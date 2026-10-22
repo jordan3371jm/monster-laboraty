@@ -257,5 +257,15 @@
             "id": "ch2",
             "title": "Open 50 chests"
         }
+    ],
+    "notifications": [
+        {
+            "id": "exp_ready",
+            "msn": 1
+        },
+        {
+            "id": "egg_ready",
+            "msn": 2
+        }
     ]
 }

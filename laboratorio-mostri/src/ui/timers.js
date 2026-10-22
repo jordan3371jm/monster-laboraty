@@ -16,6 +16,7 @@ import {draw} from './lab.js';
 import {CH} from '../data/champs.js';
 import {busy,ch,expMulCh} from '../game/meta.js';
 import {ci} from './meta.js';
+import {notify} from '../platform.js';
 import {elOf} from '../game/combat.js';
 import {rBase} from '../game/economy.js';
 import {msLeft} from '../game/missions.js';
@@ -58,7 +59,7 @@ function secNest(){const mx=nidMax();let h='<div class="dh">'+tr('nidT')+'</div>
  nidK().forEach(k=>{const d=NID[k],i=S.inc.r.findIndex(n=>n.k===k),g=nidGain({t:k});
   if(i>=0){const n=S.inc.r[i],l=nidLeft(n);
    h+='<div class="nr"><i>'+d.ic+'</i><div class="nt"><div>'+(l>0?tt(n.st+nidDur(n.t)):'<b class="rdy">'+tr('nidRdy')+'</b>')+'</div>'+barT(n.st,n.st+nidDur(n.t))+'<small>'+tr('nidGain')+' '+gain(g.c,g.e)+'</small></div>'
-    +(l>0?'<button class="b o" data-a="np" data-i="'+i+'">'+evAdTxt()+'</button>':'<button class="b g" data-a="nc" data-i="'+i+'">'+tr('claim')+'</button>')+'</div>'}
+    +(l>0?'<button class="b o" data-a="np" data-i="'+i+'">'+tr('tmSpeed')+'</button>':'<button class="b g" data-a="nc" data-i="'+i+'">'+tr('claim')+'</button>')+'</div>'}
   else{const c=nidCost(k);
    h+='<div class="nr"><i>'+d.ic+'</i><div class="nt"><div>'+tr('nidTime')+' <b>'+fmtT(nidDur(k))+'</b> · '+tr('nidCost')+' 🪙 '+fmt(c)+'</div><small>'+tr('nidGain')+' '+gain(g.c,g.e)+'</small></div>'
     +'<button class="b" data-a="nb" data-k="'+k+'"'+(S.inc.r.length>=mx||S.c<c?' disabled':'')+'>'+tr('nidBuy')+'</button></div>'}});
@@ -120,12 +121,12 @@ function drawTimers(){const b=bells();$('tExp').classList.toggle('n',b.length>0)
 
 $('tmB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a,i=+b.dataset.i;
  if(a==='ec'){R.expCh=+b.dataset.c;sfx('tap')}
- else if(a==='xs'){const q=+b.dataset.q;if(expStart(q,R.expCh)){R.expCh=-1;sfx('spawn');toast('🧭 '+EXP[q].ic+' '+fmtT(expDur(q)));track('exp_start',{q});save(true)}}
+ else if(a==='xs'){const q=+b.dataset.q;if(expStart(q,R.expCh)){R.expCh=-1;sfx('spawn');toast('🧭 '+EXP[q].ic+' '+fmtT(expDur(q)));notify('exp_ready',tr('ntExpT'),tr('ntExpD'),expDur(q)/1000);track('exp_start',{q});save(true)}}
  else if(a==='xc'){const r=expClaim(i);if(r){sfx('claim');toast('🧭 '+gain(r.c,r.e),1);track('exp_claim');prog('exp',1);save(true)}}
- else if(a==='xp')adThen('speed',()=>{if(expSpeed(i))toast('⏩ -1h')});
- else if(a==='nb'){if(nidBuy(+b.dataset.k)){sfx('spawn');track('egg_start');save(true)}}
+ else if(a==='xp')adThen('speed',()=>{if(expSpeed(i))toast('⏩ -20 min')});
+ else if(a==='nb'){if(nidBuy(+b.dataset.k)){sfx('spawn');notify('egg_ready',tr('ntEggT'),tr('ntEggD'),nidDur(+b.dataset.k)/1000);track('egg_start');save(true)}}
  else if(a==='nc'){const r=nidHatch(i);if(r){sfx('new');toast('🥚 '+gain(r.c,r.e),1);track('egg_hatch');save(true)}}
- else if(a==='np')adThen('speed',()=>{if(nidSpeed(i))toast('⏩ -5 min')});
+ else if(a==='np')adThen('speed',()=>{if(nidSpeed(i))toast('⏩ -20 min')});
  else if(a==='oc'){const r=ordClaim(i);if(r){sfx('claim');toast('📜 '+gain(r.c,r.e),1);track('order_done');prog('ord',1);save(true)}}
  else if(a==='fs'){if(evxStart(+b.dataset.q)){sfx('spawn');track('evx_start',{q:+b.dataset.q});save(true)}}
  else if(a==='fc'){const p=evxClaim();if(p){sfx('claim');toast('🎪 💠 +'+p,1);track('evx_claim');save(true)}}

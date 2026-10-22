@@ -17,7 +17,7 @@ addEventListener('error',function(ev){var t=ev.target;if(t&&t.tagName==='SCRIPT'
 </script>
 <!-- Playgama Bridge dal CDN, come indicato nella documentazione (script normale, prima del gioco). Se non si carica (offline) il gioco parte comunque. -->
 <script src="https://bridge.playgama.com/v2/stable/playgama-bridge.js" onerror="window.__bridgeFail=1"></script>
-  <script defer src="./assets/index-DquK-8Df.js"></script>
+  <script defer src="./assets/index-BQZH1z3V.js"></script>
 </head>
 <body>
 <!-- Schermata di caricamento del gioco: nome, mostro e barra mentre si caricano tutte le immagini (src/preload.js). Stili qui, così si vede subito. -->
@@ -43,15 +43,16 @@ addEventListener('error',function(ev){var t=ev.target;if(t&&t.tagName==='SCRIPT'
   <div id="skh"></div>
   <div id="ts"></div>
   <div id="fmr"><button class="b" id="stPrev">◀</button><button class="b" id="fmB"></button><button class="b" id="stNext">▶</button></div>
-  <div id="mrow"><button class="b" id="bTow"><i class="dot"></i></button><button class="b o" id="bInv"><i class="dot"></i></button></div>
+  <div id="mrow"><button class="b" id="bTow"><i class="dot"></i></button><button class="b o" id="bInv"><i class="dot"></i></button><button class="b" id="bTri"><i class="dot"></i></button></div>
  </div>
  <nav id="nav"><button id="n0" class="on"><b>🧪</b><span></span></button><button id="n1"><b>⚔️</b><span></span></button><button id="n2"><b>⚙️</b><span></span></button></nav>
  <div id="ups">
   <h2 id="upsT"></h2><div id="upsTabs" class="tabs"></div>
-  <button class="b" id="u0"></button><button class="b" id="u1"></button><button class="b" id="u2"></button><button class="b" id="amB"></button><button class="b" id="u3"></button><button class="b" id="u6"></button><button class="b" id="u4"></button><button class="b" id="aeB"></button><button class="b" id="u5"></button>
+  <button class="b" id="u0"></button><button class="b" id="u1"></button><button class="b" id="u2"></button><button class="b" id="amB"></button><button class="b" id="u3"></button><button class="b" id="u6"></button><button class="b" id="u4"></button><button class="b" id="aeB"></button><button class="b" id="u5"></button><button class="b" id="u7"></button>
   <div class="ulk" id="uLk"></div>
-  <button class="b" id="treeB"></button>
+  <div id="upsBat"></div>
   <button class="b o" id="pr"></button>
+  <div id="tBody"></div>
   <button class="b" id="closeUps"></button>
  </div>
  <div id="daily" class="ov"><h2 id="dT"></h2><div id="dBody"></div><button class="b" id="dClose"></button></div>
@@ -60,13 +61,13 @@ addEventListener('error',function(ev){var t=ev.target;if(t&&t.tagName==='SCRIPT'
  <div id="intro" class="ov"><div id="introB"></div></div>
  <div id="col" class="ov"><h2 id="cT"></h2><div id="colTabs" class="tabs"></div><div id="colB"></div><button class="b" id="cClose"></button></div>
  <div id="trop" class="ov"><h2 id="trT"></h2><div id="trB"></div><button class="b" id="trClose"></button></div>
- <div id="tree" class="ov"><h2 id="tT"></h2><div id="tBody"></div><button class="b" id="tClose"></button></div>
  <div id="sqp" class="ov"><h2 id="sqT"></h2><div id="sqB"></div><button class="b" id="sqClose"></button></div>
  <div id="set" class="ov"><h2 id="setT"></h2><div id="setTabs" class="tabs"></div><div id="setB"></div><button class="b" id="setClose"></button></div>
  <div id="stat" class="ov"><h2 id="statT"></h2><div id="statB"></div><button class="b" id="statClose"></button></div>
  <div id="por" class="ov"><h2 id="porT"></h2><div id="porTabs" class="tabs"></div><div id="porB"></div><button class="b" id="porClose"></button></div>
  <div id="tow" class="ov"><h2 id="towT"></h2><div id="towB"></div><button class="b" id="towClose"></button></div>
  <div id="pas" class="ov"><h2 id="pasT"></h2><div id="pasB"></div><button class="b" id="pasClose"></button></div>
+ <div id="tri" class="ov"><h2 id="triT"></h2><div id="triB"></div><button class="b" id="triClose"></button></div>
  <div id="inv" class="ov"><h2 id="invT"></h2><div id="invB"></div><button class="b" id="invClose"></button></div>
  <div id="shop" class="ov"><h2 id="shopT"></h2><div id="shopB"></div><button class="b" id="shopClose"></button></div>
  <div id="pull" class="ov"><div id="pullB"></div></div>
