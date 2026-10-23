@@ -100,12 +100,15 @@ function one(h,d){const A={},b64=(f,t)=>'data:'+t+';base64,'+readFileSync(d+'/'+
 const CG=`<script src="https://sdk.crazygames.com/crazygames-sdk-v3.js"></script>
 <script>
 // CrazyGames SDK v3 con la forma di Playgama Bridge (window.bridge): pubblicità, salvataggio (modulo data), audio, caricamento e partita
-(function(){var L={},C=null,ok=false;function on(k,f){(L[k]=L[k]||[]).push(f)}function emit(k,v){(L[k]||[]).forEach(function(f){try{f(v)}catch(e){}})}
+(function(){var L={},C=null,ok=false,initErr='';function on(k,f){(L[k]=L[k]||[]).push(f)}function emit(k,v){(L[k]||[]).forEach(function(f){try{f(v)}catch(e){}})}
 function sdk(){return window.CrazyGames&&window.CrazyGames.SDK}
-function ad(type,ev,rew){return new Promise(function(res){var s=sdk();if(!ok||!s){if(rew)emit(ev,'failed');return res()}var started=false;
- try{s.ad.requestAd(type,{adStarted:function(){started=true;emit(ev,'opened')},
+// messaggio di diagnostica in basso (solo quando una pubblicità non parte): dice il motivo dato da CrazyGames
+function why(t){try{var d=document.createElement('div');d.textContent='CrazyGames: '+t;d.style.cssText='position:fixed;left:8px;bottom:8px;z-index:999;background:#000c;color:#fff;font:12px sans-serif;padding:6px 10px;border-radius:8px;pointer-events:none';document.body.appendChild(d);setTimeout(function(){d.remove()},6000)}catch(e){}}
+function errTxt(e){try{return e&&(e.code||e.message)?(e.code||'')+' '+(e.message||''):JSON.stringify(e)}catch(x){return String(e)}}
+function ad(type,ev,rew){return new Promise(function(res){var s=sdk();if(!s){why('SDK non caricato');if(rew)emit(ev,'failed');return res()}if(!ok)why('init non completato ('+initErr+'), provo lo stesso');
+ try{s.ad.requestAd(type,{adStarted:function(){emit(ev,'opened')},
   adFinished:function(){if(rew)emit(ev,'rewarded');emit(ev,'closed');res()},
-  adError:function(){emit(ev,rew?'failed':'closed');res()}})}catch(e){emit(ev,rew?'failed':'closed');res()}})}
+  adError:function(e){why('adError '+errTxt(e));emit(ev,rew?'failed':'closed');res()}})}catch(e){why('eccezione '+errTxt(e));emit(ev,rew?'failed':'closed');res()}})}
 var B={platform:{id:'crazy_games',language:navigator.language||'en',payload:'',isAudioEnabled:true,on:on,
   sendMessage:function(m){var s=sdk();if(ok&&s)try{if(m==='game_ready')s.game.loadingStop();else if(m==='gameplay_started')s.game.gameplayStart();else if(m==='gameplay_stopped')s.game.gameplayStop()}catch(e){}return Promise.resolve()}},
  advertisement:{isAdvancedBannersSupported:false,rewardedState:'closed',interstitialState:'closed',on:on,
@@ -117,7 +120,7 @@ var B={platform:{id:'crazy_games',language:navigator.language||'en',payload:'',i
  initialize:function(){var s=sdk();if(!s)return Promise.resolve();return Promise.resolve(s.init()).then(function(){ok=true;
   try{s.game.loadingStart()}catch(e){}
   try{B.platform.isAudioEnabled=!s.game.settings.muteAudio;s.game.addSettingsChangeListener(function(st){B.platform.isAudioEnabled=!st.muteAudio;emit('audio_state_changed',!st.muteAudio)})}catch(e){}
- }).catch(function(){})}};
+ }).catch(function(e){initErr=errTxt(e)})}};
 window.bridge=B})();
 </script>
 `;
