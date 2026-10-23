@@ -195,6 +195,14 @@ Controllato sulla documentazione ufficiale (wiki.playgama.com: requisiti, checkl
 - **Analytics**: gli eventi del gioco (`track`) vanno anche a `bridge.analytics.send`.
 - **Bordi dello schermo** (notch): gestiti in CSS con `env(safe-area-inset-*)`.
 
+## Una cartella per ogni sito (`npm run siti` → `siti/`)
+- `scripts/siti.mjs` crea `siti/<sito>/` (cartella, non salvata nel repository) e `siti/<sito>.zip` (salvato) partendo da `dist` e `dist-yt`. In ogni cartella c'è `LEGGIMI.txt` con i passi per quel sito.
+- **Playgama:** il build di sempre.
+- **CrazyGames, Poki, GameDistribution, Yandex, Y8, Lagged, Facebook, Telegram:** Playgama Bridge in locale (`@playgama/bridge`, niente CDN) e piattaforma fissata con `forciblySetPlatformId`. Bridge carica da solo lo SDK del sito. Gli id da chiedere al sito sono segnati `INSERISCI_QUI_…` in `playgama-bridge-config.json` (GameDistribution `gameId`, Lagged `devId`/`publisherId`, Telegram `adsgramBlockId`).
+- **GameMonetize:** adattatore in `index.html` che presenta il suo SDK (`sdk.showBanner`) come `window.bridge`; il video premio dà il premio a fine annuncio. Game ID da inserire (`INSERISCI_QUI_GAME_ID`).
+- **YouTube:** `dist-yt`.
+- **itch.io, Newgrounds, Armor Games, GamePix:** versione web senza SDK (niente pubblicità, salvataggio nel browser).
+
 ## YouTube Playables (`src/ytbridge.js`, `src/core/env.js`, `store/youtube/`)
 - `npm run build:yt` crea `dist-yt`: `vite.config.js` (modalità `youtube`) mette l'SDK `https://www.youtube.com/game_api/v1` come primo script, toglie Playgama Bridge e `navigator.language` e definisce `__YT__`.
 - `src/ytbridge.js` crea `window.bridge` sopra `ytgame` con la stessa forma di Playgama Bridge:
