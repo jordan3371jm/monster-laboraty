@@ -21,7 +21,6 @@ const DA='INSERISCI_QUI'; // segnaposto per gli id che ti dà il sito quando reg
 // pid = id della piattaforma in Bridge; extra = impostazioni del sito nel config; files = file in più nella cartella
 const BR={
  poki:{pid:'poki',url:'https://developers.poki.com',note:'Poki seleziona i giochi: compila la richiesta su developers.poki.com. Di solito vuole l\'esclusiva sul web (anche 5 anni) e potrebbe rifiutare un gioco già pubblicato altrove. Gli acquisti con soldi veri non compaiono (Poki non li ha).'},
- gamedistribution:{pid:'game_distribution',url:'https://gamedistribution.com/developers',extra:{gameId:'50a89496e16648efa938585b3806a130'},note:'Game ID già inserito (50a89496e16648efa938585b3806a130). Carica lo zip nel pannello di GameDistribution e prova «Premio» nella console.'},
  yandex:{pid:'yandex',url:'https://yandex.com/dev/games/doc/en/',note:'Console per sviluppatori di Yandex Games: «Add application», carica lo zip, compila nome, descrizioni e immagini (il gioco ha già il russo, che Yandex richiede). Il pagamento minimo è 100 €.'},
  y8:{pid:'y8',url:'https://developer.y8.com',note:'Carica il gioco dal portale sviluppatori di Y8 (serve un account Y8). Le pubblicità le gestisce Y8 tramite Bridge.'},
  lagged:{pid:'lagged',url:'https://lagged.dev',extra:{devId:DA+'_DEV_ID',publisherId:DA+'_PUBLISHER_ID'},need:'lagged.devId e lagged.publisherId',note:'Registrati come sviluppatore su Lagged: ti danno devId e publisherId. Mettili in playgama-bridge-config.json, ricomprimi e carica.'},
@@ -124,6 +123,34 @@ var B={platform:{id:'crazy_games',language:navigator.language||'en',payload:'',i
 window.bridge=B})();
 </script>
 `;
+// GameDistribution: collegamento diretto al loro SDK (main.min.js), come richiede il loro controllo dell'implementazione
+const GDID='50a89496e16648efa938585b3806a130';
+const GDS=`<script>
+// GameDistribution SDK con la forma di Playgama Bridge (window.bridge). Pausa e muto su SDK_GAME_PAUSE, ripresa su SDK_GAME_START,
+// premio del video solo con SDK_REWARDED_WATCH_COMPLETE (annuncio guardato per intero)
+(function(){var L={},cur=null,got=false;function on(k,f){(L[k]=L[k]||[]).push(f)}function emit(k,v){(L[k]||[]).forEach(function(f){try{f(v)}catch(e){}})}
+function sdk(){return typeof gdsdk!=='undefined'&&gdsdk.showAd?gdsdk:null}
+function ev(){return cur==='r'?'rewarded_state_changed':'interstitial_state_changed'}
+function done(ok){if(!cur)return;var e=ev();if(cur==='r'){if(ok&&got)emit(e,'rewarded');emit(e,got?'closed':'failed')}else emit(e,'closed');cur=null}
+function show(k){var s=sdk();if(cur)return Promise.resolve();if(!s){if(k==='r')emit('rewarded_state_changed','failed');return Promise.resolve()}
+ cur=k;got=false;emit(ev(),'opened');
+ return Promise.resolve().then(function(){return k==='r'?s.showAd('rewarded'):s.showAd()}).then(function(){done(true)},function(){done(false)})}
+window.GD_OPTIONS={gameId:'${GDID}',onEvent:function(event){var n=event&&event.name;
+ if(n==='SDK_REWARDED_WATCH_COMPLETE')got=true;
+ else if(n==='SDK_GAME_PAUSE'){if(!cur)emit('pause_state_changed',true)}
+ else if(n==='SDK_GAME_START'){if(!cur)emit('pause_state_changed',false)}}};
+window.bridge={platform:{id:'game_distribution',language:navigator.language||'en',payload:'',isAudioEnabled:true,on:on,sendMessage:function(){return Promise.resolve()}},
+ advertisement:{isAdvancedBannersSupported:false,rewardedState:'closed',interstitialState:'closed',on:on,showInterstitial:function(){return show('i')},showRewarded:function(){return show('r')},showAdvancedBanners:function(){},hideAdvancedBanners:function(){}},
+ storage:{get:function(k){try{return Promise.resolve(localStorage.getItem(k))}catch(e){return Promise.resolve(null)}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}return Promise.resolve()}},
+ payments:{isSupported:false},notifications:{isSupported:false},player:{isAuthorizationSupported:false,isAuthorized:false},social:{},leaderboards:{type:'not_available'},
+ initialize:function(){return Promise.resolve()}};
+(function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(d.getElementById(id))return;js=d.createElement(s);js.id=id;js.src='https://html5.api.gamedistribution.com/main.min.js';fjs.parentNode.insertBefore(js,fjs)}(document,'script','gamedistribution-jssdk'));
+})();
+</script>
+`;
+site('gamedistribution',d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,GDS),d));
+ writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('GameDistribution','https://gamedistribution.com/developers','Game ID già inserito ('+GDID+'). Carica lo zip, apri il gioco nell\'iframe di prova e guarda un annuncio per intero (pulsante 📺 nel gioco, dal mostro di livello 4).'))});
+
 site('crazygames',d=>{base(d);writeFileSync(d+'/index.html',one(inl(html.replace(CDN,CG),d),d));
  writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('crazygames','https://developer.crazygames.com','Registrati come sviluppatore, «Submit game» e carica il file index.html (contiene tutto: immagini, suoni e codice). CrazyGames vuole: pubblico 13+, caricamento sotto 5 secondi, gioco che tiene 20+ minuti. '))});
 site('gamemonetize',d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,GM),d));
