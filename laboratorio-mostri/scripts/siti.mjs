@@ -20,7 +20,6 @@ const DA='INSERISCI_QUI'; // segnaposto per gli id che ti dà il sito quando reg
 
 // pid = id della piattaforma in Bridge; extra = impostazioni del sito nel config; files = file in più nella cartella
 const BR={
- crazygames:{pid:'crazy_games',sdk:'https://sdk.crazygames.com/crazygames-sdk-v3.js',url:'https://developer.crazygames.com',note:'Registrati come sviluppatore, «Submit game» e carica lo zip. CrazyGames vuole: pubblico 13+, caricamento sotto 5 secondi, gioco che tiene 20+ minuti. Carica lo ZIP così com\'è (non i singoli file): dentro ci sono anche le cartelle m/ e sfx/ con immagini e suoni.'},
  poki:{pid:'poki',url:'https://developers.poki.com',note:'Poki seleziona i giochi: compila la richiesta su developers.poki.com. Di solito vuole l\'esclusiva sul web (anche 5 anni) e potrebbe rifiutare un gioco già pubblicato altrove. Gli acquisti con soldi veri non compaiono (Poki non li ha).'},
  gamedistribution:{pid:'game_distribution',url:'https://gamedistribution.com/developers',extra:{gameId:DA+'_GAME_ID'},need:'game_distribution.gameId',note:'Crea il gioco nel pannello di GameDistribution: ti dà un «Game ID». Mettilo in playgama-bridge-config.json al posto di '+DA+'_GAME_ID, poi ricomprimi la cartella e caricala.'},
  yandex:{pid:'yandex',url:'https://yandex.com/dev/games/doc/en/',note:'Console per sviluppatori di Yandex Games: «Add application», carica lo zip, compila nome, descrizioni e immagini (il gioco ha già il russo, che Yandex richiede). Il pagamento minimo è 100 €.'},
@@ -79,6 +78,34 @@ window.bridge={platform:{id:'gamemonetize',language:navigator.language||'en',pay
 var s=document.createElement('script');s.id='gamemonetize-sdk';s.src='https://api.gamemonetize.com/sdk.js';document.head.appendChild(s)})();
 </script>
 `;
+
+// CrazyGames: collegamento diretto al loro SDK v3 (con Bridge il loro controllo non rilevava lo SDK e le pubblicità non partivano)
+const CG=`<script src="https://sdk.crazygames.com/crazygames-sdk-v3.js"></script>
+<script>
+// CrazyGames SDK v3 con la forma di Playgama Bridge (window.bridge): pubblicità, salvataggio (modulo data), audio, caricamento e partita
+(function(){var L={},C=null,ok=false;function on(k,f){(L[k]=L[k]||[]).push(f)}function emit(k,v){(L[k]||[]).forEach(function(f){try{f(v)}catch(e){}})}
+function sdk(){return window.CrazyGames&&window.CrazyGames.SDK}
+function ad(type,ev,rew){return new Promise(function(res){var s=sdk();if(!ok||!s){if(rew)emit(ev,'failed');return res()}var started=false;
+ try{s.ad.requestAd(type,{adStarted:function(){started=true;emit(ev,'opened')},
+  adFinished:function(){if(rew)emit(ev,'rewarded');emit(ev,'closed');res()},
+  adError:function(){emit(ev,rew?'failed':'closed');res()}})}catch(e){emit(ev,rew?'failed':'closed');res()}})}
+var B={platform:{id:'crazy_games',language:navigator.language||'en',payload:'',isAudioEnabled:true,on:on,
+  sendMessage:function(m){var s=sdk();if(ok&&s)try{if(m==='game_ready')s.game.loadingStop();else if(m==='gameplay_started')s.game.gameplayStart();else if(m==='gameplay_stopped')s.game.gameplayStop()}catch(e){}return Promise.resolve()}},
+ advertisement:{isAdvancedBannersSupported:false,rewardedState:'closed',interstitialState:'closed',on:on,
+  showRewarded:function(){return ad('rewarded','rewarded_state_changed',true)},showInterstitial:function(){return ad('midgame','interstitial_state_changed',false)},
+  showAdvancedBanners:function(){},hideAdvancedBanners:function(){}},
+ storage:{get:function(k){try{var s=sdk();return Promise.resolve(ok&&s&&s.data?s.data.getItem(k):localStorage.getItem(k))}catch(e){return Promise.resolve(null)}},
+  set:function(k,v){try{var s=sdk();if(ok&&s&&s.data)s.data.setItem(k,v);else localStorage.setItem(k,v)}catch(e){}return Promise.resolve()}},
+ payments:{isSupported:false},notifications:{isSupported:false},player:{isAuthorizationSupported:false,isAuthorized:false},social:{},leaderboards:{type:'not_available'},
+ initialize:function(){var s=sdk();if(!s)return Promise.resolve();return Promise.resolve(s.init()).then(function(){ok=true;
+  try{s.game.loadingStart()}catch(e){}
+  try{B.platform.isAudioEnabled=!s.game.settings.muteAudio;s.game.addSettingsChangeListener(function(st){B.platform.isAudioEnabled=!st.muteAudio;emit('audio_state_changed',!st.muteAudio)})}catch(e){}
+ }).catch(function(){})}};
+window.bridge=B})();
+</script>
+`;
+site('crazygames',d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,CG),d));
+ writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('crazygames','https://developer.crazygames.com','Registrati come sviluppatore, «Submit game» e carica lo zip. CrazyGames vuole: pubblico 13+, caricamento sotto 5 secondi, gioco che tiene 20+ minuti. Carica lo ZIP così com\'è (non i singoli file): dentro ci sono anche le cartelle m/ e sfx/ con immagini e suoni.'))});
 site('gamemonetize',d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,GM),d));
  writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('GameMonetize','https://gamemonetize.com','Registrati come sviluppatore, crea il gioco in «Game Management» e copia il «Game ID». Poi clicca «Verify Game» e «Request activation». GameMonetize ha solo video a schermo intero: il video premio usa lo stesso annuncio e dà il premio quando finisce.','il Game ID in index.html (cerca «'+DA+'_GAME_ID»)'))});
 
