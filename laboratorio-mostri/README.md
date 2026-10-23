@@ -200,7 +200,8 @@ Controllato sulla documentazione ufficiale (wiki.playgama.com: requisiti, checkl
 - **Playgama:** il build di sempre.
 - **CrazyGames:** collegamento diretto al loro SDK v3 (`requestAd`, modulo `data`, `loadingStart/Stop`, `gameplayStart/Stop`, `muteAudio`): con Bridge il loro controllo non rilevava lo SDK.
 - **GameDistribution:** collegamento diretto al loro SDK (`GD_OPTIONS`, `gdsdk.showAd`, premio solo con `SDK_REWARDED_WATCH_COMPLETE`), Game ID inserito.
-- **Poki, Yandex, Y8, Lagged, Facebook, Telegram:** Playgama Bridge in locale (`@playgama/bridge`, niente CDN) e piattaforma fissata con `forciblySetPlatformId`. Bridge carica da solo lo SDK del sito. Gli id da chiedere al sito sono segnati `INSERISCI_QUI_…` in `playgama-bridge-config.json` (GameDistribution `gameId`, Lagged `devId`/`publisherId`, Telegram `adsgramBlockId`).
+- **Facebook:** collegamento diretto a FBInstant 8.0 (startGameAsync, getDataAsync/setDataAsync, pubblicità di Audience Network con gli id dei posizionamenti da inserire).
+- **Poki, Yandex, Y8, Lagged, Telegram:** Playgama Bridge in locale (`@playgama/bridge`, niente CDN) e piattaforma fissata con `forciblySetPlatformId`. Bridge carica da solo lo SDK del sito. Gli id da chiedere al sito sono segnati `INSERISCI_QUI_…` in `playgama-bridge-config.json` (GameDistribution `gameId`, Lagged `devId`/`publisherId`, Telegram `adsgramBlockId`).
 - **GameMonetize:** adattatore in `index.html` che presenta il suo SDK (`sdk.showBanner`) come `window.bridge`; il video premio dà il premio a fine annuncio. Game ID da inserire (`INSERISCI_QUI_GAME_ID`).
 - **YouTube:** `dist-yt`.
 - **itch.io, Newgrounds, Armor Games, GamePix:** versione web senza SDK (niente pubblicità, salvataggio nel browser).

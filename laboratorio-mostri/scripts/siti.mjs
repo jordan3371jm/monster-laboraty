@@ -24,7 +24,6 @@ const BR={
  yandex:{pid:'yandex',url:'https://yandex.com/dev/games/doc/en/',note:'Console per sviluppatori di Yandex Games: «Add application», carica lo zip, compila nome, descrizioni e immagini (il gioco ha già il russo, che Yandex richiede). Il pagamento minimo è 100 €.'},
  y8:{pid:'y8',url:'https://developer.y8.com',note:'Carica il gioco dal portale sviluppatori di Y8 (serve un account Y8). Le pubblicità le gestisce Y8 tramite Bridge.'},
  lagged:{pid:'lagged',url:'https://lagged.dev',extra:{devId:DA+'_DEV_ID',publisherId:DA+'_PUBLISHER_ID'},need:'lagged.devId e lagged.publisherId',note:'Registrati come sviluppatore su Lagged: ti danno devId e publisherId. Mettili in playgama-bridge-config.json, ricomprimi e carica.'},
- facebook:{pid:'facebook',url:'https://developers.facebook.com/apps',files:{'fbapp-config.json':JSON.stringify({instant_games:{platform_version:'RICH_GAMEPLAY',navigation_menu_version:'NAV_FLOATING'}},null,2)},note:'Crea un\'app «Instant Games» su developers.facebook.com, vai su «Web hosting» e carica lo zip (contiene già fbapp-config.json). Facebook non è chiaro se accetti ancora giochi nuovi.'},
  telegram:{pid:'telegram',url:'https://partner.adsgram.ai',extra:{adsgramBlockId:DA+'_ADSGRAM_BLOCK_ID'},need:'telegram.adsgramBlockId',note:'Telegram non ospita i file: carica questa cartella su un sito (es. GitHub Pages), crea un bot con @BotFather e collega l\'indirizzo come Mini App. Per le pubblicità registrati su Adsgram e metti il «block id» nel config.'},
 };
 
@@ -151,6 +150,38 @@ window.bridge={platform:{id:'game_distribution',language:navigator.language||'en
 `;
 site('gamedistribution',d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,GDS),d));
  writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('GameDistribution','https://gamedistribution.com/developers','Game ID già inserito ('+GDID+'). Carica lo zip, apri il gioco nell\'iframe di prova e guarda un annuncio per intero (pulsante 📺 nel gioco, dal mostro di livello 4).'))});
+
+// Facebook Instant Games: collegamento diretto a FBInstant 8.0 (initializeAsync → startGameAsync, salvataggio con getDataAsync/setDataAsync,
+// pubblicità di Audience Network con gli id dei posizionamenti). Senza id le pubblicità non partono e il gioco continua normalmente.
+const FB_INT=DA+'_ID_INTERSTITIAL',FB_REW=DA+'_ID_REWARDED';
+const FBS=`<script src="https://connect.facebook.net/en_US/fbinstant.8.0.js"></script>
+<script>
+(function(){var L={},F=window.FBInstant,ok=false,started=false;function on(k,f){(L[k]=L[k]||[]).push(f)}function emit(k,v){(L[k]||[]).forEach(function(f){try{f(v)}catch(e){}})}
+var INT='${FB_INT}',REW='${FB_REW}',noId=function(id){return!id||id.indexOf('INSERISCI')===0};
+var pre={i:null,r:null}; // annunci precaricati (Facebook chiede di caricarli prima di mostrarli)
+function load(k){if(!ok||pre[k])return pre[k];var id=k==='r'?REW:INT;if(noId(id))return null;
+ pre[k]=(k==='r'?F.getRewardedVideoAsync(id):F.getInterstitialAdAsync(id)).then(function(ad){return ad.loadAsync().then(function(){return ad})});
+ pre[k].catch(function(){pre[k]=null});return pre[k]}
+function show(k){var e=k==='r'?'rewarded_state_changed':'interstitial_state_changed',p=load(k);
+ if(!p){if(k==='r')emit(e,'failed');return Promise.resolve()}
+ emit(e,'opened');return p.then(function(ad){pre[k]=null;return ad.showAsync()}).then(function(){if(k==='r')emit(e,'rewarded');emit(e,'closed');load(k)},
+  function(){pre[k]=null;emit(e,k==='r'?'failed':'closed');load(k)})}
+window.bridge={platform:{id:'facebook',language:'en',payload:'',isAudioEnabled:true,on:on,
+  sendMessage:function(m){if(m==='game_ready'&&ok&&!started){started=true;try{F.setLoadingProgress(100)}catch(e){}F.startGameAsync().then(function(){load('i');load('r')},function(){})}return Promise.resolve()}},
+ advertisement:{isAdvancedBannersSupported:false,rewardedState:'closed',interstitialState:'closed',on:on,showInterstitial:function(){return show('i')},showRewarded:function(){return show('r')},showAdvancedBanners:function(){},hideAdvancedBanners:function(){}},
+ storage:{get:function(k){if(!ok)return Promise.resolve(null);return F.player.getDataAsync([k]).then(function(d){return d&&d[k]||null})},
+  set:function(k,v){if(!ok)return Promise.resolve();return F.player.setDataAsync(function(){var o={};o[k]=v;return o}())}},
+ payments:{isSupported:false},notifications:{isSupported:false},player:{isAuthorizationSupported:false,isAuthorized:true},social:{},leaderboards:{type:'not_available'},
+ initialize:function(){if(!F)return Promise.reject(new Error('FBInstant mancante'));return F.initializeAsync().then(function(){ok=true;
+  try{window.bridge.platform.language=String(F.getLocale()||'en').replace('_','-')}catch(e){}
+  try{F.setLoadingProgress(50)}catch(e){}
+  try{F.onPause(function(){emit('pause_state_changed',true)})}catch(e){}})}};
+})();
+</script>
+`;
+site('facebook',d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,FBS),d));
+ writeFileSync(d+'/fbapp-config.json',JSON.stringify({instant_games:{platform_version:'RICH_GAMEPLAY',navigation_menu_version:'NAV_FLOATING'}},null,2));
+ writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('Facebook Instant Games','https://developers.facebook.com/apps','Crea un\'app di tipo Instant Games, poi «Instant Games → Web hosting» e carica lo zip. Per le pubblicità: Audience Network → crea un posizionamento Interstitial e uno Rewarded video e mettine gli id in index.html.','gli id dei posizionamenti in index.html (cerca «'+DA+'_ID»)'))});
 
 site('crazygames',d=>{base(d);writeFileSync(d+'/index.html',one(inl(html.replace(CDN,CG),d),d));
  writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('crazygames','https://developer.crazygames.com','Registrati come sviluppatore, «Submit game» e carica il file index.html (contiene tutto: immagini, suoni e codice). CrazyGames vuole: pubblico 13+, caricamento sotto 5 secondi, gioco che tiene 20+ minuti. '))});
