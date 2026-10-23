@@ -1,4 +1,5 @@
 import {AU} from './audio.js';
+import {hidden} from './core/env.js';
 import {R,S} from './core/state.js';
 import {give,incBase} from './game/economy.js';
 import {addT,ch,psBuy,psCheck} from './game/meta.js';
@@ -13,7 +14,7 @@ const msg=(m,o)=>safe(b=>later(b.platform.sendMessage(m,o)));
 
 // gameplay_started / gameplay_stopped: si gioca quando la pagina è visibile, non in pausa e senza pubblicità aperte
 let play=null;
-function syncPlay(){const on=!!(window.__ready&&!R.PZ&&!AU.ad&&!document.hidden);if(on===play)return;play=on;msg(on?'gameplay_started':'gameplay_stopped')}
+function syncPlay(){const on=!!(window.__ready&&!R.PZ&&!AU.ad&&!hidden());if(on===play)return;play=on;msg(on?'gameplay_started':'gameplay_stopped')}
 
 // Livelli di battaglia: solo il livello record (il farm e le ripetizioni dopo una sconfitta non mandano messaggi doppi)
 const lv={s:0,f:0};

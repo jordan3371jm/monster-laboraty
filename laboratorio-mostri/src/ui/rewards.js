@@ -1,4 +1,5 @@
 import {sfx} from '../audio.js';
+import {hidden} from '../core/env.js';
 import {prog} from './missions.js';
 import {$} from '../core/dom.js';
 import {R,S} from '../core/state.js';
@@ -33,6 +34,6 @@ function chest(){const q=Math.random(),pe=.08+.04*S.pk.b,k=q<pe?2:q<pe+.3?1:0,d=
  const r={k,c:Math.floor(rBase()*d.c),e:d.e(),b:d.b()};chApply(r); // R.chR solo per la finestra aperta: un secondo forziere che arriva intanto non cambia ciò che raddoppia il video
  const x={t:[1,2,3][k]};if(k||Math.random()<.35)x.g=gearRar([0,.2,.45][k]);if(Math.random()<.5)x.card=1;const xt=xTxt(grant(x));S.ach.ch++;prog('chest',1);track('first_boss');sfx('new');save();
  // finestra solo se si sta guardando la battaglia: nel laboratorio un popup a ogni boss interrompeva le unioni (il premio è già accreditato)
- if($('wb').classList.contains('on')||document.hidden||!$('batV').classList.contains('on'))toast(CHI[k]+' '+tr('ch'+k)+' · '+chTxt(r)+' · '+xt,1);
+ if($('wb').classList.contains('on')||hidden()||!$('batV').classList.contains('on'))toast(CHI[k]+' '+tr('ch'+k)+' · '+chTxt(r)+' · '+xt,1);
  else{R.chR=r;openWB('<div class="wbi">'+CHI[k]+'</div><div class="wbh">'+tr('ch'+k)+'</div><div class="wbc">'+chTxt(r).replace(/ · /g,'<br>')+'</div><div class="dc">'+xt+'</div><button class="b o" data-a="cd">'+tr('chDbl')+'</button><button class="b g" data-a="wc">'+tr('chOk')+'</button>')}}
 export {openWB,showOff,CHR,CHI,chTxt,chApply,chest};

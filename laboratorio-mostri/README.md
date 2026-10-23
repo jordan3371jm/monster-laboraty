@@ -20,6 +20,7 @@ Gioco idle/merge per Playgama (Playgama Bridge v2).
 - `npm install` – installa Vite (una volta sola)
 - `npm run dev` – prova il gioco in locale
 - `npm run build` – ricrea la cartella `dist`
+- `npm run build:yt` – versione per YouTube Playables nella cartella `dist-yt` (zip in `store/youtube/`)
 
 ## Test dell'economia
 - `npm run sim` – simula 48 ore di un giocatore ottimale (unisce e compra ogni secondo, combatte, fa l'Evocazione oscura) e stampa dopo quante ore raggiunge ogni traguardo. Usa `fightTime` di `src/game/combat.js`, la stessa formula del combattimento offline, e la ricalcola ogni secondo
@@ -193,6 +194,19 @@ Controllato sulla documentazione ufficiale (wiki.playgama.com: requisiti, checkl
 - **Classifica** `best_stage` e **obiettivi** (33 trofei, id `mg0`…`ch2`) nel file di configurazione: usati sulle piattaforme che li hanno (su Playgama le classifiche non ci sono, la chiamata viene saltata).
 - **Analytics**: gli eventi del gioco (`track`) vanno anche a `bridge.analytics.send`.
 - **Bordi dello schermo** (notch): gestiti in CSS con `env(safe-area-inset-*)`.
+
+## YouTube Playables (`src/ytbridge.js`, `src/core/env.js`, `store/youtube/`)
+- `npm run build:yt` crea `dist-yt`: `vite.config.js` (modalità `youtube`) mette l'SDK `https://www.youtube.com/game_api/v1` come primo script, toglie Playgama Bridge e `navigator.language` e definisce `__YT__`.
+- `src/ytbridge.js` crea `window.bridge` sopra `ytgame` con la stessa forma di Playgama Bridge:
+  - salvataggio con `loadData`/`saveData`;
+  - lingua con `getLanguage`;
+  - audio, pausa e ripresa;
+  - video premio (`reward-<tipo>`) e interstitial;
+  - `sendScore` col livello record;
+  - acquisti, banner, notifiche e social risultano non supportati.
+- `YT`/`hidden()` in `core/env.js`: su YouTube niente Page Visibility API, niente `localStorage`, niente interstitial ogni 50 unioni, niente pulsante 🔊 e niente scelta della lingua. In pausa (classe `.pz`) si fermano anche lo sfondo e le animazioni CSS.
+- Esc chiude la finestra aperta più in alto (in tutte le versioni).
+- Requisiti, passi per candidarsi e miniature senza logo: `store/youtube/LEGGIMI.md`.
 
 ## Scheda per Playgama (`store/`)
 - `cover-1x1.png` (800×800), `cover-9x16.png` (1080×1920), `cover-16x9.png` (1920×1080): copertine nelle misure per Playgama con l'illustrazione del laboratorio generata con l'AI di Figma (Gemini) e ingrandita ×4 con Real-ESRGAN (sfondi ad alta risoluzione in `ai/sfondo-*.jpg`, fino a 5504 px) e sopra logo, fascia «MERGE · EVOLVE · BATTLE», riquadro dell'unione con i mostri veri del gioco e pulsante «PLAY NOW».

@@ -1,4 +1,5 @@
 import {sfx} from '../audio.js';
+import {YT} from '../core/env.js';
 import {$} from '../core/dom.js';
 import {R,S} from '../core/state.js';
 import {fmt,hueOf} from '../core/util.js';
@@ -46,7 +47,8 @@ addEventListener('pointerup',endDrag);addEventListener('pointercancel',endDrag);
 function pop(i,n=6){const el=grid.children[i];el.classList.remove('pop');void el.offsetWidth;el.classList.add('pop');if(n)burst(grid,['✨','⭐','💫'],n,{x:el.offsetLeft+el.offsetWidth/2,y:el.offsetTop+el.offsetHeight/2})} // le particelle stanno nella griglia, non nella cella: draw() riscrive il contenuto delle celle
 function drop(i){const el=grid.children[i];el.classList.remove('drop','pop');void el.offsetWidth;el.classList.add('drop');burst(grid,['💧','✨'],3,{x:el.offsetLeft+el.offsetWidth/2,y:el.offsetTop+el.offsetHeight*.8})}
 // Ogni AD_MERGES unioni (a mano, «Unisci tutto» o automatiche) parte un interstitial (la piattaforma ne tiene almeno 60s tra uno e l'altro)
-function adCount(n){if(S.tut<3)return;S.mga+=n;if(S.mga>=AD_MERGES){S.mga=0;R.adPend=1}} // la mostra loop.js alla prima pausa
+function adCount(n){if(S.tut<3||YT)return; // su YouTube niente interstitial in mezzo al gioco
+ S.mga+=n;if(S.mga>=AD_MERGES){S.mga=0;R.adPend=1}} // la mostra loop.js alla prima pausa
 function merged(i,n){adCount(n);disc(S.g[i]);pop(i,4+Math.min(8,S.g[i]));shock(grid.children[i],S.g[i],S.g[i]>=8);prog('merge',n);S.ach.mg+=n;track('first_merge');tutNext(3)}
 // Solo per le unioni fatte a mano: combo (unioni entro CMB_T ms l'una dall'altra danno monete crescenti, fino a x10)
 // e «fusione perfetta» (probabilità LUCK di saltare un livello; non durante il tutorial). Premiano chi gioca attivamente.

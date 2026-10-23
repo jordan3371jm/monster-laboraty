@@ -1,11 +1,12 @@
 import {R,S} from './core/state.js';
+import {hidden} from './core/env.js';
 import {save} from './save.js';
 
 // ---- Audio (WebAudio) ----
 // Effetti: file CC0 di Kenney (public/sfx, licenza in LICENSE-kenney.txt), caricati alla prima interazione. Se un file non si carica
 // si usa il suono generato qui sotto. La musica di sottofondo è generata (sched). La vibrazione segue l'interruttore degli effetti.
 const AU={c:null,m:null,sg:null,mu:null,nb:null,plat:true,ad:false,next:0,step:0};
-const audible=()=>!!(S.sfxOn||S.musOn)&&AU.plat&&!AU.ad&&!R.PZ&&!document.hidden;
+const audible=()=>!!(S.sfxOn||S.musOn)&&AU.plat&&!AU.ad&&!R.PZ&&!hidden();
 function actx(){if(AU.c)return AU.c;const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;
  try{const c=AU.c=new C();AU.m=c.createGain();AU.sg=c.createGain();AU.mu=c.createGain();AU.sg.gain.value=.6;AU.mu.gain.value=.1;
   AU.sg.connect(AU.m);AU.mu.connect(AU.m);AU.m.connect(c.destination);
@@ -16,7 +17,7 @@ function loadSfx(c){for(const n in SFX)fetch('sfx/'+n+'.mp3').then(r=>r.ok?r.arr
 function play(n,rate=1){const c=AU.c,b=BUF[n];if(!c||!b)return false;try{const s=c.createBufferSource(),g=c.createGain();s.buffer=b;s.playbackRate.value=rate;g.gain.value=SFX[n];s.connect(g);g.connect(AU.sg);s.start()}catch(e){return false}return true}
 // vibrazione leggera sui telefoni (unione, mostro nuovo, colpo del boss)
 // solo dopo il primo tocco del giocatore (prima il browser la blocca e scrive un errore in console, es. per i premi al ritorno)
-const buzz=p=>{try{const ua=navigator.userActivation;if(S.sfxOn&&!document.hidden&&navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate(p)}catch(e){}};
+const buzz=p=>{try{const ua=navigator.userActivation;if(S.sfxOn&&!hidden()&&navigator.vibrate&&(!ua||ua.hasBeenActive))navigator.vibrate(p)}catch(e){}};
 function aSync(){const c=AU.c;if(!c)return;
  try{audible()?c.resume&&c.resume():c.suspend&&c.suspend()}catch(e){}}
 function tone(f,d,ty,v,f2,t0,out){const c=AU.c;if(!c||!audible())return;const t=c.currentTime+(t0||0),o=c.createOscillator(),g=c.createGain();

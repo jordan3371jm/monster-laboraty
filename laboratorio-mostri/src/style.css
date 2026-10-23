@@ -595,3 +595,6 @@ em.mon{display:inline-block;width:1.3em;height:1.3em;vertical-align:-.3em;font-s
 .css .xh{display:flex;justify-content:space-between}.csg{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:4px}
 .csg .chc{font-size:24px;border-width:1px}.csr{display:grid;grid-template-columns:1fr 1fr;gap:6px}.csr .b{padding:7px 4px;font-size:12px}
 .chf .b{flex:0 0 auto;width:auto!important;margin:0!important;min-width:40px}
+/* YouTube Playables: il muto è quello di YouTube (niente pulsante 🔊 nel gioco) e in pausa si ferma anche ogni animazione */
+.yt #tMute{display:none}
+.pz *,.pz *::before,.pz *::after{animation-play-state:paused!important}

@@ -5,17 +5,19 @@ import {timersTick} from './game/timers.js';
 import {obj,num0,sanitize} from './sanitize.js';
 import {dayCheck} from './ui/missions.js';
 import {ulMigrate} from './game/unlocks.js';
+import {YT} from './core/env.js';
 
 // Con Playgama Bridge si salva SOLO con bridge.storage (regola della piattaforma): l'SDK sceglie da solo cloud o memoria locale
 // e, quando il cloud riesce, cancella la copia locale con la stessa chiave. localStorage diretto solo se il Bridge non c'è (offline).
 const brSt=()=>R.inited&&window.bridge&&window.bridge.storage&&typeof window.bridge.storage.set==='function'?window.bridge.storage:null;
-function save(force){if(!R.loaded)return; // prima di load() S è lo stato vuoto: non deve sovrascrivere il salvataggio vero
+function save(force){if(!R.loaded||R.PZ&&!force)return; // prima di load() S è lo stato vuoto: non deve sovrascrivere il salvataggio vero; in pausa niente salvataggi periodici
+ if(YT&&!R.stOk)return; // YouTube: se il cloud save non si è letto, salvare cancellerebbe i progressi veri
  const st=brSt();if(st&&!force&&Date.now()-R.lastB<10000)return; // sulla piattaforma ogni 10s (e subito quando serve)
  S.ls=Date.now();const j=JSON.stringify(S);
  if(st){R.lastB=S.ls;try{Promise.resolve(st.set(K,j)).catch(()=>{})}catch(e){}return}
  try{localStorage.setItem(K,j)}catch(e){}}
 async function load(){const c=[],st=brSt();
- if(st){try{const r=await Promise.race([st.get(K),sleep(5000).then(()=>null)]);if(r)c.push(typeof r==='string'?JSON.parse(r):r)}catch(e){}} // l'SDK legge anche i vecchi salvataggi locali (stessa chiave)
+ if(st){try{const r=await Promise.race([Promise.resolve(st.get(K)).then(x=>{R.stOk=1;return x}),sleep(YT?20000:5000).then(()=>null)]);if(r)c.push(typeof r==='string'?JSON.parse(r):r)}catch(e){}} // l'SDK legge anche i vecchi salvataggi locali (stessa chiave)
  else{try{const r=localStorage.getItem(K);if(r)c.push(JSON.parse(r))}catch(e){}}
  const v=c.filter(x=>x&&Array.isArray(x.g)&&x.g.length>=1&&x.g.length<=N).sort((a,b)=>(b.ls||0)-(a.ls||0))[0];
  if(v){const d=def();setS({...d,...v,up:{...d.up,...obj(v.up)},dl:{...d.dl,...obj(v.dl)}});

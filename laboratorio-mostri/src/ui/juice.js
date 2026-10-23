@@ -1,5 +1,6 @@
 import {$} from '../core/dom.js';
-import {S} from '../core/state.js';
+import {hidden} from '../core/env.js';
+import {R,S} from '../core/state.js';
 import {E} from '../data/config.js';
 import {elOf,squad} from '../game/combat.js';
 
@@ -25,7 +26,7 @@ function part(w,any){return w===2?{x:Math.random()*W,y:Math.random()*H,r:Math.ra
  :w===3?{x:Math.random()*W,y:any?Math.random()*H:H+20,r:Math.random()*3+1.5,v:Math.random()*30+20,ph:Math.random()*6.28,h:[12,28,40][Math.random()*3|0]}
  :{x:Math.random()*W,y:any?Math.random()*H:H+20,r:Math.random()*7+2,v:Math.random()*18+8,ph:Math.random()*6.28,h:[275,130,25][Math.random()*3|0]}}
 let t0=0,dirty=true;
-function frame(t){requestAnimationFrame(frame);if(!cx||document.hidden||t-t0<33)return; // ~30 fps bastano per lo sfondo
+function frame(t){requestAnimationFrame(frame);if(!cx||hidden()||R.PZ||t-t0<33)return; // ~30 fps bastano per lo sfondo
  const dt=Math.min(.1,(t-t0)/1000);t0=t;if(dirty){dirty=false;size()} // misure solo dopo un ridimensionamento (leggere clientWidth a ogni fotogramma forzava il layout)
  const w=Math.min(3,S.wd||1);if(w!==lastW){lastW=w;seed(w)}
  cx.clearRect(0,0,W,H);

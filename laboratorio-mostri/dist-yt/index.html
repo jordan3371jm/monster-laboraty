@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<script src="https://www.youtube.com/game_api/v1"></script>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Monster Laboratory</title>
+
+<script>
+// Schermata di caricamento ed errore: la pagina non resta mai bianca. Se qualcosa si rompe all'avvio compare un messaggio con il pulsante per azzerare il salvataggio.
+window.__fatal=function(e){
+ var b=document.getElementById('boot');if(!b||window.__ready)return;
+ var M={en:['The game could not start.','Reset save and retry'],it:['Il gioco non è partito.','Azzera il salvataggio e riprova'],es:['El juego no ha podido arrancar.','Borrar la partida y reintentar'],fr:['Le jeu n\'a pas pu démarrer.','Effacer la partie et réessayer'],zh:['游戏无法启动。','重置存档并重试'],ru:['Не удалось запустить игру.','Сбросить сохранение и повторить']};
+ var t=M[String(''||'').slice(0,2).toLowerCase()]||M.en;
+ b.innerHTML='<div style="padding:24px;max-width:420px;text-align:center"><div style="font-size:48px">🧪</div><p style="font-size:16px">'+t[0]+'</p><p style="font-size:12px;opacity:.7;word-break:break-word">'+String(e&&e.message||e||'').slice(0,160)+'</p><button id="bootRs" style="font:inherit;padding:12px 18px;border:0;border-radius:12px;background:#6cc22a;color:#fff">'+t[1]+'</button></div>';
+ document.getElementById('bootRs').onclick=function(){try{localStorage.removeItem('ml_save_v1')}catch(x){}location.reload()}};
+addEventListener('error',function(ev){var t=ev.target;if(t&&t.tagName==='SCRIPT'&&t.src&&t.src.indexOf('playgama')<0)window.__fatal('script: '+t.src.split('/').pop());else if((!t||t===window)&&String(ev.filename||'').indexOf('playgama')<0)window.__fatal(ev.error||ev.message)},true);
+</script>
+  <script defer src="./assets/index-CogCVKe3.js"></script>
+</head>
+<body>
+<!-- Schermata di caricamento del gioco: nome, mostro e barra mentre si caricano tutte le immagini (src/preload.js). Stili qui, così si vede subito. -->
+<style>#boot{z-index:99;color:#f2e9ff;background:radial-gradient(70% 50% at 50% 45%,#6a34c8 0,#3b1c70 40%,#0000 75%),linear-gradient(#1a0f33,#0a0614);justify-content:center;align-items:center;font:700 15px ui-rounded,Nunito,Segoe UI Rounded,system-ui,sans-serif;transition:opacity .5s;display:flex;position:fixed;inset:0;overflow:hidden}#boot.out{opacity:0;pointer-events:none}#boot:before{content:"";background:repeating-conic-gradient(#ffffff0d 0 7deg,transparent 7deg 16deg);width:220vmax;height:220vmax;animation:40s linear infinite btr;position:absolute;top:42%;left:50%;translate:-50% -50%;-webkit-mask:radial-gradient(circle,#000 6%,#0000 40%);mask:radial-gradient(circle,#000 6%,#0000 40%)}@keyframes btr{to{rotate:360deg}}.bt-in{text-align:center;flex-direction:column;align-items:center;gap:14px;width:min(86vw,420px);display:flex;position:relative}.bt-m{aspect-ratio:1;object-fit:contain;filter:drop-shadow(0 10px 18px #000b);width:min(44vw,40vh,220px);animation:2.2s ease-in-out infinite btb}@keyframes btb{50%{transform:translateY(-10px)scale(1.03)}}#bootT{letter-spacing:.5px;color:#ffd36b;text-shadow:0 3px #7a3a00,0 0 22px #ffb02e88;margin:0;font-size:clamp(30px,9vw,52px);font-weight:900;line-height:1}#bootT small{letter-spacing:2px;color:#c79bff;text-shadow:0 2px #2a0f55;margin-top:6px;font-size:.55em;display:block}.bt-bar{background:#0008;border:2px solid #ffffff2a;border-radius:12px;width:100%;height:18px;overflow:hidden;box-shadow:inset 0 2px 6px #000a}#bootBar{background:linear-gradient(#a6f06a,#4fa81c);border-radius:10px;width:0;height:100%;transition:width .25s;display:block;box-shadow:inset 0 3px #fff5}#bootPct{color:#e6d8ff;opacity:.85;font-size:14px}@media (prefers-reduced-motion:reduce){#boot:before,.bt-m{animation:none}}#boot{background:linear-gradient(#0000 45%,#0a0614e6 88%),url(boot-v.webp) 50%/cover,#0a0614;align-items:flex-end;padding-bottom:max(6vh,24px)}@media (aspect-ratio>=1){#boot{background:linear-gradient(#0000 50%,#0a0614e6 92%),url(boot-h.webp) 50%/cover,#0a0614}}#boot:before,.bt-m{display:none}</style>
+<div id="boot"><div class="bt-in"><img class="bt-m" src="m/lumizucca.webp" alt=""><h1 id="bootT">MONSTER<small>LABORATORY</small></h1><div class="bt-bar"><i id="bootBar"></i></div><div id="bootPct">0%</div></div></div>
+<script>(function(){var T={en:['MONSTER','LABORATORY','Loading monsters…'],it:['LABORATORIO','DI MOSTRI','Caricamento dei mostri…'],es:['LABORATORIO','DE MONSTRUOS','Cargando monstruos…'],fr:['LABORATOIRE','DE MONSTRES','Chargement des monstres…'],zh:['怪物','实验室','正在加载怪物……'],ru:['ЛАБОРАТОРИЯ','МОНСТРОВ','Загрузка монстров…']},t=T[String(''||'').slice(0,2).toLowerCase()]||T.en;document.getElementById('bootT').innerHTML=t[0]+'<small>'+t[1]+'</small>';document.getElementById('bootPct').setAttribute('data-l',t[2])})()</script>
+<div id="app">
+ <canvas id="bgfx" aria-hidden="true"></canvas>
+ <div id="top"><div class="cn"><div id="coins"></div><div id="inc"></div></div><div id="stg"></div><div class="tr8"><div id="ess"></div><button class="ib" id="tMute" aria-label="Sound">🔊</button><button class="ib" id="tSet" aria-label="Settings">⚙️</button></div></div>
+ <div id="tools"><button class="tb" id="tDaily"><b>🎁</b><span></span><i class="dot"></i></button><button class="tb" id="tMis"><b>📋</b><span></span><i class="dot"></i></button><button class="tb" id="tCol"><b>📖</b><span></span><i class="dot"></i></button><button class="tb" id="tTr"><b>🏆</b><span></span><i class="dot"></i></button><button class="tb" id="tExp"><b>🧭</b><span></span><i class="dot"></i></button><button class="tb" id="tPor"><b>🌀</b><span></span><i class="dot"></i></button><button class="tb" id="tPas"><b>🎟️</b><span></span><i class="dot"></i></button><button class="tb" id="tShop"><b>🛒</b><span></span></button></div>
+ <div id="goal"><i></i><span id="goalT"></span></div>
+ <div id="tut"><b id="tutT"></b><button id="tutX">✕</button></div>
+ <div id="labV" class="view on">
+  <div id="grid"></div>
+  <div class="row"><button class="b g" id="spawn"></button><button class="b" id="mall"></button></div>
+  <div class="row" id="adr"><button class="b o" id="a1"></button><button class="b o" id="a2"></button><button class="b o" id="a3"></button></div>
+ </div>
+ <div id="batV" class="view">
+  <div id="arena"><div id="tag"></div><div id="en"></div><div id="eh"><i id="ehb"></i></div><div id="enm"></div></div>
+  <div id="team"></div>
+  <div id="th"><i id="thb"></i></div>
+  <div id="sks"><button class="sk" id="sk0"><i></i><b id="skl0"></b></button><button class="sk" id="sk1"><i></i><b id="skl1"></b></button><button class="sk" id="sk2"><i></i><b id="skl2"></b></button></div>
+  <div id="skh"></div>
+  <div id="ts"></div>
+  <div id="fmr"><button class="b" id="stPrev">◀</button><button class="b" id="fmB"></button><button class="b" id="stNext">▶</button></div>
+  <div id="mrow"><button class="b" id="bTow"><i class="dot"></i></button><button class="b o" id="bInv"><i class="dot"></i></button><button class="b" id="bTri"><i class="dot"></i></button></div>
+ </div>
+ <nav id="nav"><button id="n0" class="on"><b>🧪</b><span></span></button><button id="n1"><b>⚔️</b><span></span></button><button id="n2"><b>⚙️</b><span></span></button></nav>
+ <div id="ups">
+  <h2 id="upsT"></h2><div id="upsTabs" class="tabs"></div>
+  <button class="b" id="u0"></button><button class="b" id="u1"></button><button class="b" id="u2"></button><button class="b" id="amB"></button><button class="b" id="u3"></button><button class="b" id="u6"></button><button class="b" id="u4"></button><button class="b" id="aeB"></button><button class="b" id="u5"></button><button class="b" id="u7"></button>
+  <div class="ulk" id="uLk"></div>
+  <div id="upsBat"></div>
+  <button class="b o" id="pr"></button>
+  <div id="tBody"></div>
+  <button class="b" id="closeUps"></button>
+ </div>
+ <div id="daily" class="ov"><h2 id="dT"></h2><div id="dBody"></div><button class="b" id="dClose"></button></div>
+ <div id="mis" class="ov"><h2 id="misT"></h2><div id="misTabs" class="tabs"></div><div id="misB"></div><button class="b" id="misClose"></button></div>
+ <div id="tm" class="ov"><h2 id="tmT"></h2><div id="tmTabs" class="tabs"></div><div id="tmB"></div><button class="b" id="tmClose"></button></div>
+ <div id="intro" class="ov"><div id="introB"></div></div>
+ <div id="col" class="ov"><h2 id="cT"></h2><div id="colTabs" class="tabs"></div><div id="colB"></div><button class="b" id="cClose"></button></div>
+ <div id="trop" class="ov"><h2 id="trT"></h2><div id="trB"></div><button class="b" id="trClose"></button></div>
+ <div id="sqp" class="ov"><h2 id="sqT"></h2><div id="sqB"></div><button class="b" id="sqClose"></button></div>
+ <div id="set" class="ov"><h2 id="setT"></h2><div id="setTabs" class="tabs"></div><div id="setB"></div><button class="b" id="setClose"></button></div>
+ <div id="stat" class="ov"><h2 id="statT"></h2><div id="statB"></div><button class="b" id="statClose"></button></div>
+ <div id="por" class="ov"><h2 id="porT"></h2><div id="porTabs" class="tabs"></div><div id="porB"></div><button class="b" id="porClose"></button></div>
+ <div id="tow" class="ov"><h2 id="towT"></h2><div id="towB"></div><button class="b" id="towClose"></button></div>
+ <div id="pas" class="ov"><h2 id="pasT"></h2><div id="pasB"></div><button class="b" id="pasClose"></button></div>
+ <div id="tri" class="ov"><h2 id="triT"></h2><div id="triB"></div><button class="b" id="triClose"></button></div>
+ <div id="inv" class="ov"><h2 id="invT"></h2><div id="invB"></div><button class="b" id="invClose"></button></div>
+ <div id="shop" class="ov"><h2 id="shopT"></h2><div id="shopB"></div><button class="b" id="shopClose"></button></div>
+ <div id="pull" class="ov"><div id="pullB"></div></div>
+ <div id="ev"></div>
+ <div id="wb" class="ov"><div id="wbB"></div></div>
+ <div id="ulp" class="ov"><div id="ulpB"></div></div>
+ <div id="cele"></div>
+ <div id="toast"></div>
+</div>
+</body>
+</html>

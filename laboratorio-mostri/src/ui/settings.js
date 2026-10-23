@@ -12,6 +12,7 @@ import {openStats} from './stats.js';
 import {tutDraw} from './tutorial.js';
 import {initAnalytics,track} from '../analytics.js';
 import {authorize,player,social,socials} from '../platform.js';
+import {YT} from '../core/env.js';
 
 // Account (salvataggio nel cloud) e condivisione: solo i pulsanti che la piattaforma supporta davvero
 const SOCI={share:'📤',addToHomeScreen:'📲',addToFavorites:'⭐',rate:'👍',inviteFriends:'👥',joinCommunity:'💬'};
@@ -25,7 +26,7 @@ function renderSet(){const on=k=>S[k]?' g':'';
  tabs('setTabs',['🎮','👤'].map((ic,k)=>'<b>'+ic+'</b><small>'+tr(['tbGame','tbAcc'][k])+'</small>'),tab);
  if(tab)return setT('setB',(platHtml()||'')+'<div class="dh">'+tr('setData')+'</div>'
  +(R.rs?'<div class="dc">'+tr('rsAsk')+'</div><div class="row"><button class="b r" data-a="rsOk">'+tr('rsYes')+'</button><button class="b" data-a="rsNo">'+tr('rsNo')+'</button></div>':'<button class="b" data-a="rs">'+tr('rsBtn')+'</button>'));
- setT('setB','<div class="dh">'+tr('setLang')+'</div><div class="lgs">'+LANGS.map(l=>'<button class="b'+(R.lang===l?' g':'')+'" data-a="lang" data-v="'+l+'">'+LANGN[l]+'</button>').join('')+'</div>'
+ setT('setB',(YT?'':'<div class="dh">'+tr('setLang')+'</div><div class="lgs">'+LANGS.map(l=>'<button class="b'+(R.lang===l?' g':'')+'" data-a="lang" data-v="'+l+'">'+LANGN[l]+'</button>').join('')+'</div>')
  +'<div class="dh">'+tr('setAud')+'</div><div class="row"><button class="b'+on('sfxOn')+'" data-a="au" data-v="sfxOn">'+(S.sfxOn?'🔊':'🔇')+' '+tr('setSfx')+'</button><button class="b'+on('musOn')+'" data-a="au" data-v="musOn">'+(S.musOn?'🎵':'🔇')+' '+tr('setMus')+'</button></div>'
  +'<button class="b" data-a="stat">'+tr('setStat')+'</button>')}
 // Azzeramento: riparte da zero ma tiene lingua e audio scelti; il tutorial ricomincia.

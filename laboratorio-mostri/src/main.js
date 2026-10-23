@@ -1,3 +1,5 @@
+import './ytbridge.js'; // per primo: nel build per YouTube crea window.bridge sopra l'SDK ytgame
+import {YT} from './core/env.js';
 import {AU,aSync,actx} from './audio.js';
 import {sleep} from './core/dom.js';
 import {K} from './data/config.js';
@@ -28,15 +30,17 @@ preload();initMonsters();initCoins();
 
 // Salvataggio periodico e sincronizzazione audio
 setInterval(()=>save(),5000);
-addEventListener('visibilitychange',()=>{if(document.hidden){ordersExpire();save(true)}else drawTimers();aSync();syncPlay()});
+if(!YT)addEventListener('visibilitychange',()=>{if(document.hidden){ordersExpire();save(true)}else drawTimers();aSync();syncPlay()});
 addEventListener('pointerdown',()=>{R.lastTap=Date.now();actx();aSync()});
 // Regole delle piattaforme: niente menu del tasto destro, niente zoom (pizzico, Ctrl+rotella) e i tasti non fanno scorrere la pagina
 addEventListener('contextmenu',e=>e.preventDefault());
 addEventListener('wheel',e=>{if(e.ctrlKey)e.preventDefault()},{passive:false});
 for(const e of ['gesturestart','gesturechange'])addEventListener(e,ev=>ev.preventDefault());
 addEventListener('keydown',e=>{if([' ','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','PageUp','PageDown','Home','End'].includes(e.key)&&!/INPUT|TEXTAREA/.test(e.target.tagName))e.preventDefault()});
+// Esc chiude la finestra aperta più in alto (pulsante ✕ «...Close» o la chiusura dei Potenziamenti); senza preventDefault
+addEventListener('keydown',e=>{if(e.key!=='Escape')return;const o=[...document.querySelectorAll('.ov.on,#ups.on')].pop();const c=o&&(o.id==='ups'?document.getElementById('closeUps'):o.querySelector('[id$="Close"]'));if(c)c.click()});
 // L'app (o il browser del telefono) può chiudere la pagina senza visibilitychange: salvo anche qui
-for(const e of ['pagehide','freeze','beforeunload'])addEventListener(e,()=>save(true));
+if(!YT)for(const e of ['pagehide','freeze','beforeunload'])addEventListener(e,()=>save(true));
 
 // Il Bridge è caricato async: lo aspetto al massimo 5s (subito se il caricamento fallisce, es. offline) e initialize() al massimo 6s.
 // Se arriva più tardi (rete lenta, app di Playgama) non lo perdo: lateBridge() lo collega appena c'è e recupera il salvataggio della piattaforma.
@@ -59,9 +63,9 @@ const redraw=()=>{ulMigrate();dayCheck();startFight();applyLang();tutDraw();aSyn
 async function boot(){
  try{if(await waitBridge(5000)){initP=Promise.resolve(window.bridge.initialize());
   await Promise.race([initP,sleep(6000).then(()=>{throw 0})]);hookBridge();R.lang=pickLang(window.bridge.platform.language)}}catch(e){}
- if(!R.inited)R.lang=pickLang(navigator.language); // lingua del dispositivo se supportata, altrimenti inglese
+ if(!R.inited)R.lang=YT?'en':pickLang(navigator.language); // lingua del dispositivo se supportata, altrimenti inglese
  try{await load();R.loaded=true;R.lastT=Math.min(S.ls,Date.now());initAnalytics();
-  if(LANGS.includes(S.lp))R.lang=S.lp; // lingua scelta nelle impostazioni
+  if(!YT&&LANGS.includes(S.lp))R.lang=S.lp; // lingua scelta nelle impostazioni (su YouTube vale solo quella dell'account)
   redraw();setInterval(tick,250);
   if(S.tut>=3&&!S.introSeen&&has('exp'))setTimeout(()=>{S.introSeen=1;openIntro()},900); // una sola volta: spiega i timer da riscuotere
  }catch(e){console.error(e);if(window.__fatal)window.__fatal(e);return} // mai pagina bianca: messaggio con pulsante di reset
@@ -77,6 +81,6 @@ async function lateBridge(){const t0=Date.now();
  try{await (initP||window.bridge.initialize())}catch(e){return}
  hookBridge();let cl=null;
  try{const r=await Promise.race([window.bridge.storage.get(K),sleep(5000).then(()=>null)]);cl=typeof r==='string'?JSON.parse(r):r}catch(e){}
- if(cl&&Array.isArray(cl.g)&&(cl.pt||0)>(S.pt||0)){await load();R.lastT=Date.now();if(LANGS.includes(S.lp))R.lang=S.lp;redraw()}
+ if(cl&&Array.isArray(cl.g)&&(cl.pt||0)>(S.pt||0)){await load();R.lastT=Date.now();if(!YT&&LANGS.includes(S.lp))R.lang=S.lp;redraw()}
  save(true);ready()}
 boot().catch(e=>{console.error(e);if(window.__fatal)window.__fatal(e)});
