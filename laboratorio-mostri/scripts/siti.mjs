@@ -139,7 +139,8 @@ window.GD_OPTIONS={gameId:'${GDID}',onEvent:function(event){var n=event&&event.n
  if(n==='SDK_REWARDED_WATCH_COMPLETE')got=true;
  else if(n==='SDK_GAME_PAUSE'){if(!cur)emit('pause_state_changed',true)}
  else if(n==='SDK_GAME_START'){if(!cur)emit('pause_state_changed',false)}}};
-window.bridge={platform:{id:'game_distribution',language:navigator.language||'en',payload:'',isAudioEnabled:true,on:on,sendMessage:function(){return Promise.resolve()}},
+var pre=false; // una pubblicità all'avvio, appena il gioco è pronto (GameDistribution la usa per verificare lo SDK)
+window.bridge={platform:{id:'game_distribution',language:navigator.language||'en',payload:'',isAudioEnabled:true,on:on,sendMessage:function(m){if(m==='game_ready'&&!pre){pre=true;setTimeout(function(){show('i')},300)}return Promise.resolve()}},
  advertisement:{isAdvancedBannersSupported:false,rewardedState:'closed',interstitialState:'closed',on:on,showInterstitial:function(){return show('i')},showRewarded:function(){return show('r')},showAdvancedBanners:function(){},hideAdvancedBanners:function(){}},
  storage:{get:function(k){try{return Promise.resolve(localStorage.getItem(k))}catch(e){return Promise.resolve(null)}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}return Promise.resolve()}},
  payments:{isSupported:false},notifications:{isSupported:false},player:{isAuthorizationSupported:false,isAuthorized:false},social:{},leaderboards:{type:'not_available'},
