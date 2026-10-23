@@ -1,0 +1,49 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Lilita;src:url(lilita.woff2) format('woff2')}
+@font-face{font-family:Fredoka;src:url(fredoka.woff2) format('woff2');font-weight:300 700}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#07040f}
+.abs{position:absolute}
+.merge{display:flex;align-items:center;gap:calc(var(--u)*1.4);padding:calc(var(--u)*1.6);border-radius:calc(var(--u)*3);background:linear-gradient(#2a1a55e8,#160c33e8);border:calc(var(--u)*.3) solid #b77bff88;box-shadow:0 calc(var(--u)*1) calc(var(--u)*3) #000a,0 0 calc(var(--u)*4) #8b43ff55}
+.card{position:relative;width:var(--k);aspect-ratio:1;border-radius:calc(var(--k)*.18);display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,hsl(var(--h) 60% 40%),hsl(var(--h) 60% 12%));border:calc(var(--u)*.35) solid hsl(var(--h) 80% 65%);box-shadow:0 0 calc(var(--u)*2) hsl(var(--h) 90% 55% / .7)}
+.card img{width:86%}
+.card b{position:absolute;right:-8%;bottom:-8%;font:calc(var(--k)*.22)/1 Lilita;padding:calc(var(--k)*.05) calc(var(--k)*.1);border-radius:calc(var(--k)*.1);background:linear-gradient(hsl(var(--h) 70% 50%),hsl(var(--h) 70% 25%));border:2px solid #fff8}
+.op{font:calc(var(--u)*4.4)/1 Lilita;color:#fff;text-shadow:0 0 calc(var(--u)*1.5) #b77bff}
+.arrow{font:calc(var(--u)*4.4)/1 Lilita;color:#8be04a;text-shadow:0 0 calc(var(--u)*1.5) #8be04a}
+.card.big{--k:calc(var(--kk)*1.35);box-shadow:0 0 calc(var(--u)*4) #ffd36b,0 0 0 calc(var(--u)*.4) #ffd36b}
+.logo{left:50%;translate:-50% 0;top:var(--ly);text-align:center;white-space:nowrap;z-index:8}
+.logo h1{font:var(--ls)/.86 Lilita;letter-spacing:.02em;position:relative}
+.l1{display:block;color:#ffd84a;background:linear-gradient(#fffbe0 5%,#ffe066 30%,#ffb31a 62%,#ff7a00 95%);-webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 calc(var(--ls)*.012) 0 #c25a00) drop-shadow(0 calc(var(--ls)*.012) 0 #a24600) drop-shadow(0 calc(var(--ls)*.012) 0 #7a3200) drop-shadow(0 calc(var(--ls)*.012) 0 #5a2200) drop-shadow(0 calc(var(--ls)*.04) calc(var(--ls)*.04) #000c) drop-shadow(0 0 calc(var(--ls)*.12) #ffb02e88)}
+.l2{display:block;font-size:.6em;margin-top:.06em;background:linear-gradient(#f6ecff 5%,#d3a8ff 40%,#9b55ff 75%,#6a22d8);-webkit-background-clip:text;background-clip:text;color:transparent;
+ filter:drop-shadow(0 calc(var(--ls)*.01) 0 #4a1a9a) drop-shadow(0 calc(var(--ls)*.01) 0 #3a1080) drop-shadow(0 calc(var(--ls)*.01) 0 #2a0a60) drop-shadow(0 calc(var(--ls)*.04) calc(var(--ls)*.04) #000c) drop-shadow(0 0 calc(var(--ls)*.12) #b77bff88)}
+.tag{display:inline-block;margin-top:calc(var(--ls)*.12);font:700 calc(var(--ls)*.2)/1 Fredoka;letter-spacing:.08em;padding:.45em 1.2em;border-radius:3em;background:linear-gradient(#7be04a,#2f8a14);border:calc(var(--u)*.3) solid #d6ffb0aa;box-shadow:0 calc(var(--u)*.6) 0 #1a4a08,0 0 calc(var(--u)*3) #6cc22a99;text-shadow:0 2px 0 #1a4a08}
+.cta{z-index:9;font:calc(var(--u)*var(--cs))/1 Lilita;letter-spacing:.04em;padding:.55em 1.6em .6em;border-radius:1em;color:#fff;background:linear-gradient(#ffd36b 0,#ff9d2e 48%,#ff6a00 52%,#e04a00);border:calc(var(--u)*.45) solid #fff3c0;box-shadow:0 .14em 0 #8a2a00,0 .3em .5em #000a,0 0 1em #ff9d2e;text-shadow:0 .06em 0 #8a2a00;white-space:nowrap}
+.cta::before{content:'';position:absolute;left:8%;right:8%;top:6%;height:40%;border-radius:1em;background:linear-gradient(#ffffffaa,#fff0)}
+.hand{font-size:calc(var(--u)*var(--cs)*1.3);z-index:10;filter:drop-shadow(0 4px 4px #000a);rotate:-15deg}
+.vig{inset:0;background:radial-gradient(ellipse 80% 75% at 50% 50%,transparent 55%,#000c);z-index:20;pointer-events:none}
+.grain{inset:0;z-index:21;opacity:.07;mix-blend-mode:overlay;pointer-events:none}
+#c{position:relative;width:100vw;height:100vh;overflow:hidden;--u:1vmin;font-family:Fredoka,sans-serif;color:#fff}
+.bg{inset:0;background-size:cover;background-position:center}
+.shade{inset:0;background:linear-gradient(#0d0626e6 0%,#0d062688 var(--sh),transparent calc(var(--sh) + 12%)),linear-gradient(transparent 70%,#0d0626cc)}
+.h{--ly:3vh;--ls:15vh;--cs:5;--kk:8vh;--sh:22%}
+.q{--ly:3vh;--ls:13vh;--cs:4.8;--kk:8vw;--sh:24%}
+.v{--ly:5vh;--ls:20vw;--cs:6.6;--kk:12vw;--sh:22%}
+.p{--ly:4.5vh;--ls:21vw;--sh:22%}
+.clean .tag,.clean #x{display:none}
+</style></head><body><div id="c">
+<div class="abs bg" id="bg"></div><div class="abs shade"></div>
+<div class="abs logo"><h1><span class="l1">MONSTER</span><span class="l2">LABORATORY</span></h1><div class="tag">MERGE · EVOLVE · BATTLE</div></div>
+<div id="x"></div>
+<div class="abs vig"></div>
+<svg class="abs grain" width="100%" height="100%"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+</div><script>
+const q=new URLSearchParams(location.search),F=q.get('f')||'h';document.getElementById('c').classList.add(F==='p'?'p':F);if(q.get('clean'))document.getElementById('c').classList.add('clean');
+document.getElementById('bg').style.backgroundImage='url('+q.get('bg')+')';
+if(!q.get('clean')){const L={h:{cta:[84,86],hand:[92,89],merge:[2,78]},q:{cta:[73,90],hand:[87,93],merge:[2,83]},v:{cta:[50,93.5],hand:[77,95.5],merge:[50,75.5,'c']}}[F];
+document.getElementById('x').innerHTML=`<div class="abs merge" style="left:${L.merge[0]}vw;top:${L.merge[1]}vh;--k:var(--kk);${L.merge[2]?'translate:-50% 0;':''}">
+ <div class="card" style="--h:85"><img src="m/fanghiglia.webp"><b>3</b></div><span class="op">+</span>
+ <div class="card" style="--h:85"><img src="m/fanghiglia.webp"><b>3</b></div><span class="arrow">➜</span>
+ <div class="card big" style="--h:280"><img src="m/melmostro.webp"><b>4</b></div></div>
+ <div class="abs cta" style="left:${L.cta[0]}vw;top:${L.cta[1]}vh;translate:-50% -50%">▶ PLAY NOW</div><div class="abs hand" style="left:${L.hand[0]}vw;top:${L.hand[1]}vh">👆</div>`;}
+</script></body></html>
