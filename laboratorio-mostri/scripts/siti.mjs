@@ -102,8 +102,8 @@ const CG=`<script src="https://sdk.crazygames.com/crazygames-sdk-v3.js"></script
 // CrazyGames SDK v3 con la forma di Playgama Bridge (window.bridge): pubblicità, salvataggio (modulo data), audio, caricamento e partita
 (function(){var L={},C=null,ok=false,initErr='';function on(k,f){(L[k]=L[k]||[]).push(f)}function emit(k,v){(L[k]||[]).forEach(function(f){try{f(v)}catch(e){}})}
 function sdk(){return window.CrazyGames&&window.CrazyGames.SDK}
-// messaggio di diagnostica in basso (solo quando una pubblicità non parte): dice il motivo dato da CrazyGames
-function why(t){try{var d=document.createElement('div');d.textContent='CrazyGames: '+t;d.style.cssText='position:fixed;left:8px;bottom:8px;z-index:999;background:#000c;color:#fff;font:12px sans-serif;padding:6px 10px;border-radius:8px;pointer-events:none';document.body.appendChild(d);setTimeout(function(){d.remove()},6000)}catch(e){}}
+// motivo di una pubblicità non partita, nella console (es. adsDisabledBasicLaunch: niente pubblicità durante il Basic Launch)
+function why(t){try{console.warn('CrazyGames: '+t)}catch(e){}}
 function errTxt(e){try{return e&&(e.code||e.message)?(e.code||'')+' '+(e.message||''):JSON.stringify(e)}catch(x){return String(e)}}
 function ad(type,ev,rew){return new Promise(function(res){var s=sdk();if(!s){why('SDK non caricato');if(rew)emit(ev,'failed');return res()}if(!ok)why('init non completato ('+initErr+'), provo lo stesso');
  try{s.ad.requestAd(type,{adStarted:function(){emit(ev,'opened')},
