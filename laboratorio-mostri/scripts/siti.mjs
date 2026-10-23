@@ -11,11 +11,16 @@ if(!existsSync('dist/index.html')||!existsSync('dist-yt/index.html'))throw new E
 const html=readFileSync('dist/index.html','utf8');if(!CDN.test(html))throw new Error('script del Bridge non trovato in dist/index.html');
 const cfg=JSON.parse(readFileSync('dist/playgama-bridge-config.json','utf8'));
 const BRIDGE='node_modules/@playgama/bridge/dist/playgama-bridge.js';
+// Codice del gioco dentro index.html (in fondo al body, come faceva defer): alcuni caricatori (es. CrazyGames) perdevano la cartella assets/
+const JS=/<script defer src="\.\/assets\/(index-[\w-]+\.js)"><\/script>\n?/;
+function inl(h,d){const m=h.match(JS);if(!m)throw new Error('script del gioco non trovato');const code=readFileSync('dist/assets/'+m[1],'utf8');
+ if(code.includes('</script'))throw new Error('il codice contiene </script>');rmSync(d+'/assets/'+m[1],{force:true});
+ return h.replace(JS,'').replace('</body>',()=>'<script>'+code+'</script>\n</body>')}
 const DA='INSERISCI_QUI'; // segnaposto per gli id che ti dà il sito quando registri il gioco
 
 // pid = id della piattaforma in Bridge; extra = impostazioni del sito nel config; files = file in più nella cartella
 const BR={
- crazygames:{pid:'crazy_games',url:'https://developer.crazygames.com',note:'Registrati come sviluppatore, «Submit game» e carica lo zip. CrazyGames vuole: pubblico 13+, caricamento sotto 5 secondi, gioco che tiene 20+ minuti. Lo SDK di CrazyGames lo carica Bridge da solo.'},
+ crazygames:{pid:'crazy_games',sdk:'https://sdk.crazygames.com/crazygames-sdk-v3.js',url:'https://developer.crazygames.com',note:'Registrati come sviluppatore, «Submit game» e carica lo zip. CrazyGames vuole: pubblico 13+, caricamento sotto 5 secondi, gioco che tiene 20+ minuti. Carica lo ZIP così com\'è (non i singoli file): dentro ci sono anche le cartelle m/ e sfx/ con immagini e suoni.'},
  poki:{pid:'poki',url:'https://developers.poki.com',note:'Poki seleziona i giochi: compila la richiesta su developers.poki.com. Di solito vuole l\'esclusiva sul web (anche 5 anni) e potrebbe rifiutare un gioco già pubblicato altrove. Gli acquisti con soldi veri non compaiono (Poki non li ha).'},
  gamedistribution:{pid:'game_distribution',url:'https://gamedistribution.com/developers',extra:{gameId:DA+'_GAME_ID'},need:'game_distribution.gameId',note:'Crea il gioco nel pannello di GameDistribution: ti dà un «Game ID». Mettilo in playgama-bridge-config.json al posto di '+DA+'_GAME_ID, poi ricomprimi la cartella e caricala.'},
  yandex:{pid:'yandex',url:'https://yandex.com/dev/games/doc/en/',note:'Console per sviluppatori di Yandex Games: «Add application», carica lo zip, compila nome, descrizioni e immagini (il gioco ha già il russo, che Yandex richiede). Il pagamento minimo è 100 €.'},
@@ -48,7 +53,7 @@ site('playgama',d=>{cpSync('dist',d,{recursive:true});writeFileSync(d+'/LEGGIMI.
 for(const [nome,s] of Object.entries(BR))site(nome,d=>{base(d);cpSync(BRIDGE,d+'/playgama-bridge.js');
  const c=structuredClone(cfg);c.forciblySetPlatformId=s.pid;c.platforms={[s.pid]:s.extra||{}};
  writeFileSync(d+'/playgama-bridge-config.json',JSON.stringify(c,null,4));
- writeFileSync(d+'/index.html',html.replace(CDN,'<script src="playgama-bridge.js" onerror="window.__bridgeFail=1"></script>\n'));
+ writeFileSync(d+'/index.html',inl(html.replace(CDN,(s.sdk?'<script src="'+s.sdk+'"></script>\n':'')+'<script src="playgama-bridge.js" onerror="window.__bridgeFail=1"></script>\n'),d));
  for(const [f,t] of Object.entries(s.files||{}))writeFileSync(d+'/'+f,t);
  writeFileSync(d+'/LEGGIMI.txt',LEGGIMI(nome,s.url,s.note,s.need))});
 // YouTube Playables: build dedicato (vedi store/youtube/LEGGIMI.md)
@@ -74,7 +79,7 @@ window.bridge={platform:{id:'gamemonetize',language:navigator.language||'en',pay
 var s=document.createElement('script');s.id='gamemonetize-sdk';s.src='https://api.gamemonetize.com/sdk.js';document.head.appendChild(s)})();
 </script>
 `;
-site('gamemonetize',d=>{base(d);writeFileSync(d+'/index.html',html.replace(CDN,GM));
+site('gamemonetize',d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,GM),d));
  writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('GameMonetize','https://gamemonetize.com','Registrati come sviluppatore, crea il gioco in «Game Management» e copia il «Game ID». Poi clicca «Verify Game» e «Request activation». GameMonetize ha solo video a schermo intero: il video premio usa lo stesso annuncio e dà il premio quando finisce.','il Game ID in index.html (cerca «'+DA+'_GAME_ID»)'))});
 
 // Versione web senza SDK: niente pubblicità, salvataggio nel browser
@@ -82,4 +87,4 @@ const WEB={itchio:['itch.io','https://itch.io/game/new','Crea il gioco, scegli �
  newgrounds:['Newgrounds','https://www.newgrounds.com/projects/games','Crea un progetto «Game», carica lo zip come HTML5. Newgrounds condivide con te parte delle sue pubblicità.'],
  armorgames:['Armor Games','https://armorgames.com/contact','Armor Games non ha un caricamento libero: scrivi proponendo il gioco (link GitHub Pages + questo zip) per una sponsorizzazione.'],
  gamepix:['GamePix','https://www.gamepix.com','Registrati come sviluppatore GamePix e invia il gioco: integrano loro il loro SDK. Se ti chiedono di integrarlo tu, dimmelo e preparo una versione apposta.']};
-for(const [nome,[n,url,note]] of Object.entries(WEB))site(nome,d=>{base(d);writeFileSync(d+'/index.html',html.replace(CDN,''));writeFileSync(d+'/LEGGIMI.txt',LEGGIMI(n,url,note))});
+for(const [nome,[n,url,note]] of Object.entries(WEB))site(nome,d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,''),d));writeFileSync(d+'/LEGGIMI.txt',LEGGIMI(n,url,note))});
