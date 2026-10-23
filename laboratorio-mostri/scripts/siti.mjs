@@ -79,6 +79,23 @@ var s=document.createElement('script');s.id='gamemonetize-sdk';s.src='https://ap
 </script>
 `;
 
+// Un solo file: immagini e suoni dentro index.html come data: URI (il caricatore di CrazyGames riceveva solo index.html)
+import {readdirSync} from 'node:fs';
+function one(h,d){const A={},b64=(f,t)=>'data:'+t+';base64,'+readFileSync(d+'/'+f).toString('base64');
+ for(const f of readdirSync(d+'/m'))A['m/'+f]=b64('m/'+f,'image/webp');
+ for(const f of readdirSync(d+'/sfx'))A['sfx/'+f]=b64('sfx/'+f,'audio/mpeg');
+ for(const f of ['boot-h.webp','boot-v.webp'])h=h.split('url('+f+')').join('url('+b64(f,'image/webp')+')');
+ h=h.split('src="m/lumizucca.webp"').join('src="'+A['m/lumizucca.webp']+'"');
+ // nel codice: percorsi m/… e sfx/… passano da __u()
+ const before=h.length;
+ h=h.split('src="m/`+e+`.webp"').join('src="`+__u(`m/`+e+`.webp`)+`"');
+ h=h.split('src="m/`+e.slice(1)+`.webp"').join('src="`+__u(`m/`+e.slice(1)+`.webp`)+`"');
+ h=h.replace(/`m\/`\+e\+`\.webp`/g,'__u(`m/`+e+`.webp`)').split('fetch(`sfx/`+t+`.mp3`)').join('fetch(__u(`sfx/`+t+`.mp3`))');
+ if(/src="m\/`|[^(]`m\/`\+|fetch\(`sfx/.test(h))throw new Error('percorsi m/ o sfx/ non convertiti');
+ h=h.replace('<script src="https://sdk.crazygames.com','<script>window.__A='+JSON.stringify(A)+';window.__u=function(p){return window.__A[p]||p}</script>\n<script src="https://sdk.crazygames.com');
+ for(const f of readdirSync(d))if(f!=='index.html')rmSync(d+'/'+f,{recursive:true,force:true});
+ return h}
+
 // CrazyGames: collegamento diretto al loro SDK v3 (con Bridge il loro controllo non rilevava lo SDK e le pubblicità non partivano)
 const CG=`<script src="https://sdk.crazygames.com/crazygames-sdk-v3.js"></script>
 <script>
@@ -104,8 +121,8 @@ var B={platform:{id:'crazy_games',language:navigator.language||'en',payload:'',i
 window.bridge=B})();
 </script>
 `;
-site('crazygames',d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,CG),d));
- writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('crazygames','https://developer.crazygames.com','Registrati come sviluppatore, «Submit game» e carica lo zip. CrazyGames vuole: pubblico 13+, caricamento sotto 5 secondi, gioco che tiene 20+ minuti. Carica lo ZIP così com\'è (non i singoli file): dentro ci sono anche le cartelle m/ e sfx/ con immagini e suoni.'))});
+site('crazygames',d=>{base(d);writeFileSync(d+'/index.html',one(inl(html.replace(CDN,CG),d),d));
+ writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('crazygames','https://developer.crazygames.com','Registrati come sviluppatore, «Submit game» e carica il file index.html (contiene tutto: immagini, suoni e codice). CrazyGames vuole: pubblico 13+, caricamento sotto 5 secondi, gioco che tiene 20+ minuti. '))});
 site('gamemonetize',d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,GM),d));
  writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('GameMonetize','https://gamemonetize.com','Registrati come sviluppatore, crea il gioco in «Game Management» e copia il «Game ID». Poi clicca «Verify Game» e «Request activation». GameMonetize ha solo video a schermo intero: il video premio usa lo stesso annuncio e dà il premio quando finisce.','il Game ID in index.html (cerca «'+DA+'_GAME_ID»)'))});
 
