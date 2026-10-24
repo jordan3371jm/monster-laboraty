@@ -1,0 +1,10 @@
+MONSTER LABORATORY · versione per Telegram
+
+Come pubblicarlo
+Online su https://jordan3371jm.github.io/monster-laboraty/telegram/ : crea il bot con @BotFather e collega quell'indirizzo come Mini App. Pubblicità: registrati su https://partner.adsgram.ai e manda il block id.
+
+Dove: https://t.me/BotFather
+
+Per caricarlo: comprimi in .zip il CONTENUTO di questa cartella (index.html deve stare subito dentro lo zip, non in una sottocartella),
+oppure usa lo zip già pronto con lo stesso nome nella cartella siti/.
+Immagini e descrizioni per la scheda del gioco: store/ (copertine 1:1, 9:16, 16:9 e store/descrizioni.md, in 6 lingue).
