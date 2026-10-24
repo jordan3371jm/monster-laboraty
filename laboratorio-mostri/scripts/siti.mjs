@@ -21,10 +21,8 @@ const DA='INSERISCI_QUI'; // segnaposto per gli id che ti dà il sito quando reg
 // pid = id della piattaforma in Bridge; extra = impostazioni del sito nel config; files = file in più nella cartella
 const BR={
  poki:{pid:'poki',url:'https://developers.poki.com',note:'Poki seleziona i giochi: compila la richiesta su developers.poki.com. Di solito vuole l\'esclusiva sul web (anche 5 anni) e potrebbe rifiutare un gioco già pubblicato altrove. Gli acquisti con soldi veri non compaiono (Poki non li ha).'},
- yandex:{pid:'yandex',url:'https://yandex.com/dev/games/doc/en/',note:'Console per sviluppatori di Yandex Games: «Add application», carica lo zip, compila nome, descrizioni e immagini (il gioco ha già il russo, che Yandex richiede). Il pagamento minimo è 100 €.'},
  y8:{pid:'y8',url:'https://developer.y8.com',note:'Carica il gioco dal portale sviluppatori di Y8 (serve un account Y8). Le pubblicità le gestisce Y8 tramite Bridge.'},
  lagged:{pid:'lagged',url:'https://lagged.dev',extra:{devId:DA+'_DEV_ID',publisherId:DA+'_PUBLISHER_ID'},need:'lagged.devId e lagged.publisherId',note:'Registrati come sviluppatore su Lagged: ti danno devId e publisherId. Mettili in playgama-bridge-config.json, ricomprimi e carica.'},
- telegram:{pid:'telegram',url:'https://partner.adsgram.ai',extra:{adsgramBlockId:DA+'_ADSGRAM_BLOCK_ID'},need:'telegram.adsgramBlockId',note:'Telegram non ospita i file: carica questa cartella su un sito (es. GitHub Pages), crea un bot con @BotFather e collega l\'indirizzo come Mini App. Per le pubblicità registrati su Adsgram e metti il «block id» nel config.'},
 };
 
 const LEGGIMI=(nome,url,note,need)=>`MONSTER LABORATORY · versione per ${nome}
@@ -182,6 +180,51 @@ window.bridge={platform:{id:'facebook',language:'en',payload:'',isAudioEnabled:t
 site('facebook',d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,FBS),d));
  writeFileSync(d+'/fbapp-config.json',JSON.stringify({instant_games:{platform_version:'RICH_GAMEPLAY',navigation_menu_version:'NAV_FLOATING'}},null,2));
  writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('Facebook Instant Games','https://developers.facebook.com/apps','Crea un\'app di tipo Instant Games, poi «Instant Games → Web hosting» e carica lo zip. Per le pubblicità: Audience Network → crea un posizionamento Interstitial e uno Rewarded video e mettine gli id in index.html.','gli id dei posizionamenti in index.html (cerca «'+DA+'_ID»)'))});
+
+// Yandex Games: collegamento diretto al loro SDK (/sdk.js): LoadingAPI.ready, GameplayAPI, pubblicità, dati del giocatore, pausa
+const YAS=`<script src="/sdk.js"></script>
+<script>
+(function(){var L={},Y=null,P=null,busy=false;function on(k,f){(L[k]=L[k]||[]).push(f)}function emit(k,v){(L[k]||[]).forEach(function(f){try{f(v)}catch(e){}})}
+function ad(r){var e=r?'rewarded_state_changed':'interstitial_state_changed';if(!Y||busy){if(r)emit(e,'failed');return Promise.resolve()}busy=true;var got=false;
+ return new Promise(function(res){var end=function(st){busy=false;emit(e,st);res()};var cb={onOpen:function(){emit(e,'opened')},onError:function(){end(r?'failed':'closed')}};
+  if(r){cb.onRewarded=function(){got=true};cb.onClose=function(){if(got)emit(e,'rewarded');end(got?'closed':'failed')}}else{cb.onClose=function(){end('closed')}}
+  try{r?Y.adv.showRewardedVideo({callbacks:cb}):Y.adv.showFullscreenAdv({callbacks:cb})}catch(x){end(r?'failed':'closed')}})}
+window.bridge={platform:{id:'yandex',language:'en',payload:'',isAudioEnabled:true,on:on,
+  sendMessage:function(m){if(!Y)return Promise.resolve();try{if(m==='game_ready')Y.features.LoadingAPI.ready();else if(m==='gameplay_started')Y.features.GameplayAPI.start();else if(m==='gameplay_stopped')Y.features.GameplayAPI.stop()}catch(e){}return Promise.resolve()}},
+ advertisement:{isAdvancedBannersSupported:false,rewardedState:'closed',interstitialState:'closed',on:on,showInterstitial:function(){return ad(false)},showRewarded:function(){return ad(true)},showAdvancedBanners:function(){},hideAdvancedBanners:function(){}},
+ storage:{get:function(k){if(!P)return Promise.resolve(null);return P.getData([k]).then(function(d){return d&&d[k]||null})},
+  set:function(k,v){if(!P)return Promise.resolve();var o={};o[k]=v;return P.setData(o,true)}},
+ payments:{isSupported:false},notifications:{isSupported:false},player:{isAuthorizationSupported:false,isAuthorized:false},social:{},leaderboards:{type:'not_available'},
+ initialize:function(){if(!window.YaGames)return Promise.reject(new Error('SDK Yandex mancante'));return YaGames.init().then(function(s){Y=s;
+  try{window.bridge.platform.language=s.environment.i18n.lang||'en'}catch(e){}
+  try{s.on('game_api_pause',function(){emit('pause_state_changed',true)});s.on('game_api_resume',function(){emit('pause_state_changed',false)})}catch(e){}
+  return s.getPlayer({scopes:false}).then(function(p){P=p},function(){})})}};
+})();
+</script>
+`;
+site('yandex',d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,YAS),d));
+ writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('Yandex Games','https://yandex.ru/games/console','Console sviluppatori di Yandex Games: aggiungi l\'applicazione e carica questo zip.'))});
+
+// Telegram Mini App: il gioco va ospitato su un sito (GitHub Pages). Pubblicità con Adsgram (video premio), salvataggio nel browser di Telegram.
+const ADSGRAM='INSERISCI_QUI_ADSGRAM_BLOCK_ID';
+const TGS=`<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<script>
+(function(){var L={},T=window.Telegram&&Telegram.WebApp,A=null;function on(k,f){(L[k]=L[k]||[]).push(f)}function emit(k,v){(L[k]||[]).forEach(function(f){try{f(v)}catch(e){}})}
+var BLOCK='${ADSGRAM}';
+function rew(){var e='rewarded_state_changed';if(!A){emit(e,'failed');return Promise.resolve()}emit(e,'opened');
+ return A.show().then(function(r){if(r&&r.done)emit(e,'rewarded');emit(e,r&&r.done?'closed':'failed')},function(){emit(e,'failed')})}
+window.bridge={platform:{id:'telegram',language:'en',payload:'',isAudioEnabled:true,on:on,sendMessage:function(){return Promise.resolve()}},
+ advertisement:{isAdvancedBannersSupported:false,rewardedState:'closed',interstitialState:'closed',on:on,showInterstitial:function(){return Promise.resolve()},showRewarded:rew,showAdvancedBanners:function(){},hideAdvancedBanners:function(){}},
+ storage:{get:function(k){try{return Promise.resolve(localStorage.getItem(k))}catch(e){return Promise.resolve(null)}},set:function(k,v){try{localStorage.setItem(k,v)}catch(e){}return Promise.resolve()}},
+ payments:{isSupported:false},notifications:{isSupported:false},player:{isAuthorizationSupported:false,isAuthorized:false},social:{},leaderboards:{type:'not_available'},
+ initialize:function(){try{if(T){T.ready();T.expand();var u=T.initDataUnsafe&&T.initDataUnsafe.user;if(u&&u.language_code)window.bridge.platform.language=u.language_code}}catch(e){}
+  try{if(window.Adsgram&&BLOCK.indexOf('INSERISCI')!==0)A=Adsgram.init({blockId:BLOCK})}catch(e){}return Promise.resolve()}};
+})();
+</script>
+`;
+site('telegram',d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,TGS),d));
+ writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('Telegram','https://t.me/BotFather','Online su https://jordan3371jm.github.io/monster-laboraty/telegram/ : crea il bot con @BotFather e collega quell\'indirizzo come Mini App. Pubblicità: registrati su https://partner.adsgram.ai e manda il block id.'))});
 
 site('crazygames',d=>{base(d);writeFileSync(d+'/index.html',one(inl(html.replace(CDN,CG),d),d));
  writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('crazygames','https://developer.crazygames.com','Registrati come sviluppatore, «Submit game» e carica il file index.html (contiene tutto: immagini, suoni e codice). CrazyGames vuole: pubblico 13+, caricamento sotto 5 secondi, gioco che tiene 20+ minuti. '))});
