@@ -7,11 +7,15 @@ import {pgN} from './economy.js';
 // L'ordine della lista è quello in cui la barra «prossimo obiettivo» propone gli sblocchi.
 const UL=[
  {k:'ups',m:3,ic:'⚙️'},{k:'ads',m:4,ic:'⚡'},{k:'day',m:5,ic:'🎁'},{k:'col',m:7,ic:'📖'},{k:'exp',m:7,ic:'🧭'},
- {k:'pr',c:25000,ic:'🔮'},{k:'bat',p:1,ic:'⚔️'},{k:'por',p:1,ic:'🌀'},{k:'tr',s:8,ic:'🏆'},{k:'fm',s:12,ic:'🔁'},
+ {k:'pr',c:315000,ic:'🔮'},{k:'bat',p:1,ic:'⚔️'},{k:'por',p:1,ic:'🌀'},{k:'tr',s:8,ic:'🏆'},{k:'fm',s:12,ic:'🔁'},
  {k:'pas',s:20,ic:'🎟️'},{k:'tow',s:25,ic:'🗼'},{k:'inv',s:30,ic:'🔥'}];
 // Potenziamenti: i primi due ci sono da subito, gli altri si aggiungono man mano (indice in UP di economy.js)
 const UPL=[null,null,{m:5},null,{m:7},{s:10},null,null]; // 7 (Laboratorio notturno) si vede con l'unione o l'incubatrice automatica // 3 e 6 (Unione automatica) si vedono dopo averla sbloccata con le Essenze
 const disc=()=>S.disc.filter(Boolean).length;
+// Nella prima ora di gioco (S.pt) gli sblocchi arrivano uno alla volta, ad almeno UL_GAP secondi l'uno dall'altro:
+// così le novità si distribuiscono nei primi 10 minuti invece di arrivare tutte insieme. S.ulAt = S.pt dell'ultimo sblocco.
+const UL_GAP=110,UL_FAST=3600;
+const ulWait=()=>S.pt>=UL_FAST||!UL.some(u=>(u.m||u.c)&&has(u.k))?0:Math.max(0,UL_GAP-((S.pt||0)-(S.ulAt||0)));
 // avanzamento verso il requisito, da 0 a 1
 function rqP(r){if(r.p)return S.ach.pr>=r.p?1:Math.min(.99,(S.ach.pr+Math.min(1,S.run/pgN()))/r.p); // verso l'Evocazione oscura conta anche quanto manca alla prossima
  const [v,n]=r.m?[disc(),r.m]:r.s?[S.bs,r.s]:r.c?[S.run,r.c]:[S.ach.pr,r.p];return Math.max(0,Math.min(1,v/n))}
@@ -19,7 +23,8 @@ const has=k=>S.ul.includes(k);
 const upOpen=i=>!UPL[i]||has('u'+i);
 // Sblocca ciò che ha raggiunto il requisito; restituisce le novità (le chiamate successive non le ripetono)
 function ulCheck(){if(S.tut<3)return[];const out=[];
- for(const u of UL)if(!has(u.k)&&rqP(u)>=1){S.ul.push(u.k);out.push({k:u.k,ic:u.ic})}
+ for(const u of UL)if(!has(u.k)&&rqP(u)>=1){const g=u.m||u.c; // distanziati solo gli sblocchi dei primi minuti (mostri e monete); quelli da Evocazione e livelli arrivano subito
+  if(g&&(ulWait()>0||out.some(o=>o.g)))continue;S.ul.push(u.k);if(g)S.ulAt=S.pt||0;out.push({k:u.k,ic:u.ic,g})}
  UPL.forEach((r,i)=>{if(r&&!has('u'+i)&&rqP(r)>=1){S.ul.push('u'+i);out.push({k:'u'+i,up:i})}});
  return out}
 const ulNext=()=>UL.find(u=>!has(u.k));
@@ -28,4 +33,4 @@ const ulNext=()=>UL.find(u=>!has(u.k));
 function ulMigrate(){if(has('v2'))return;
  if(S.tut>=3&&(S.ach.pr>0||S.bs>=15))for(const k of [...UL.map(u=>u.k),'u2','u3','u4','u5'])if(!has(k))S.ul.push(k);
  S.ul.push('v2');ulCheck()}
-export {UL,UPL,rqP,has,upOpen,ulCheck,ulNext,ulMigrate};
+export {UL,UPL,UL_GAP,rqP,has,upOpen,ulCheck,ulNext,ulMigrate,ulWait};

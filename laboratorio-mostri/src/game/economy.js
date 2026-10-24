@@ -27,7 +27,8 @@ const mult=()=>(1+LAB_UP*S.up.l)*essMult(S.essT)*(1+.03*(S.bs-1))*(1+.01*trN())*
 const val=t=>.5*Math.pow(2.4,t-1);
 // Variante dorata (S.gv[i]=1): quel mostro rende GOLD volte tanto
 const GOLD=3,inc=()=>S.g.reduce((s,t,i)=>s+(t?val(t)*(S.gv&&S.gv[i]?GOLD:1):0),0)*mult();
-const spCost=()=>Math.floor(10*Math.pow(2,S.pk.s)*Math.pow(1.07,S.sp)*Math.pow(1-DISC_UP,S.up.d)*Math.pow(.98,S.pk.e||0));
+// prima partita (nessuna Evocazione oscura): il prezzo delle uova sale più piano, così i primi minuti non si bloccano
+const spCost=()=>Math.floor(10*Math.pow(2,S.pk.s)*Math.pow(S.ach&&S.ach.pr?1.07:1.06,S.sp)*Math.pow(1-DISC_UP,S.up.d)*Math.pow(.98,S.pk.e||0));
 // Potenziamenti a monete. Laboratorio, Sconto uova e Sonno profondo danno poco per livello ma hanno tanti livelli economici:
 // le monete restano utili per tutta la partita invece di finire i potenziamenti in fretta.
 const LAB_UP=.05,DISC_UP=.02,OFF_UP=.02;
@@ -60,6 +61,8 @@ const dayNum=()=>Math.floor((Date.now()-new Date().getTimezoneOffset()*60000)/86
 // Monete della partita necessarie per la prima Essenza: PG. Solo la PRIMA Evocazione oscura usa la soglia più bassa PG1
 // (le guide consigliano il primo prestigio entro 10-15 minuti; prima arrivava dopo ~30 col gioco ottimale). Le successive restano uguali.
 const PG1=35000,PG=200000,pgN=()=>S.ach&&S.ach.pr?PG:PG1,pgain=()=>Math.floor(Math.sqrt(S.run/pgN()));
+// Conviene l'Evocazione oscura? Sì quando le Essenze che otterresti alzano i guadagni di almeno il 25% (PR_OK)
+const PR_OK=1.25,prRatio=()=>essMult(S.essT+pgain())/essMult(S.essT),prWorth=()=>pgain()>=1&&prRatio()>=PR_OK;
 // Unisce a coppie tutti i mostri uguali (dal livello più basso): ritorna le unioni fatte come {i: cella, t: nuovo livello}.
 // gv (facoltativo): varianti dorate, il risultato è dorato solo se lo sono entrambi
 // max: livello più alto che si può unire; n: numero massimo di unioni (Unione automatica = 1 ogni amInt() secondi)
@@ -70,4 +73,4 @@ function prestigeState(old,p){const x=def();KEEP.forEach(k=>x[k]=old[k]);x.ord={
  x.ess=old.ess+p;x.essT=old.essT+p;x.ach.pr++;
  const s0=1+x.pk.s;x.g[0]=x.g[1]=s0;for(let t=1;t<=s0;t++)x.disc[t-1]=1; // perk «Uova antiche»
  return x}
-export {OFF_AUTO,offAutoInt,LAB_UP,DISC_UP,OFF_UP,AE_COST,EGG_T0,AMV_INT,AMV_MS,AD_MERGES,AM_COST,amInt,amMax,PG1,pgN,GOLD,setHook,eggInt,incBase,essBonus,essMult,offRate,slots,freeCell,PG,mult,val,inc,spCost,UP,PK,PKR,pkrCost,trN,spT,earn,rBase,give,dayNum,pgain,mergePairs,prestigeState,setEvMul};
+export {PR_OK,prRatio,prWorth,OFF_AUTO,offAutoInt,LAB_UP,DISC_UP,OFF_UP,AE_COST,EGG_T0,AMV_INT,AMV_MS,AD_MERGES,AM_COST,amInt,amMax,PG1,pgN,GOLD,setHook,eggInt,incBase,essBonus,essMult,offRate,slots,freeCell,PG,mult,val,inc,spCost,UP,PK,PKR,pkrCost,trN,spT,earn,rBase,give,dayNum,pgain,mergePairs,prestigeState,setEvMul};

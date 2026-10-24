@@ -18,7 +18,7 @@ function safeMult(){let m=1;try{m=mult()}catch(e){m=1}if(!isFinite(m)||m<=0)m=1;
 function evT(x,q){if(!x||typeof x!=='object')return null;const now=Date.now(),st=Math.min(fin(x.st,now),now),et=fin(x.et,NaN);if(!isFinite(et))return null;
  const o={st,et:Math.min(et,now+8*3600e3)};if(q)o.q=Math.floor(fin(x.q,0,0,2));return o}
 function sanitize(d){
- for(const k of ['c','sp','ess','run','boost','fm','ls','pt','essT','lt'])S[k]=fin(S[k],d[k]);
+ for(const k of ['c','sp','ess','run','boost','fm','ls','pt','essT','lt','ulAt'])S[k]=fin(S[k],d[k]);
  S.c=Math.max(0,S.c);S.ess=Math.max(0,S.ess);S.boost=Math.min(S.boost,Date.now()+24*3600e3); // il boost non supera 24 ore (ripara anche i salvataggi creati con il vecchio errore delle 1000 ore)
  safeMult(); // prima di tutto: se il tasso è rotto niente funziona
  S.st=Math.floor(fin(S.st,1,1));S.introSeen=S.introSeen?1:0;S.bs=Math.floor(fin(S.bs,1,1));S.tut=Math.floor(fin(S.tut,0,0,3));S.wd=fin(S.wd,1,1,3)|0||1;

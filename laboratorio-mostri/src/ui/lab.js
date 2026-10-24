@@ -87,4 +87,8 @@ function offAuto(secs){if(!S.am&&!S.ae){R.oA=0;return{m:0,e:0}}R.oA=(R.oA||0)+se
   if(S.ae){const i=freeCell();if(i>=0){const t=spT();S.g[i]=t;S.gv[i]=0;for(let q=1;q<=t;q++)S.disc[q-1]=1;e++}}
   if(S.am){const r=mergePairs(S.g,S.gv,amMax(),1);r.forEach(x=>{disc(x.t);onMerge(x.t)});m+=r.length}}
  if(m){prog('merge',m);S.ach.mg+=m}if(m||e)draw();return{m,e}}
-export {draw,pop,mergeAll,rar,autoEgg,offAuto};
+// Uova regalo: nei primi 10 minuti della prima partita (prima dell'Evocazione oscura) un uovo gratis ogni GIFT_T secondi
+const GIFT_T=12,GIFT_END=600;
+function giftEgg(dt){if(S.tut<3||S.ach.pr||S.pt>=GIFT_END){R.giftT=0;return}if((R.giftT+=dt)<GIFT_T)return;const i=freeCell();if(i<0){R.giftT=GIFT_T;return}
+ R.giftT=0;const t=spT();S.g[i]=t;S.gv[i]=0;for(let k=1;k<=t;k++)S.disc[k-1]=1;toast(tr('gift'));sfx('spawn');draw();drop(i)}
+export {draw,pop,mergeAll,rar,autoEgg,giftEgg,offAuto};

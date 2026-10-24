@@ -133,6 +133,12 @@ Tutto è calcolato da `Date.now()`, senza server: i timer proseguono a gioco chi
 - `npm run fuzz [passi] [semi] [primo-seme]`: clic casuali su tutta l'interfaccia, salti di tempo di ore e salvataggi di partenza diversi; controlla errori JS, testi anomali (`NaN`, `undefined`) e valori impossibili nel salvataggio.
 
 ## Sblocchi a obiettivi e grafica 3.0 (`src/game/unlocks.js`)
+
+- **Inizio più chiaro (ottobre 2026):**
+  - nella prima ora di gioco (`S.pt`) gli sblocchi dei primi minuti (requisiti `m` e `c`) arrivano uno alla volta, ad almeno `UL_GAP` = 110 s l'uno dall'altro (`ulWait`, `S.ulAt`); così si distribuiscono nei primi ~10 minuti. La barra obiettivo mostra «in arrivo tra 1:14». Gli sblocchi da Evocazione oscura e da livello di battaglia arrivano subito;
+  - testi delle finestre di sblocco (`uld_*`) corti, in 6 lingue;
+  - prima partita: il prezzo delle uova sale del 6% invece del 7% per uovo (`spCost`); nei primi 10 minuti un **uovo regalo** ogni 12 s (`giftEgg` in `ui/lab.js`);
+  - **Evocazione oscura** sbloccata a 315K monete della partita (la prima dà almeno 3 🔮, +30%). `prWorth()` (economy.js) dice se conviene: almeno +25% di guadagni (`PR_OK`). Solo allora la barra obiettivo la propone («Ora conviene… ×1.30 per sempre»); nel pannello compare «✅ Conviene adesso» oppure «⏳ Non ancora: ora solo +X%».
 Prima il gioco mostrava quasi tutto dall'inizio e non sembrava di fare progressi. Come nei merge/idle più giocati (AdVenture Capitalist, Egg, Inc., AFK Arena, Merge Dragons, Travel Town…) ora si parte con il **solo laboratorio** e ogni sistema si apre raggiungendo un traguardo:
 
 | Sblocco | Requisito |

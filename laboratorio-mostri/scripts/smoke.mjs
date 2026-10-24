@@ -146,8 +146,8 @@ const dl0=o=>({d:-1,m:[],last:-1,st:0,dbl:1,lr:null,wk:-1,w:null,...o});
  ok(t.S().dl.sh===1&&t.S().pk.x===0&&t.S().an&&t.S().an.id.length>5,'vecchio salvataggio: scudo pronto, nuovi livelli a 0, ID analytics creato');
  ok(t.$('goal').classList.contains('on')&&/daily|giornaliero/i.test(t.$('goalT').textContent),'barra obiettivo: con il bonus pronto lo propone ('+t.$('goalT').textContent+')');
  t.click(t.$('goal'));ok(t.$('daily').classList.contains('on'),'toccando l\'obiettivo si apre la schermata giusta');}
-{const q={...base,ess:0,col:Array(12).fill(1),dl:dl0({last:dn})};
- {const t=await boot({...q,ach:{...base.ach,pr:0}},{});
+{const q={...base,ess:0,col:Array(12).fill(1),dl:dl0({last:dn}),pt:5000};
+ {const t=await boot({...q,ach:{...base.ach,pr:0},essT:0,run:1e7,ul:[...(base.ul||[]),'pr']},{});
   ok(/Dark summoning|Evocazione oscura/.test(t.$('goalT').textContent),'senza premi da riscuotere e mai evocato: l\'obiettivo è la prima Evocazione oscura ('+t.$('goalT').textContent+')');}
  {const t=await boot(q,{});
   ok(/Discover|Scopri/.test(t.$('goalT').textContent)&&/level 7|livello 7/.test(t.$('goalT').textContent),'già evocato: l\'obiettivo è scoprire il prossimo mostro ('+t.$('goalT').textContent+')');}
@@ -224,6 +224,8 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  const st0=t.S().st;await t.adv(3000);ok(t.S().st===st0,'prima dello sblocco la battaglia è ferma');
  t.click(t.$('n1'));ok(!t.$('batV').classList.contains('on')&&/Dark summoning|Evocazione oscura/.test(t.$('toast').textContent),'toccare Battaglia chiusa non la apre e dice cosa serve ('+t.$('toast').textContent+')');
  const cells=t.qa('#grid .c');t.click(cells[0]);t.click(cells[1]);await t.adv(1500);
+ ok(!t.S().ul.includes('ads')&&/coming in|in arrivo/.test(t.$('goalT').textContent),'sblocchi distanziati: livello 4 raggiunto ma il Boost arriva dopo, con il conto alla rovescia ('+t.$('goalT').textContent+')');
+ await t.adv(112000);
  ok(t.S().ul.includes('ads')&&!t.S().ul.includes('bat')&&t.$('ulp').classList.contains('on')&&t.$('adr').style.display!=='none','mostro di livello 4 → boost con video sbloccati con la finestra «Nuova funzione»');
  t.click(t.q('#ulp [data-a=go]'));ok(!t.$('ulp').classList.contains('on'),'«Andiamo!» chiude la finestra');
  t.click(t.$('n2'));t.click(t.$('pr'));ok(t.S().ach.pr===0,'senza abbastanza monete niente Evocazione oscura');
@@ -353,7 +355,7 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
  const t=await boot(null,{bridge:true,bx:st});await t.adv(600);ok(/7[78]\d\.\dK/.test(t.$('coins').textContent),'caricamento tramite bridge.storage ('+t.$('coins').textContent+')');}
 
 // --- premio a ogni sblocco e offerta a tempo del Pacchetto iniziale (72 ore dopo la prima Evocazione oscura)
-{const t=await boot({g:[3,3,...z(18)],tut:3,disc:[1,1,1,...z(36)],ul:['v2','ups'],introSeen:0,c:0},{});await t.adv(600);
+{const t=await boot({g:[3,3,...z(18)],tut:3,disc:[1,1,1,...z(36)],ul:['v2','ups'],introSeen:0,c:0,pt:5000},{});await t.adv(600);
  const t0=(t.S().ch&&t.S().ch.t)||0,c0=t.S().c;const cells=t.qa('#grid .c');t.click(cells[0]);t.click(cells[1]);await t.adv(1500);
  ok(t.$('ulp').classList.contains('on')&&/🎫 \+1/.test(t.$('ulpB').textContent)&&t.S().ch.t>=t0+1&&t.S().c>c0,'sblocco: premio di monete e biglietto');}
 {const pay=calls=>({payments:{isSupported:true,getCatalog:async()=>[{id:'starter_pack',price:'4.99 $'},{id:'tickets_10',price:'0.99 $'}],getPurchases:async()=>[],purchase:async id=>({id,orderId:'x'}),consumePurchase:async()=>{}}});
