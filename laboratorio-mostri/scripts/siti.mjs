@@ -203,7 +203,7 @@ window.bridge={platform:{id:'yandex',language:'en',payload:'',isAudioEnabled:tru
 </script>
 `;
 site('yandex',d=>{base(d);writeFileSync(d+'/index.html',inl(html.replace(CDN,YAS),d));
- writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('Yandex Games','https://yandex.ru/games/console','Console sviluppatori di Yandex Games: aggiungi l\'applicazione e carica questo zip.'))});
+ writeFileSync(d+'/LEGGIMI.txt',LEGGIMI('Yandex Games','https://games.yandex.ru/console','Console sviluppatori di Yandex Games: aggiungi l\'applicazione e carica questo zip.'))});
 
 // Telegram Mini App: il gioco va ospitato su un sito (GitHub Pages). Pubblicità con Adsgram (video premio), salvataggio nel browser di Telegram.
 const ADSGRAM='INSERISCI_QUI_ADSGRAM_BLOCK_ID';
