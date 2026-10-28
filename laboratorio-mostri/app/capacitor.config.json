@@ -1,0 +1,18 @@
+{
+  "appId": "io.github.jordan3371jm.monsterlab",
+  "appName": "Monster Laboratory",
+  "webDir": "www",
+  "backgroundColor": "#0f081c",
+  "android": {
+    "backgroundColor": "#0f081c"
+  },
+  "ios": {
+    "backgroundColor": "#0f081c",
+    "contentInset": "never"
+  },
+  "plugins": {
+    "SystemBars": {
+      "style": "DARK"
+    }
+  }
+}

@@ -16,9 +16,12 @@ import {YT} from '../core/env.js';
 
 // Account (salvataggio nel cloud) e condivisione: solo i pulsanti che la piattaforma supporta davvero
 const SOCI={share:'📤',addToHomeScreen:'📲',addToFavorites:'⭐',rate:'👍',inviteFriends:'👥',joinCommunity:'💬'};
+// App per telefono (scripts/app.mjs): il modulo privacy di Google (consenso alle pubblicità) va sempre riapribile
+const privOn=()=>{try{return typeof window.bridge.privacyOptions==='function'&&window.bridge.privacyOptions.needed!==false}catch(e){return false}};
 function platHtml(){const p=player(),so=socials();let h='';
  if(p&&p.can)h+='<div class="dh">'+tr('setAcc')+'</div>'+(p.on?'<div class="rw"><span>👤 '+tr('logged').replace('{n}',p.name||'✓')+'</span><b>☁️</b></div>':'<button class="b g" data-a="login">👤 '+tr('login')+'</button>');
  if(so.length)h+='<div class="dh">'+tr('setSoc')+'</div><div class="lgs">'+so.map(f=>'<button class="b" data-a="soc" data-v="'+f+'">'+SOCI[f]+' '+tr('so_'+f)+'</button>').join('')+'</div>';
+ if(privOn())h+='<button class="b" data-a="priv">🔒 '+tr('setPriv')+'</button>';
  return h}
 // Due schede: Gioco (lingua, audio, statistiche) e Account (cloud, social, dati)
 let tab=0;
@@ -42,6 +45,7 @@ $('setB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b)return;const a=
  else if(a==='stat'){closeSet();openStats();return}
  else if(a==='login'){authorize().then(()=>{save(true);toast('☁️ '+tr('loginOk'),1);track('login');renderSet()}).catch(()=>{});return}
  else if(a==='soc'){social(v,v==='share'?{text:tr('shareTxt')}:undefined).then(()=>track('social_'+v)).catch(()=>{});return}
+ else if(a==='priv'){try{window.bridge.privacyOptions()}catch(e){}return}
  else if(a==='rs'){R.rs=1;sfx('tap')}
  else if(a==='rsNo')R.rs=0;
  else if(a==='rsOk'){closeSet();resetSave();return}

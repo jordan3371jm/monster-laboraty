@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Monster Laboratory</string>
+    <string name="title_activity_main">Monster Laboratory</string>
+    <string name="package_name">io.github.jordan3371jm.monsterlab</string>
+    <string name="custom_url_scheme">io.github.jordan3371jm.monsterlab</string>
+</resources>
