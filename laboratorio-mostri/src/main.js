@@ -46,13 +46,18 @@ if(!YT)for(const e of ['pagehide','freeze','beforeunload'])addEventListener(e,()
 // Il Bridge è caricato async: lo aspetto al massimo 5s (subito se il caricamento fallisce, es. offline) e initialize() al massimo 6s.
 // Se arriva più tardi (rete lenta, app di Playgama) non lo perdo: lateBridge() lo collega appena c'è e recupera il salvataggio della piattaforma.
 const waitBridge=ms=>new Promise(res=>{if(window.bridge)return res(true);if(window.__bridgeFail||!document.querySelector('script[src*="playgama"]'))return res(false);const t0=Date.now(),iv=setInterval(()=>{if(window.bridge||window.__bridgeFail||Date.now()-t0>ms){clearInterval(iv);res(!!window.bridge)}},50)});
-let initP=null;
+let initP=null,adWd=0;
+// un tocco sul gioco vuol dire che nessuna pubblicità lo copre: se il gioco era rimasto in pausa (annuncio mai chiuso), riparte subito
+addEventListener('pointerdown',()=>{if(!AU.ad&&!R.PZ)return;AU.ad=false;R.PZ=false;R.lastT=Date.now();clearTimeout(adWd);aSync();syncPlay()},true);
 function hookBridge(){R.inited=true;
  const ev=(k,f)=>{try{return window.bridge.EVENT_NAME[k]||f}catch(e){return f}};
  try{window.bridge.advertisement.on('rewarded_state_changed',s=>{
   if(s==='opened'){AU.ad=true;aSync()}else if(s==='closed'||s==='failed'){AU.ad=false;aSync()}syncPlay();
   if(!R.pend)return;if(s==='rewarded'||s==='failed'||s==='closed')R.pend(s)})}catch(e){}
- try{window.bridge.advertisement.on(ev('INTERSTITIAL_STATE_CHANGED','interstitial_state_changed'),s=>{AU.ad=s==='opened';aSync();syncPlay()})}catch(e){}
+ // a volte Playgama manda «opened» per l'interstitial e mai «closed»: senza questa rete il gioco restava fermo (contatori bloccati)
+ // finché non si apriva un'altra schermata. Dopo 90s senza chiusura il gioco riparte da solo.
+ try{window.bridge.advertisement.on(ev('INTERSTITIAL_STATE_CHANGED','interstitial_state_changed'),s=>{AU.ad=s==='opened';clearTimeout(adWd);
+  if(AU.ad)adWd=setTimeout(()=>{if(AU.ad){AU.ad=false;aSync();syncPlay()}},90000);aSync();syncPlay()})}catch(e){}
  try{const a=window.bridge.advertisement;if(a.interstitialState==='opened'||a.rewardedState==='opened')AU.ad=true}catch(e){} // un annuncio già aperto all'avvio: muto e in pausa
  try{AU.plat=window.bridge.platform.isAudioEnabled!==false;window.bridge.platform.on(ev('AUDIO_STATE_CHANGED','audio_state_changed'),v=>{AU.plat=!!v;aSync()})}catch(e){}
  // pausa della piattaforma: gioco e audio fermi, il tempo in pausa non conta
