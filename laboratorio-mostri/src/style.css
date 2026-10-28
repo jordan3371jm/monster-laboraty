@@ -82,8 +82,8 @@ nav button.on{background:linear-gradient(#7a3fe0,#4b1fa0);color:#fff;box-shadow:
 #en.fast i{animation-duration:.9s}#en.armor i{filter:drop-shadow(0 0 16px #8fb4ff)}#en.heal i{filter:drop-shadow(0 0 16px #5cff9d)}
 .dm.sp{color:#d9a8ff;font-size:26px;top:20%!important}
 /* ---- Trofei, albero, eventi, bentornato, mondi ---- */
-#trop,#tree,#wb,#set,#stat{display:none;position:absolute;inset:0;background:#0f081cf7;flex-direction:column;padding:14px;gap:10px;overflow-y:auto;overscroll-behavior:contain;z-index:5}
-#trop.on,#tree.on,#wb.on,#set.on,#stat.on{display:flex}#trop h2,#tree h2,#set h2,#stat h2{margin:0;text-align:center;color:#ffd36b}
+#trop,#lbo,#tree,#wb,#set,#stat{display:none;position:absolute;inset:0;background:#0f081cf7;flex-direction:column;padding:14px;gap:10px;overflow-y:auto;overscroll-behavior:contain;z-index:5}
+#trop.on,#lbo.on,#tree.on,#wb.on,#set.on,#stat.on{display:flex}#trop h2,#lbo h2,#tree h2,#set h2,#stat h2{margin:0;text-align:center;color:#ffd36b}
 #trB,#tBody{display:flex;flex-direction:column;gap:10px}
 .ms small.d,.cs small.d{display:block;margin:2px 0 0;font-weight:500;opacity:.8}
 .tp{display:flex;gap:4px;margin-top:6px}.tp b{font-size:14px;opacity:.2;filter:grayscale(1)}.tp b.on{opacity:1;filter:none}
@@ -119,7 +119,7 @@ nav button.on{background:linear-gradient(#7a3fe0,#4b1fa0);color:#fff;box-shadow:
 .b.r{background:linear-gradient(#d84a4a,#9a1f1f);box-shadow:0 3px 0 #4d0d0d}
 .cm.f[data-a]{cursor:pointer}.cm.sl{outline:3px solid #ffd36b}
 .mi{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:#ffffff12;border:1px solid #ffd36b66}.mi>i{font-style:normal;font-size:44px}.mi small{display:block;opacity:.85;margin-top:3px}
-.lb b{display:block;margin-bottom:4px}.lbr{display:flex;gap:6px;padding:3px 6px;border-radius:8px}.lbr span{margin-left:auto;font-weight:700;color:#ffd36b}.lbr.me{background:#8a5cf033;outline:1px solid #8a5cf0}
+.lbl{display:flex;flex-direction:column;gap:3px;margin-top:6px}.lbr{display:flex;gap:8px;align-items:center;padding:7px 10px;border-radius:10px;background:#ffffff0d}.lbr i{font-style:normal;min-width:26px;text-align:center;font-weight:700;color:var(--txt2)}.lbr.free{opacity:.45}.lbr span{margin-left:auto;font-weight:700;color:#ffd36b}.lbr.me{background:#8a5cf033;outline:1px solid #8a5cf0}
 .ms.wk{border-color:#ffd36b66;background:#ffd36b14}
 
 /* Battaglia: controlli di farm e avviso del colpo a terra */
@@ -389,7 +389,7 @@ nav button.lk::after{content:'🔒';position:absolute;top:3px;right:8px;font-siz
 /* Pannelli: titolo in alto e «Chiudi» in basso restano sempre visibili */
 .ov>h2,#ups>h2{position:sticky;top:-14px;z-index:2;margin:-14px -14px 0!important;padding:14px;background:#140b26;border-bottom:1px solid var(--line);font-size:19px}
 .ov>button.b:last-child,#ups>button.b:last-child{position:sticky;bottom:-14px;z-index:2;flex-shrink:0;margin-top:auto;box-shadow:0 -10px 20px #0f081c,0 4px 0 #1a0f33}
-#ups,#daily,#mis,#col,#trop,#set,#stat,#tm,#intro,#por,#tow,#pas,#inv,#tri,#sqp{background:#0f081cfa}
+#ups,#daily,#mis,#col,#trop,#lbo,#set,#stat,#tm,#intro,#por,#tow,#pas,#inv,#tri,#sqp{background:#0f081cfa}
 /* Potenziamenti: scheda con icona, testo e prezzo a destra */
 :is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh){display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:10px;text-align:left;padding:10px 12px;background:linear-gradient(#3d2770,#2c1b52);flex-shrink:0}
 :is(#ups>.b:is([id^=u],#amB,#aeB),#upsBat>.b,#shopB>.b.sh) i{font-style:normal;font-size:26px;text-align:center}

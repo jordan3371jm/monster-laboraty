@@ -16,7 +16,8 @@ import {dailyInfo,misNew,prog,renderDaily,renderMis} from './missions.js';
 import {renderSet} from './settings.js';
 import {renderStats} from './stats.js';
 import {renderTree} from './tree.js';
-import {refreshTr} from './trophies.js';
+import {renderTr} from './trophies.js';
+import {openLb} from './leaderboard.js';
 import {tutNext} from './tutorial.js';
 import {renderGoal} from './goal.js';
 import {drawTimers,openIntro} from './timers.js';
@@ -29,17 +30,16 @@ import {offerCheck} from './shop.js';
 
 // ---- Sblocchi a obiettivi (game/unlocks.js): all'inizio c'è solo il laboratorio, il resto si apre raggiungendo dei traguardi.
 // Ogni sblocco ha una finestra «Nuova funzione!»; le schede ancora chiuse restano visibili con il lucchetto e dicono cosa serve.
-const UIC={day:['tDaily','tMis'],col:['tCol'],tr:['tTr'],exp:['tExp'],por:['tPor'],pas:['tPas'],ads:['adr'],fm:['fmr'],bat:['stg'],pr:['pr']};
+const UIC={day:['tDaily','tMis'],col:['tCol'],tr:['tTr'],lb:['tLb'],exp:['tExp'],por:['tPor'],pas:['tPas'],ads:['adr'],fm:['fmr'],bat:['stg'],pr:['pr']};
 const NAVK={1:'bat',2:'ups'},UPI=['🧪','🏷️','😴','⏱️','➕','🐣','🆙','🌙'];
 const rqTxt=r=>r.m?tr('rq_m').replace('{n}',r.m+' '+E[r.m-1]):r.s?tr('rq_s').replace('{n}',r.s):r.c?tr('rq_c').replace('{n}',fmt(r.c)):tr('rq_p');
 const ulName=k=>k[0]==='u'&&k.length===2?tr(k):tr('ul_'+k);
-function gate(){Ul.ulMigrate();const tut=S.tut>=3,on=k=>tut&&Ul.has(k);
+function gate(){R.lbOk=lbList();Ul.ulMigrate();const tut=S.tut>=3,on=k=>tut&&Ul.has(k);
  for(const u of Ul.ulCheck()){if(u.up!==undefined)toast(tr('ulNew').replace('{n}',tr('u'+u.up)),1);else R.ulq.push(u.k)}
  if(R.ulq.length&&!R.ulT&&!$('ulp').classList.contains('on'))R.ulT=setTimeout(openUl,900); // dopo la scheda del mostro nuovo
- for(const k in UIC)for(const id of UIC[k])$(id).style.display=on(k)?'':'none';
- if(tut&&lbList())$('tTr').style.display=''; // con le classifiche il pulsante 🏆 c'è da subito: si entra in gara fin dal primo minuto
+ for(const k in UIC)for(const id of UIC[k])$(id).style.display=on(k)&&(k!=='lb'||R.lbOk)?'':'none';
  const shop=tut&&Ul.has('ups');$('tShop').style.display=shop?'':'none'; // negozio sempre visibile dopo lo sblocco dei Potenziamenti
- $('tools').style.display=shop||(tut&&lbList())||['day','col','tr','exp','por','pas'].some(on)?'':'none';$('nav').style.display=tut?'':'none';
+ $('tools').style.display=shop||['day','col','tr','lb','exp','por','pas'].some(on)?'':'none';$('nav').style.display=tut?'':'none';
  for(const i in NAVK)$('n'+i).classList.toggle('lk',!on(NAVK[i]));
  UP.forEach((u,i)=>{$('u'+i).style.display=Ul.upOpen(i)&&(!u.am||S.am)&&(!u.ae||S.ae)&&(!u.off||S.am||S.ae)?'':'none'});$('amB').style.display=S.am?'none':'';
  $('aeB').style.display=!S.ae&&Ul.upOpen(UP.findIndex(u=>u.ae))?'':'none'; // Incubatrice automatica: prima si sblocca con le Essenze
@@ -52,7 +52,7 @@ function gate(){Ul.ulMigrate();const tut=S.tut>=3,on=k=>tut&&Ul.has(k);
  Mt.twCheck();const c=Mt.ch();$('tPor').classList.toggle('n',Mt.freeLeft()<=0||c.t>=1);$('tPas').classList.toggle('n',Mt.psCan());
  $('bTow').classList.toggle('n',c.tw.tries>0&&!c.tw.run);$('bInv').classList.toggle('n',Mt.ivEnded()&&ivc.pts>0&&!ivc.cl)}
 // Finestra «Nuova funzione sbloccata!»: una alla volta, «Andiamo!» porta subito alla funzione
-const UGO={ups:()=>{R.tabGo=0;openUps()},pr:()=>{R.tabGo=2;openUps()},bat:()=>show(1),fm:()=>show(1),tow:()=>show(1),inv:()=>show(1),
+const UGO={lb:openLb,ups:()=>{R.tabGo=0;openUps()},pr:()=>{R.tabGo=2;openUps()},bat:()=>show(1),fm:()=>show(1),tow:()=>show(1),inv:()=>show(1),
  day:()=>$('tDaily').click(),col:()=>$('tCol').click(),tr:()=>$('tTr').click(),por:()=>$('tPor').click(),pas:()=>$('tPas').click(),
  exp:()=>{if(!S.introSeen){S.introSeen=1;openIntro()}else $('tExp').click()}};
 // ogni sblocco dà anche un premio: 10 minuti di guadagni e 1 biglietto (consegnati subito)
@@ -82,7 +82,7 @@ function ui(){const b=Date.now()<S.boost;
  const di=dailyInfo();$('tDaily').classList.toggle('n',di.can);$('tMis').classList.toggle('n',misNew());
  $('tCol').classList.toggle('n',colNew());
  if($('daily').classList.contains('on'))renderDaily();if($('mis').classList.contains('on'))renderMis();if($('col').classList.contains('on'))renderCol();
- if($('trop').classList.contains('on'))refreshTr();if($('ups').classList.contains('on')&&upTab===2)renderTree();if($('ups').classList.contains('on')&&upTab===1)renderUb();
+ if($('trop').classList.contains('on'))renderTr();if($('ups').classList.contains('on')&&upTab===2)renderTree();if($('ups').classList.contains('on')&&upTab===1)renderUb();
  if($('set').classList.contains('on'))renderSet();if($('stat').classList.contains('on'))renderStats();
  if($('ups').classList.contains('on'))upsTabs();
  $('tMute').textContent=S.sfxOn||S.musOn?'🔊':'🔇';
@@ -92,7 +92,7 @@ function ui(){const b=Date.now()<S.boost;
 const lbl=(id,t)=>{$(id).querySelector('span').textContent=String(t).replace(/^\S+\s/,'')};
 function applyLang(){document.documentElement.lang=R.lang;document.title=tr('gameT');$('a1').textContent=tr('a1');$('a2').textContent=tr('a2');lbl('n0',tr('n0'));lbl('n1',tr('n1'));lbl('n2',tr('n2'));
  lbl('tPor',tr('lb_por'));lbl('tShop',tr('lb_shop'));$('shopT').textContent='🛒 '+tr('shopT');$('shopClose').textContent=tr('close');lbl('tPas',tr('lb_pas'));lbl('tExp',tr('lb_exp'));$('upsT').textContent=tr('ups');$('closeUps').textContent=tr('close');
- $('sqT').textContent=tr('sqT');$('sqClose').textContent=tr('close');lbl('tTr',tr('trb'));$('trT').textContent=tr('trT');$('trClose').textContent=tr('close');
+ $('sqT').textContent=tr('sqT');$('sqClose').textContent=tr('close');lbl('tTr',tr('trb'));lbl('tLb',tr('lbb'));$('lbH').textContent=tr('lbT');$('lbClose').textContent=tr('close');$('trT').textContent=tr('trT');$('trClose').textContent=tr('close');
  lbl('tDaily',tr('dly'));lbl('tMis',tr('lb_mis'));$('misT').textContent='📋 '+tr('misT');$('misClose').textContent=tr('close');lbl('tCol',tr('colb'));$('dT').textContent=tr('dT');$('cT').textContent=tr('colT');$('dClose').textContent=tr('close');$('cClose').textContent=tr('close');
  $('tmT').textContent=tr('introT');$('tmClose').textContent=tr('close');$('tExp').title=tr('expT');
  $('setT').textContent=tr('setT');$('setClose').textContent=tr('close');$('statT').textContent=tr('statT');$('statClose').textContent=tr('close');metaLang()}
