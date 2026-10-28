@@ -25,7 +25,8 @@ function make(y){const L={},on=(k,f)=>{(L[k]=L[k]||[]).push(f)},emit=(k,v)=>(L[k
   // cloud save di YouTube: una sola stringa (la chiave non serve). loadData va atteso prima di qualsiasi saveData.
   storage:{get(){loadP=loadP||Promise.resolve().then(()=>y.game.loadData());return loadP.then(s=>s||null)},
    set(k,v){if(!loadP)return Promise.reject(new Error('load first'));return loadP.then(()=>y.game.saveData(String(v)))}},
-  leaderboards:{type:'single',setScore(id,v){return y.engagement.sendScore({value:Math.max(0,Math.floor(Number(v)||0))})}},
+  // YouTube ha una sola classifica: riceve solo il livello record (le altre classifiche del gioco vengono ignorate)
+  leaderboards:{type:'single',setScore(id,v){if(id!=='best_stage')return Promise.resolve();return y.engagement.sendScore({value:Math.max(0,Math.floor(Number(v)||0))})}},
   payments:{isSupported:false},notifications:{isSupported:false},player:{isAuthorizationSupported:false,isAuthorized:false},social:{},
   async initialize(){try{y.game.firstFrameReady()}catch(e){} // la schermata di caricamento è già a schermo
    try{B.platform.language=String(await y.system.getLanguage()||'en')}catch(e){}

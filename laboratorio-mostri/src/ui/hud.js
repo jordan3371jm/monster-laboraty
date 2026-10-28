@@ -16,7 +16,7 @@ import {dailyInfo,misNew,prog,renderDaily,renderMis} from './missions.js';
 import {renderSet} from './settings.js';
 import {renderStats} from './stats.js';
 import {renderTree} from './tree.js';
-import {renderTr} from './trophies.js';
+import {refreshTr} from './trophies.js';
 import {tutNext} from './tutorial.js';
 import {renderGoal} from './goal.js';
 import {drawTimers,openIntro} from './timers.js';
@@ -24,7 +24,7 @@ import {track} from '../analytics.js';
 import {metaLang,metaUi} from './meta.js';
 import * as Mt from '../game/meta.js';
 import * as Ul from '../game/unlocks.js';
-import {banner,bannerMenu} from '../platform.js';
+import {banner,bannerMenu,lbList} from '../platform.js';
 import {offerCheck} from './shop.js';
 
 // ---- Sblocchi a obiettivi (game/unlocks.js): all'inizio c'è solo il laboratorio, il resto si apre raggiungendo dei traguardi.
@@ -37,8 +37,9 @@ function gate(){Ul.ulMigrate();const tut=S.tut>=3,on=k=>tut&&Ul.has(k);
  for(const u of Ul.ulCheck()){if(u.up!==undefined)toast(tr('ulNew').replace('{n}',tr('u'+u.up)),1);else R.ulq.push(u.k)}
  if(R.ulq.length&&!R.ulT&&!$('ulp').classList.contains('on'))R.ulT=setTimeout(openUl,900); // dopo la scheda del mostro nuovo
  for(const k in UIC)for(const id of UIC[k])$(id).style.display=on(k)?'':'none';
+ if(tut&&lbList())$('tTr').style.display=''; // con le classifiche il pulsante 🏆 c'è da subito: si entra in gara fin dal primo minuto
  const shop=tut&&Ul.has('ups');$('tShop').style.display=shop?'':'none'; // negozio sempre visibile dopo lo sblocco dei Potenziamenti
- $('tools').style.display=shop||['day','col','tr','exp','por','pas'].some(on)?'':'none';$('nav').style.display=tut?'':'none';
+ $('tools').style.display=shop||(tut&&lbList())||['day','col','tr','exp','por','pas'].some(on)?'':'none';$('nav').style.display=tut?'':'none';
  for(const i in NAVK)$('n'+i).classList.toggle('lk',!on(NAVK[i]));
  UP.forEach((u,i)=>{$('u'+i).style.display=Ul.upOpen(i)&&(!u.am||S.am)&&(!u.ae||S.ae)&&(!u.off||S.am||S.ae)?'':'none'});$('amB').style.display=S.am?'none':'';
  $('aeB').style.display=!S.ae&&Ul.upOpen(UP.findIndex(u=>u.ae))?'':'none'; // Incubatrice automatica: prima si sblocca con le Essenze
@@ -81,7 +82,7 @@ function ui(){const b=Date.now()<S.boost;
  const di=dailyInfo();$('tDaily').classList.toggle('n',di.can);$('tMis').classList.toggle('n',misNew());
  $('tCol').classList.toggle('n',colNew());
  if($('daily').classList.contains('on'))renderDaily();if($('mis').classList.contains('on'))renderMis();if($('col').classList.contains('on'))renderCol();
- if($('trop').classList.contains('on'))renderTr();if($('ups').classList.contains('on')&&upTab===2)renderTree();if($('ups').classList.contains('on')&&upTab===1)renderUb();
+ if($('trop').classList.contains('on'))refreshTr();if($('ups').classList.contains('on')&&upTab===2)renderTree();if($('ups').classList.contains('on')&&upTab===1)renderUb();
  if($('set').classList.contains('on'))renderSet();if($('stat').classList.contains('on'))renderStats();
  if($('ups').classList.contains('on'))upsTabs();
  $('tMute').textContent=S.sfxOn||S.musOn?'🔊':'🔇';

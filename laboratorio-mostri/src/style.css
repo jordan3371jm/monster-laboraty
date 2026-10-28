@@ -119,6 +119,7 @@ nav button.on{background:linear-gradient(#7a3fe0,#4b1fa0);color:#fff;box-shadow:
 .b.r{background:linear-gradient(#d84a4a,#9a1f1f);box-shadow:0 3px 0 #4d0d0d}
 .cm.f[data-a]{cursor:pointer}.cm.sl{outline:3px solid #ffd36b}
 .mi{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:14px;background:#ffffff12;border:1px solid #ffd36b66}.mi>i{font-style:normal;font-size:44px}.mi small{display:block;opacity:.85;margin-top:3px}
+.lb b{display:block;margin-bottom:4px}.lbr{display:flex;gap:6px;padding:3px 6px;border-radius:8px}.lbr span{margin-left:auto;font-weight:700;color:#ffd36b}.lbr.me{background:#8a5cf033;outline:1px solid #8a5cf0}
 .ms.wk{border-color:#ffd36b66;background:#ffd36b14}
 
 /* Battaglia: controlli di farm e avviso del colpo a terra */

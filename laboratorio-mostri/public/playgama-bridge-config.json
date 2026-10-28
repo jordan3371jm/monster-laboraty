@@ -120,8 +120,19 @@
     "leaderboards": [
         {
             "id": "best_stage",
+            "isMain": true,
             "title": "Best stage",
             "description": "Highest battle stage reached"
+        },
+        {
+            "id": "total_coins",
+            "title": "Total coins",
+            "description": "Coins earned in total"
+        },
+        {
+            "id": "best_monster",
+            "title": "Strongest monster",
+            "description": "Strongest monster created"
         }
     ],
     "achievements": [
@@ -267,5 +278,14 @@
             "id": "egg_ready",
             "msn": 2
         }
-    ]
+    ],
+    "saas": {
+        "publicToken": "cmvibvg1u0cosl20h22wchoxg",
+        "leaderboards": {
+            "platforms": [
+                "playgama",
+                "qa_tool"
+            ]
+        }
+    }
 }

@@ -30,6 +30,7 @@ preload();initMonsters();initCoins();
 
 // Salvataggio periodico e sincronizzazione audio
 setInterval(()=>save(),5000);
+setInterval(()=>lbScore(),60000); // classifica delle monete (il livello record parte a ogni livello vinto)
 if(!YT)addEventListener('visibilitychange',()=>{if(document.hidden){ordersExpire();save(true)}else drawTimers();aSync();syncPlay()});
 addEventListener('pointerdown',()=>{R.lastTap=Date.now();actx();aSync()});
 // Regole delle piattaforme: niente menu del tasto destro, niente zoom (pizzico, Ctrl+rotella) e i tasti non fanno scorrere la pagina
