@@ -16,7 +16,7 @@ window.__fatal=function(e){
  document.getElementById('bootRs').onclick=function(){try{localStorage.removeItem('ml_save_v1')}catch(x){}location.reload()}};
 addEventListener('error',function(ev){var t=ev.target;if(t&&t.tagName==='SCRIPT'&&t.src&&t.src.indexOf('playgama')<0)window.__fatal('script: '+t.src.split('/').pop());else if((!t||t===window)&&String(ev.filename||'').indexOf('playgama')<0)window.__fatal(ev.error||ev.message)},true);
 </script>
-  <script defer src="./assets/index-Uyn1O2yc.js"></script>
+  <script defer src="./assets/index-BXONiQkX.js"></script>
 </head>
 <body>
 <!-- Schermata di caricamento del gioco: nome, mostro e barra mentre si caricano tutte le immagini (src/preload.js). Stili qui, così si vede subito. -->
@@ -26,7 +26,7 @@ addEventListener('error',function(ev){var t=ev.target;if(t&&t.tagName==='SCRIPT'
 <div id="app">
  <canvas id="bgfx" aria-hidden="true"></canvas>
  <div id="top"><div class="cn"><div id="coins"></div><div id="inc"></div></div><div id="stg"></div><div class="tr8"><div id="ess"></div><button class="ib" id="tMute" aria-label="Sound">🔊</button><button class="ib" id="tSet" aria-label="Settings">⚙️</button></div></div>
- <div id="tools"><button class="tb" id="tDaily"><b>🎁</b><span></span><i class="dot"></i></button><button class="tb" id="tMis"><b>📋</b><span></span><i class="dot"></i></button><button class="tb" id="tCol"><b>📖</b><span></span><i class="dot"></i></button><button class="tb" id="tTr"><b>🏆</b><span></span><i class="dot"></i></button><button class="tb" id="tExp"><b>🧭</b><span></span><i class="dot"></i></button><button class="tb" id="tPor"><b>🌀</b><span></span><i class="dot"></i></button><button class="tb" id="tPas"><b>🎟️</b><span></span><i class="dot"></i></button><button class="tb" id="tShop"><b>🛒</b><span></span></button></div>
+ <div id="tools"><button class="tb" id="tDaily"><b>🎁</b><span></span><i class="dot"></i></button><button class="tb" id="tMis"><b>📋</b><span></span><i class="dot"></i></button><button class="tb" id="tCol"><b>📖</b><span></span><i class="dot"></i></button><button class="tb" id="tTr"><b>🏆</b><span></span><i class="dot"></i></button><button class="tb" id="tLb"><b>🏅</b><span></span><i class="dot"></i></button><button class="tb" id="tExp"><b>🧭</b><span></span><i class="dot"></i></button><button class="tb" id="tPor"><b>🌀</b><span></span><i class="dot"></i></button><button class="tb" id="tPas"><b>🎟️</b><span></span><i class="dot"></i></button><button class="tb" id="tShop"><b>🛒</b><span></span></button></div>
  <div id="goal"><i></i><span id="goalT"></span></div>
  <div id="tut"><b id="tutT"></b><button id="tutX">✕</button></div>
  <div id="labV" class="view on">
@@ -46,7 +46,7 @@ addEventListener('error',function(ev){var t=ev.target;if(t&&t.tagName==='SCRIPT'
  </div>
  <nav id="nav"><button id="n0" class="on"><b>🧪</b><span></span></button><button id="n1"><b>⚔️</b><span></span></button><button id="n2"><b>⚙️</b><span></span></button></nav>
  <div id="ups">
-  <h2 id="upsT"></h2><div id="upsTabs" class="tabs"></div>
+  <h2 id="upsT"></h2><div id="upsTabs" class="tabs"></div><div id="bulkB" class="tabs bulk"></div>
   <button class="b" id="u0"></button><button class="b" id="u1"></button><button class="b" id="u2"></button><button class="b" id="amB"></button><button class="b" id="u3"></button><button class="b" id="u6"></button><button class="b" id="u4"></button><button class="b" id="aeB"></button><button class="b" id="u5"></button><button class="b" id="u7"></button>
   <div class="ulk" id="uLk"></div>
   <div id="upsBat"></div>
@@ -59,7 +59,8 @@ addEventListener('error',function(ev){var t=ev.target;if(t&&t.tagName==='SCRIPT'
  <div id="tm" class="ov"><h2 id="tmT"></h2><div id="tmTabs" class="tabs"></div><div id="tmB"></div><button class="b" id="tmClose"></button></div>
  <div id="intro" class="ov"><div id="introB"></div></div>
  <div id="col" class="ov"><h2 id="cT"></h2><div id="colTabs" class="tabs"></div><div id="colB"></div><button class="b" id="cClose"></button></div>
- <div id="trop" class="ov"><h2 id="trT"></h2><div id="trB"></div><button class="b" id="trClose"></button></div>
+ <div id="lbo" class="ov"><h2 id="lbH"></h2><div id="lbTabs" class="tabs"></div><div id="lbB"></div><button class="b" id="lbClose"></button></div>
+<div id="trop" class="ov"><h2 id="trT"></h2><div id="trB"></div><button class="b" id="trClose"></button></div>
  <div id="sqp" class="ov"><h2 id="sqT"></h2><div id="sqB"></div><button class="b" id="sqClose"></button></div>
  <div id="set" class="ov"><h2 id="setT"></h2><div id="setTabs" class="tabs"></div><div id="setB"></div><button class="b" id="setClose"></button></div>
  <div id="stat" class="ov"><h2 id="statT"></h2><div id="statB"></div><button class="b" id="statClose"></button></div>
