@@ -7,11 +7,11 @@ import {pgN} from './economy.js';
 // L'ordine della lista è quello in cui la barra «prossimo obiettivo» propone gli sblocchi.
 // need = sblocco che esiste solo se R[need] è vero (lb: la Classifica, solo dove il Bridge la offre); ng = non conta nel distanziamento dei primi minuti.
 const UL=[
- {k:'lb',m:2,ic:'🏅',need:'lbOk',ng:1},{k:'ups',m:3,ic:'⚙️'},{k:'ads',m:4,ic:'⚡'},{k:'day',m:5,ic:'🎁'},{k:'col',m:7,ic:'📖'},{k:'exp',m:7,ic:'🧭'},
- {k:'pr',c:315000,ic:'🔮'},{k:'bat',p:1,ic:'⚔️'},{k:'por',p:1,ic:'🌀'},{k:'tr',s:8,ic:'🏆'},{k:'fm',s:12,ic:'🔁'},
+ {k:'lb',m:2,ic:'🏅',need:'lbOk',ng:1},{k:'ups',m:3,ic:'⚙️'},{k:'pr',m:3,ic:'🔮',ng:1},{k:'ads',m:4,ic:'⚡'},{k:'day',m:5,ic:'🎁'},{k:'col',m:7,ic:'📖'},{k:'exp',m:7,ic:'🧭'},
+ {k:'bat',p:1,ic:'⚔️'},{k:'por',p:1,ic:'🌀'},{k:'tr',s:8,ic:'🏆'},{k:'fm',s:12,ic:'🔁'},
  {k:'pas',s:20,ic:'🎟️'},{k:'tow',s:25,ic:'🗼'},{k:'inv',s:30,ic:'🔥'}];
 // Potenziamenti: i primi due ci sono da subito, gli altri si aggiungono man mano (indice in UP di economy.js)
-const UPL=[null,null,{m:5},null,{m:7},{s:10},null,null]; // 7 (Laboratorio notturno) si vede con l'unione o l'incubatrice automatica // 3 e 6 (Unione automatica) si vedono dopo averla sbloccata con le Essenze
+const UPL=[null,null,{m:5},null,{m:7},{s:10},null,{m:6}]; // 7 Laboratorio notturno: dal mostro di livello 6 // 3 e 6 (Unione automatica) si vedono dopo averla sbloccata con le Essenze
 const disc=()=>S.disc.filter(Boolean).length;
 // Nella prima ora di gioco (S.pt) gli sblocchi arrivano uno alla volta, ad almeno UL_GAP secondi l'uno dall'altro:
 // così le novità si distribuiscono nei primi 10 minuti invece di arrivare tutte insieme. S.ulAt = S.pt dell'ultimo sblocco.

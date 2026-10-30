@@ -4,8 +4,8 @@ import {S} from '../core/state.js';
 import {fmt,hueOf,ico} from '../core/util.js';
 import {E} from '../data/config.js';
 import {tr,trv} from '../data/text.js';
-import {critC,critD,regen,faction,AUTO_T,EL,RETREAT,SK,SLAM_D,SLAM_T,SLAM_W,SQN,advM,eAtk,eEl,eEmo,eHp,elOf,isBoss,skOn,squad,stageReward,tAtk,tHp,trait} from '../game/combat.js';
-import {earn} from '../game/economy.js';
+import {critC,critD,regen,regenFor,faction,AUTO_T,EL,RETREAT,SK,SLAM_D,SLAM_T,SLAM_W,SQN,advM,eAtk,eEl,eEmo,eHp,elOf,isBoss,skOn,squad,stageReward,tAtk,tHp,trait} from '../game/combat.js';
+import {earn,PK_A} from '../game/economy.js';
 import {save} from '../save.js';
 import {burst,fx,setT,toast} from './common.js';
 import {track} from '../analytics.js';
@@ -26,7 +26,7 @@ function startFight(){F.st=S.st;if(!S.fm&&S.st>=S.bs&&Ul.has('bat'))levelStart(S
  if(isBoss(S.st))F.stun=bossStun(); // Leone Reale: il boss parte stordito
  $('en').classList.remove('die');fx($('en'),'enter');if(isBoss(S.st)){fx($('arena'),'shake');if(onB())sfx('boss')}}
 function hitFx(d,sp,crit){if(!onB())return;const e=document.createElement('div');e.className='dm'+(crit?' crit':sp?' sp':'');e.textContent=sp?sp:'-'+fmt(d);e.style.left=(35+Math.random()*30)+'%';e.style.top='32%';$('arena').appendChild(e);setTimeout(()=>e.remove(),950);const n=$('en');n.classList.remove('hit');void n.offsetWidth;n.classList.add('hit')}
-function cast(i,pw){const a=tAtk(),h=tHp();prog('ability',1);S.ach.ab++;F.cd[i]=SK[i].cd*(1-.08*S.pk.a)*cdMul();F.rd[i]=0;
+function cast(i,pw){const a=tAtk(),h=tHp();prog('ability',1);S.ach.ab++;F.cd[i]=SK[i].cd*(1-PK_A*S.pk.a)*cdMul();F.rd[i]=0;
  if(i===0){const d=a*5*pw;F.eh-=d;hitFx(d,'🔥 '+tr('sk0')+' -'+fmt(d))}
  else if(i===1){const c=h*.35*pw;F.th=Math.min(h,F.th+c);hitFx(0,'💧 '+tr('sk1')+' +'+fmt(c))}
  else{F.stun=Math.max(F.stun,3.5*pw);hitFx(0,'🌿 '+tr('sk2')+' 💫')}
@@ -38,7 +38,7 @@ function fight(dt){
  if(F.th>h)F.th=h;
  const s=S.st,tt=trait(s),mx=eHp(s),m=tt==='armor'?.7:1;
  const cr=Math.random()<critC(),d=a*dt*m*(tt==='boss'?bossMul():1)*(cr?critD():1);F.eh-=d;F.dm+=d;if(cr)F.cr=1; // colpo critico (potenziamenti 🎯 e 💥)
- if(regen()>0)F.th=Math.min(h,F.th+h*regen()*dt);
+ if(regen()>0)F.th=Math.min(h,F.th+regenFor(h)*dt);
  if(F.stun>0)F.stun-=dt;
  else{F.th-=eAtk(s)*(tt==='boss'&&F.eh<mx*.5?1.3:1)*dt;if(tt==='heal')F.eh=Math.min(mx,F.eh+mx*.025*dt)}
  // Colpo a terra del boss: avviso SLAM_W secondi prima; chi tocca l'arena lo schiva (e stordisce il boss 2s), altrimenti la squadra perde SLAM_D della vita
@@ -70,11 +70,11 @@ function drawB(){const s=S.st,b=isBoss(s),tt=trait(s);$('stg').textContent=(ivOn
  const h=tHp(),tw=h?Math.max(0,Math.min(1,F.th/h))*100+'%':'0%';$('thb').style.width=tw;$('th').style.setProperty('--g',tw);
  // abilità: si vedono solo quelle sbloccate (niente riga di lucchetti all'inizio)
  let any=0;for(let i=0;i<3;i++){const on=skOn(i),k=$('sk'+i),rdy=on&&F.cd[i]<=0&&F.wait<=0;if(on)any=1;
-  k.style.display=on?'':'none';k.classList.toggle('lock',!on);k.classList.toggle('rdy',rdy);k.firstChild.style.width=on?(F.cd[i]>0?(1-F.cd[i]/(SK[i].cd*(1-.08*S.pk.a)*cdMul()))*100:100)+'%':'0%';
+  k.style.display=on?'':'none';k.classList.toggle('lock',!on);k.classList.toggle('rdy',rdy);k.firstChild.style.width=on?(F.cd[i]>0?(1-F.cd[i]/(SK[i].cd*(1-PK_A*S.pk.a)*cdMul()))*100:100)+'%':'0%';
   setT('skl'+i,on?SK[i].ic+' '+tr('sk'+i)+(F.cd[i]>0?' · '+Math.ceil(F.cd[i])+'s':''):'🔒 '+EL[i])}
  $('sks').style.display=any?'':'none';setT('skh',any?tr('skHint'):'');
  setT('team',(leaders().length?'<span class="ldr">'+leaders().map(i=>ci(i)).join('')+'<sup>👑</sup></span>':'')+(squad().map(t=>{const m=advM(elOf(t),eEl(s));return'<span class="'+(m>1?'up':m<1?'dn':'')+'">'+E[t-1]+'<sup>'+EL[elOf(t)]+'</sup></span>'}).join('')||tr('noteam'))+'<small class="ed">✏️ '+(S.sq.length?tr('sqMan'):tr('sqAutoL'))+'</small>');
- $('ts').textContent='⚔️ '+tr('atk')+' '+fmt(tAtk(),1)+'/s  ·  ❤️ '+fmt(Math.max(F.th,0))+' / '+fmt(h)+'  ·  🎯 '+Math.round(critC()*100)+'% ×'+critD().toFixed(1)+(regen()>0?'  ·  💚 '+(regen()*100).toFixed(1)+'%/s':'')+'  ·  +'+Math.round(3*(S.bs-1))+'% '+tr('stb')+(faction()>1?'  ·  🔰 '+tr('facB')+' +'+Math.round((faction()-1)*100)+'%':'')}
+ $('ts').textContent='⚔️ '+tr('atk')+' '+fmt(tAtk(),1)+'/s  ·  ❤️ '+fmt(Math.max(F.th,0))+' / '+fmt(h)+'  ·  🎯 '+(critC()*100).toFixed(1).replace('.0','')+'% '+fmt(critD()*100)+'%'+(regen()>0?'  ·  💚 +'+fmt(regenFor(h))+'/s':'')+'  ·  +'+Math.round(3*(S.bs-1))+'% '+tr('stb')+(faction()>1?'  ·  🔰 '+tr('facB')+' +'+Math.round((faction()-1)*100)+'%':'')}
 function renderSq(){const sq=squad(),cnt={};S.g.filter(Boolean).forEach(t=>cnt[t]=(cnt[t]||0)+1);sq.forEach(t=>cnt[t]--);
  const chip=(t,a,x,sm)=>'<button class="sqc f" data-a="'+a+'" '+x+' style="--h:'+hueOf(t)+'"><i>'+E[t-1]+'</i><small>'+sm+'</small></button>';
  let h='<div class="cs">'+tr('sqD')+'</div><div class="sqs">'+Array.from({length:SQN},(_,i)=>sq[i]?chip(sq[i],'rm','data-i="'+i+'"',EL[elOf(sq[i])]):'<div class="sqc"></div>').join('')+'</div>'

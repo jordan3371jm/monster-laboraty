@@ -7,6 +7,7 @@ import {cName,evoAt,mImg,CH,RAR,PITY_R,PITY_L,MAXSTAR,GEAR,ALB} from '../data/ch
 import {W} from '../data/config.js';
 import {tr} from '../data/text.js';
 import {EL} from '../game/combat.js';
+import {rBase} from '../game/economy.js';
 import * as M from '../game/meta.js';
 import {fmtT} from '../game/timers.js';
 import {save} from '../save.js';
@@ -24,7 +25,7 @@ const pc=v=>Math.round(v*100)+'%';
 const skTxt=i=>{const c=CH[i],v=M.skVal(i);return tr('sk_'+c.sk).replace('{v}',c.sk==='stun'?v.toFixed(1):pc(v)).replace('{e}',EL[c.el])};
 const stars=s=>'★'.repeat(s)+'☆'.repeat(MAXSTAR-s);
 const gearTxt=g=>RAR[g.r]+' '+GEAR[g.s].ic+' +'+g.v+'% '+tr('gearE'+g.s);
-const rwTxt=r=>[r.tm?'📘 '+r.tm:'',r.c?'🪙':'',r.e?'🔮 '+r.e:'',r.t?'🎫 '+r.t:'',r.g!==undefined?RAR[r.g]+'🎒':'',r.card?'🃏':'',r.ch!==undefined?ci(r.ch,'sm'):''].filter(Boolean).join(' ');
+const rwTxt=r=>[r.tm?'📘 '+r.tm:'',r.c?'🪙 '+fmt(rBase()*r.c):'',r.e?'🔮 '+r.e:'',r.t?'🎫 '+r.t:'',r.g!==undefined?RAR[r.g]+'🎒':'',r.card?'🃏':'',r.ch!==undefined?ci(r.ch,'sm'):''].filter(Boolean).join(' ');
 // Messaggio per ciò che si è appena ricevuto (biglietti, equipaggiamento, figurina, campione)
 function grantMsg(o){if(!o)return;const p=[];if(o.tm)p.push('📘 +'+o.tm);if(o.co)p.push('🪙 +'+fmt(o.co));if(o.e)p.push('🔮 +'+o.e);if(o.t)p.push('🎫 +'+o.t);if(o.gear)p.push(tr('gearGot')+' '+gearTxt(o.gear));if(o.cd)p.push(tr('cardGot')+' '+ALB[o.cd.a].c[o.cd.k]);
  if(o.chr)p.push(nm(o.chr.i)+' '+stars(o.chr.s));if(p.length)toast(p.join(' · '),1)}
@@ -107,10 +108,11 @@ $('porB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)ret
 // ---- Torre giornaliera ----
 const twEmo=f=>{const w=W[Math.min(W.length,S.wd)-1],s=M.twStage(f);return ico(M.twBoss(f)?w.tw[(f/5)%w.tw.length|0]:w.en.n[s%3])};
 function renderTow(){M.twCheck();const tw=S.ch.tw;
- let h='<div class="cs">'+tr('twTries')+': <b>'+tw.tries+'/'+M.TW_TRIES+'</b> · '+tr('twBest')+': <b>'+tw.best+'</b> · '+tr('twRec')+': <b>'+tw.rec+'</b></div><small class="d" style="text-align:center">'+tr('twD')+'</small>';
+ let h='<div class="cs">'+tr('twTries')+': <b>'+tw.tries+'/'+M.TW_TRIES+'</b> · '+tr('twBest')+': <b>'+tw.best+'</b> · '+tr('twRec')+': <b>'+tw.rec+'</b></div>'
+  +'<div class="ulr">🏆 '+tr('permB').replace('{n}',Math.round(M.twB()*100))+' · '+tr('twNextB').replace('{n}',Math.round(M.TW_B*100))+'</div><small class="d" style="text-align:center">'+tr('twD')+'</small>';
  if(R.twRes){const r=R.twRes;h+='<div class="twf'+(r.win?' w':' l')+'"><div class="twv"><span>'+(S.ch.ld.length?S.ch.ld.map(i=>ci(i)).join(''):'🧪')+'</span><b>VS</b><span>'+twEmo(r.f)+'</span></div>'
   +'<div class="bar"><i class="twb" style="--to:'+Math.round((1-r.r)*100)+'%"></i></div><div class="wbh">'+tr(r.win?'twWin':'twLose').replace('{n}',r.f)+'</div>'
-  +(r.rw&&r.rw.c!==undefined?'<div class="dc">'+[r.rw.c?'🪙 +'+fmt(r.rw.c):'',r.rw.t?'🎫 +'+r.rw.t:'',r.rw.g?RAR[r.rw.g.r]+'🎒':'',r.rw.card?ALB[r.rw.card.a].c[r.rw.card.k]:''].filter(Boolean).join(' · ')+'</div>':'')+'</div>'}
+  +(r.rw&&r.rw.c!==undefined?'<div class="dc">'+[r.rw.c?'🪙 +'+fmt(r.rw.c):'',r.rw.e?'🔮 +'+r.rw.e:'',r.rw.tm?'📘 +'+r.rw.tm:'',r.rw.t?'🎫 +'+r.rw.t:'',r.rw.g?RAR[r.rw.g.r]+'🎒':'',r.rw.card?ALB[r.rw.card.a].c[r.rw.card.k]:''].filter(Boolean).join(' · ')+'</div>':'')+'</div>'}
  if(tw.buf.length)h+='<div class="dh">'+tr('twBufs')+'</div><div class="dc">'+tw.buf.map(k=>tr('buf_'+k)).join(' · ')+'</div>';
  if(!tw.run)h+=tw.tries?'<button class="b g" data-a="start">'+tr('twStart')+'</button>':'<div class="dc">'+tr('twNoTry')+'</div>';
  else if(tw.ch)h+='<div class="dh">'+tr('twPick')+'</div>'+tw.ch.map(k=>'<button class="b o" data-a="pick" data-k="'+k+'">'+tr('buf_'+k)+'</button>').join('');
@@ -127,7 +129,7 @@ $('towB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)ret
 // ---- Prove dei Campioni (Mondo 2): solo campioni, fino a 3. Si vince con abbastanza potenza; premi alla prima vittoria ----
 let triRes=null;
 function renderTri(){const c=M.ch(),n=(c.tri.best||0)+1,team=M.triTeam(),need=M.triNeed(n),pow=M.triPow(n,team),el=M.triEl(n),rw=M.triRew(n);
- let h='<small class="d" style="text-align:center">'+tr('triD')+'</small>';
+ let h='<div class="ulr">🏆 '+tr('permB').replace('{n}',Math.round(M.triB()*100))+' · '+tr('triNextB').replace('{n}',Math.round(M.TRI_B*100))+'</div><small class="d" style="text-align:center">'+tr('triD')+'</small>';
  if(triRes){const r=triRes;h+='<div class="twf'+(r.win?' w':' l')+'"><div class="wbh">'+tr(r.win?'triWin':'triLose').replace('{n}',r.n)+'</div><div class="bar"><i style="width:'+Math.min(100,r.p/r.need*100)+'%"></i></div><small class="d">⚡ '+fmt(r.p)+' / '+fmt(r.need)+'</small>'+(r.win?'<div class="dc">'+rwTxt(r.rw)+'</div>':'<div class="dc">'+tr('triHint')+'</div>')+'</div>'}
  h+='<div class="trh e'+el+'"><div><small>'+tr('triStage')+'</small><b>'+n+(M.triBoss(n)?' 👑':'')+'</b></div><div class="tre">'+EL[el]+'</div><div><small>'+tr('triNeed')+'</small><b>⚡ '+fmt(need)+'</b></div></div>';
  h+='<div class="dh">'+tr('triTeam')+' · ⚡ '+fmt(pow)+'</div><div class="trt">'+[0,1,2].map(k=>{const i=team[k];if(i===undefined)return '<div class="chc e"><small>'+tr('porEmpty')+'</small></div>';

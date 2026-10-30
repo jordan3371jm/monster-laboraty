@@ -10,8 +10,8 @@ html,body{margin:0;height:100%;overflow:hidden;background:#0a0614;color:#f2e9ff;
 #stg{font-size:14px;color:#ff9d5c;text-align:center}#ess{font-size:20px;color:#c79bff;text-shadow:0 0 10px #a35cff;min-width:40px;text-align:right}
 .view{display:none;flex:1;min-height:0;flex-direction:column;gap:8px}.view.on{display:flex}
 #grid{flex:1;min-height:0;display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(5,1fr);gap:6px}
-#grid[data-r="6"]{grid-template-rows:repeat(6,1fr)}#grid[data-r="7"]{grid-template-rows:repeat(7,1fr)}
-#grid[data-r="6"] .c{font-size:min(10vw,5.4dvh)}#grid[data-r="7"] .c{font-size:min(9vw,4.6dvh)}
+#grid[data-r="6"]{grid-template-rows:repeat(6,1fr)}#grid[data-r="7"]{grid-template-rows:repeat(7,1fr)}#grid[data-r="8"]{grid-template-rows:repeat(8,1fr)}#grid[data-r="9"]{grid-template-rows:repeat(9,1fr)}
+#grid[data-r="6"] .c{font-size:min(10vw,5.4dvh)}#grid[data-r="7"] .c{font-size:min(9vw,4.6dvh)}#grid[data-r="8"] .c{font-size:min(8vw,4dvh)}#grid[data-r="9"] .c{font-size:min(7.5vw,3.6dvh)}
 .c{position:relative;display:flex;align-items:center;justify-content:center;border-radius:14px;background:#ffffff08;border:2px dashed #ffffff1f;font-size:min(11vw,6.5dvh)}
 .c.f{border:2px solid hsl(var(--h) 60% 48%);background:radial-gradient(circle at 30% 25%,hsl(var(--h) 55% 38%),hsl(var(--h) 55% 13%));box-shadow:inset 0 0 14px #0008,0 0 10px hsl(var(--h) 80% 40% / .35)}
 .c i{font-style:normal;animation:bob 3s ease-in-out infinite;filter:drop-shadow(0 3px 5px #000a)}
@@ -453,9 +453,9 @@ nav button.lk::after{content:'🔒';position:absolute;top:3px;right:8px;font-siz
  /* laboratorio: griglia con vasche quasi quadrate, centrata */
  #labV{align-items:center}
  #grid{width:min(100%,calc((100dvh - 150px) * .8));flex:1}
- #grid[data-r="6"]{width:min(100%,calc((100dvh - 150px) * .66))}#grid[data-r="7"]{width:min(100%,calc((100dvh - 150px) * .57))}
+ #grid[data-r="6"]{width:min(100%,calc((100dvh - 150px) * .66))}#grid[data-r="7"]{width:min(100%,calc((100dvh - 150px) * .57))}#grid[data-r="8"]{width:min(100%,calc((100dvh - 150px) * .5))}#grid[data-r="9"]{width:min(100%,calc((100dvh - 150px) * .45))}
  #labV .row{width:min(100%,560px)}
- .c{font-size:min(7vw,7dvh)}#grid[data-r="6"] .c{font-size:min(6vw,6dvh)}#grid[data-r="7"] .c{font-size:min(5.5vw,5.2dvh)}
+ .c{font-size:min(7vw,7dvh)}#grid[data-r="6"] .c{font-size:min(6vw,6dvh)}#grid[data-r="7"] .c{font-size:min(5.5vw,5.2dvh)}#grid[data-r="8"] .c{font-size:min(5vw,4.6dvh)}#grid[data-r="9"] .c{font-size:min(4.6vw,4.1dvh)}
  /* battaglia: arena larga, comandi sotto */
  #batV{max-width:900px;width:100%;justify-self:center}
  #en{font-size:min(18vw,20dvh)}#en.big{font-size:min(24vw,26dvh)}#team{font-size:min(5vw,6dvh)}
@@ -469,8 +469,8 @@ nav button.lk::after{content:'🔒';position:absolute;top:3px;right:8px;font-siz
  #app{grid-template-columns:220px 1fr;padding:8px 12px;row-gap:6px}
  #coins{font-size:20px}#tools .tb span,nav button span{display:none}nav{flex-direction:row}nav button{justify-content:center;padding:6px}
  #goal{font-size:11.5px;min-height:0;padding:5px 8px}
- #grid,#grid[data-r="6"],#grid[data-r="7"]{width:min(100%,calc((100dvh - 110px) * 1.15));grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(4,minmax(0,1fr));gap:5px}
- #grid[data-r="6"]{grid-template-rows:repeat(5,minmax(0,1fr))}#grid[data-r="7"]{grid-template-rows:repeat(6,minmax(0,1fr))}
+ #grid,#grid[data-r]{width:min(100%,calc((100dvh - 110px) * 1.15));grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(4,minmax(0,1fr));gap:5px}
+ #grid[data-r="6"]{grid-template-rows:repeat(5,minmax(0,1fr))}#grid[data-r="7"]{grid-template-rows:repeat(6,minmax(0,1fr))}#grid[data-r="8"],#grid[data-r="9"]{grid-template-rows:repeat(7,minmax(0,1fr))}
  #grid .c,#grid[data-r] .c{font-size:min(6vw,6.5dvh);border-radius:12px}
  #top{padding:6px 8px}
  #spawn{padding:8px}#adr .b{padding:6px}
@@ -537,7 +537,8 @@ em.mon{display:inline-block;width:1.3em;height:1.3em;vertical-align:-.3em;font-s
 #misB{display:flex;flex-direction:column;gap:8px}
 .tabs .b small{display:block;font-size:10.5px;font-weight:700;margin-top:1px}
 .tabs .b b{display:block;font-size:17px;line-height:1.1}
-#ups[data-t="0"] :is(#upsBat,#pr,#tBody),#ups[data-t="1"] :is([id^=u]:not(#upsT):not(#upsTabs):not(#upsBat),#amB,#aeB,#pr,#tBody),#ups[data-t="2"] :is([id^=u]:not(#upsT):not(#upsTabs),#amB,#aeB,#upsBat){display:none!important}
+#ups[data-t="0"] :is(#upsBat,#pr,#tBody),#ups[data-t="1"] :is([id^=u]:not(#upsT):not(#upsTabs):not(#upsBat),#amB,#aeB,#pr,#tBody),#ups[data-t="2"] :is([id^=u]:not(#upsT):not(#upsTabs),#amB,#aeB,#upsBat,#bulkB){display:none!important}
+#ups .tabs.bulk{position:static}#ups .tabs.bulk .b{padding:6px 4px;font-size:13px}
 #upsBat{display:flex;flex-direction:column;gap:10px}
 #ups .tabs{top:0}
 /* ---- Evento della settimana (scheda 🎪 delle Avventure) ---- */

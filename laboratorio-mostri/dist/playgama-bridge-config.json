@@ -125,7 +125,7 @@
             "description": "Highest battle stage reached"
         },
         {
-            "id": "total_coins",
+            "id": "coins",
             "title": "Total coins",
             "description": "Coins earned in total"
         },

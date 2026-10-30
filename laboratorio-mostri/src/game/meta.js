@@ -48,9 +48,11 @@ const gearOf=i=>(C().eq[i]||[]).map(id=>C().gear.find(g=>g.id===id)).filter(Bool
 const gearB=k=>leaders().reduce((s,i)=>s+gearOf(i).reduce((a,g)=>a+(GEAR[g.s].k===k?g.v/100:0),0),0);
 const albB=k=>ALB.reduce((s,a,i)=>s+(C().alb[i]&&a.b===k?a.v:0),0);
 // Moltiplicatori usati dal resto del gioco
-const atkMul=()=>1+leadAtk()+sk('atk')+sk('all')+gearB('atk')+albB('atk');
+// Bonus permanenti di Torre e Prove: ogni piano record della Torre +2% guadagni e attacco, ogni Prova superata +1% guadagni e attacco
+const TW_B=.02,TRI_B=.01,twB=()=>TW_B*(C().tw.rec||0),triB=()=>TRI_B*(C().tri.best||0);
+const atkMul=()=>1+leadAtk()+sk('atk')+sk('all')+gearB('atk')+albB('atk')+twB()+triB();
 const hpMul=()=>1+sk('hp')+sk('all')+gearB('hp');
-const incMul=()=>1+sk('inc')+sk('all')+gearB('inc')+albB('inc');
+const incMul=()=>1+sk('inc')+sk('all')+gearB('inc')+albB('inc')+twB()+triB();
 const goldMul=()=>1+sk('gold'),cdMul=()=>Math.max(.5,1-sk('cd')),luckAdd=()=>sk('luck'),bossStun=()=>sk('stun'),slamMul=()=>Math.max(0,1-sk('slam')),bossMul=()=>1+sk('boss');
 // Campione che accompagna una spedizione: premio più ricco secondo rarità e stelle (e la sua abilità «exp»). Mentre è via non guida la squadra.
 const EXPB=[.15,.3,.5,.8,.9];
@@ -128,7 +130,7 @@ function twStart(){const c=C();twCheck();if(c.tw.run||c.tw.tries<1)return false;
 function twFight(){const c=C(),tw=c.tw;if(!tw.run||tw.ch)return null;const f=tw.f,res=twSim(f);
  if(!res.win){tw.run=0;tw.ch=null;return{...res,f}}
  const rw={f};if(f>tw.best){tw.best=f;tw.rec=Math.max(tw.rec,f);
-  rw.c=Math.floor(rBase()*.3*(1+.1*f)*(1+twBuf('gold')));earn(rw.c);rw.t=(f%3===0?1:0)+(twBoss(f)?2:0);addT(rw.t); // biglietti ogni 3 piani (+2 ai boss)
+  rw.c=Math.floor(rBase()*(1+.5*f)*(1+twBuf('gold')));earn(rw.c);if(twBoss(f)){rw.e=1;give(0,1)}/* monete: da 7 minuti di guadagni in su; 🔮 a ogni boss */rw.t=(f%3===0?1:0)+(twBoss(f)?2:0);addT(rw.t); // biglietti ogni 3 piani (+2 ai boss)
   rw.tm=1+(twBoss(f)?2:0);addTm(rw.tm); // Tomi per i campioni a ogni piano nuovo
   if(f%3===0)rw.g=addGear(gearRar(Math.min(.5,f*.03)));if(f%2===0)rw.card=addCard()}
  const TWX=CH.findIndex(x=>x.ex==='tw');if(tw.rec>=20&&TWX>=0&&!star(TWX))rw.chr=giveCh(TWX); // campione speciale della Torre
@@ -151,7 +153,7 @@ const elAdv=(a,d)=>(a-d+3)%3===1?1.3:(d-a+3)%3===1?.8:1;   // stessa ruota degli
 function triTeam(){const c=C(),own=Object.keys(c.own).map(Number);let t=(c.tri.team||[]).filter(i=>star(i)).slice(0,TRI_N);
  if(!t.length)t=own.sort((a,b)=>cPow(b)-cPow(a)).slice(0,TRI_N);return t}
 const triPow=(n,t=triTeam())=>Math.round(t.reduce((s,i)=>s+cPow(i)*elAdv(CH[i].el,triEl(n)),0));
-const triRew=n=>({tm:3+Math.floor(n/5),...(n%5===0?{t:2,g:Math.min(3,1+Math.floor(n/15))}:{}),...(n%10===0?{e:1}:{})});
+const triRew=n=>({c:2+.4*n,tm:3+Math.floor(n/5),...(n%5===0?{t:2,g:Math.min(3,1+Math.floor(n/15)),e:1+Math.floor(n/20)}:{})}); // c: minuti×5 di guadagni (grant usa rBase)
 function triSet(i){const c=C(),t=triTeam().slice();if(!star(i))return false;const k=t.indexOf(i);if(k>=0)t.splice(k,1);else{if(t.length>=TRI_N)t.shift();t.push(i)}c.tri.team=t;return true}
 function triFight(){const c=C(),n=(c.tri.best||0)+1,p=triPow(n),need=triNeed(n);if(!p)return null;
  if(p<need)return{n,win:false,p,need};c.tri.best=n;const rw=grant(triRew(n));return{n,win:true,p,need,rw}}
@@ -254,7 +256,7 @@ setHook('inc',incMul);setHook('egg',()=>Math.max(.5,1-sk('egg')));
 setCK('ehp',()=>ivOn()?1.25:1);
 
 export {LV_STAR,MAXLV,TOME_XP,lvl,lvCap,xpNeed,xpOf,lMul,giveXp,tomesToCap,useTomes,addTm,GYM_N,GYM_XP,gymTick,gymSet,
- TRI_N,cPow,triEl,triBoss,triNeed,triTeam,triPow,triRew,triSet,triFight,elAdv,CSETS,csHave,csTier,csRew,csOk,csClaim,csDone,csMul,csCan,
+ TW_B,TRI_B,twB,triB,TRI_N,cPow,triEl,triBoss,triNeed,triTeam,triPow,triRew,triSet,triFight,elAdv,CSETS,csHave,csTier,csRew,csOk,csClaim,csDone,csMul,csCan,
  LEADB,form,needCp,cps,C as ch,expMulCh,defCh,sanCh,LDMAX,FREE_CD,AD_MAX,star,sMul,skVal,busy,leaders,sk,leadAtk,gearOf,atkMul,hpMul,incMul,goldMul,cdMul,luckAdd,bossStun,slamMul,bossMul,setLeader,
  rollRar,giveCh,pull1,pullT,pullFree,pullAd,freeLeft,adLeft,addT,gearRar,addGear,salvage,equip,unequip,autoEquip,SALV,
  addCard,albHave,albDone,albDup,albClaim,albTrade,ALB_T,

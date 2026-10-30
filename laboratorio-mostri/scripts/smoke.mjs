@@ -53,7 +53,7 @@ const CH0F=13;const base={c:5e5,g:[3,3,4,2,2,1,0,5,0,6,1,1,0,0,2,4,0,0,0,0],sp:3
  t.click(t.$('cClose'));
  t.click(t.$('n2'));ok(t.$('upsTabs').style.display!=='none'&&t.$('ups').dataset.t==='0'&&t.w.getComputedStyle(t.$('pr')).display==='none','potenziamenti: scheda Laboratorio, l\'Evocazione oscura è nell\'altra scheda');
  t.click(t.qa('#upsTabs .b')[1]);ok(t.$('ups').dataset.t==='1'&&t.qa('#upsBat .b').length===6&&t.w.getComputedStyle(t.$('upsBat')).display!=='none'&&t.w.getComputedStyle(t.$('u0')).display==='none','potenziamenti: scheda Battaglia con 6 potenziamenti');
- t.click(t.qa('#upsTabs .b')[2]);ok(t.$('ups').dataset.t==='2'&&t.w.getComputedStyle(t.$('pr')).display!=='none'&&t.qa('#tBody [data-a=pr]').length===6&&t.w.getComputedStyle(t.$('u0')).display==='none','potenziamenti: scheda Essenze con l\'Evocazione oscura');t.click(t.$('closeUps'));
+ t.click(t.qa('#upsTabs .b')[2]);ok(t.$('ups').dataset.t==='2'&&t.w.getComputedStyle(t.$('pr')).display!=='none'&&t.qa('#tBody [data-a=pk]').length===12&&t.w.getComputedStyle(t.$('u0')).display==='none','potenziamenti: scheda Essenze con l\'Evocazione oscura');t.click(t.$('closeUps'));
  t.click(t.$('tPor'));ok(!!t.q('#porB [data-a=x1]')&&!t.q('#porB .chg'),'portale: scheda Evoca');t.click(t.qa('#porTabs .b')[1]);ok(!!t.q('#porB .chg')&&!t.q('#porB [data-a=x1]'),'portale: scheda Campioni');t.click(t.qa('#porTabs .b')[2]);ok(!t.q('#porB .chg')&&/🎒|gear|equip/i.test(t.$('porB').textContent+t.$('porTabs').textContent),'portale: scheda Equipaggiamento');t.click(t.$('porClose'));
  const s=t.S();ok(s.dl.m.length===5&&s.dl.m[0].t==='merge'&&s.dl.wl.length===5&&s.dl.ml.length===5,'5 missioni giornaliere, 5 settimanali, 5 mensili: '+s.dl.m.map(m=>m.t).join(',')+' / '+s.dl.wl.map(m=>m.t+m.n).join(',')+' / '+s.dl.ml.map(m=>m.t+m.n).join(','));
  ok(s.dl.wl.some(m=>m.t==='days'&&m.p===1)&&s.dl.ml.some(m=>m.t==='days'&&m.p===1),'settimanali e mensili: «gioca in N giorni» conta già oggi');
@@ -90,7 +90,7 @@ const CH0F=13;const base={c:5e5,g:[3,3,4,2,2,1,0,5,0,6,1,1,0,0,2,4,0,0,0,0],sp:3
 {const t=await boot({...base,g:[1,1,...Array(18).fill(0)],sq:[]},{});await t.adv(5200);
  ok(t.S().bs===8,'vecchio salvataggio: lo stadio raggiunto diventa «migliore» ('+t.S().bs+')');
  const vis=()=>t.qa('#grid .c').filter(c=>c.style.display!=='none').length;
- ok(t.qa('#grid .c').length===28&&vis()===20,'28 celle create, 20 visibili ('+vis()+')');
+ ok(t.qa('#grid .c').length===35&&vis()===20,'35 celle create, 20 visibili ('+vis()+')');
  t.click(t.$('u4'));ok(t.S().up.c===1&&vis()===21,'«Laboratorio ampliato»: +1 cella ('+vis()+')');
  t.click(t.$('pr'));await t.adv(300);ok(t.S().bs>=8&&t.S().up.c===0&&vis()===20,'dopo l\'Evocazione oscura: livello migliore tenuto, celle di nuovo 20');
  ok(t.errs.length===0,'nessun errore JS '+t.errs.slice(0,2));}
@@ -156,7 +156,7 @@ const dl0=o=>({d:-1,m:[],last:-1,st:0,dbl:1,lr:null,wk:-1,w:null,...o});
 {const t=await boot({...base,tut:1},{});
  ok(!t.$('goal').classList.contains('on'),'durante il tutorial la barra obiettivo è nascosta');}
 {const t=await boot({...base,ess:500,essT:500,dl:dl0({last:dn})},{});
- t.click(t.$('ess'));ok(t.$('ups').classList.contains('on')&&t.$('ups').dataset.t==='2'&&t.qa('#tBody [data-a=pr]').length===6,'albero (scheda Essenze dei Potenziamenti): 6 rami infiniti visibili');
+ t.click(t.$('ess'));ok(t.$('ups').classList.contains('on')&&t.$('ups').dataset.t==='2'&&t.qa('#tBody [data-a=pk]').length===12,'albero (scheda Essenze dei Potenziamenti): 9 radici e 3 rami infiniti');
  t.click(t.q('[data-a=pr][data-k=x]'));ok(t.S().pk.x===1&&t.S().ess===497,'un livello di Alchimia costa 3 🔮');
  t.click(t.q('[data-a=prm][data-k=t]'));const l=t.S().pk.t,cost=n=>Math.ceil(3*Math.pow(1.22,n));let sp=0;for(let i=0;i<l;i++)sp+=cost(i);
  ok(l>8&&t.S().ess===497-sp&&t.S().ess<cost(l),'«Max» compra finché bastano le Essenze: Furia livello '+l+', restano '+t.S().ess);
@@ -251,7 +251,7 @@ const dn2=Math.floor((1.8e12-new Date().getTimezoneOffset()*60000)/864e5);
 // --- Incubatrice automatica: si sblocca con 5 Essenze, poi -0,5s a livello; i vecchi salvataggi la tengono
 {const t=await boot({...base,ess:6,essT:6,c:1e9,am:1,introSeen:1,dl:dl0({last:dn})},{});await t.adv(600);t.click(t.$('n2'));
  ok(t.$('aeB').style.display!=='none'&&t.$('u5').style.display==='none'&&/5/.test(t.$('aeB').textContent),'incubatrice: prima si sblocca con 🔮 5');
- t.click(t.$('aeB'));await t.adv(300);ok(t.S().ae===1&&t.S().ess===1&&t.$('u5').style.display!=='none'&&/30\.0s/.test(t.$('u5').textContent),'incubatrice sbloccata: un uovo ogni 30s');
+ t.click(t.$('aeB'));await t.adv(300);ok(t.S().ae===1&&t.S().ess===1&&t.$('u5').style.display!=='none'&&/60\.0s/.test(t.$('u5').textContent),'incubatrice sbloccata: un uovo ogni 60s');
  t.click(t.$('u5'));await t.adv(300);ok(t.S().up.f===1&&/29\.5s/.test(t.$('u5').textContent),'incubatrice liv. 1: 29,5s');
  ok(/×1\.15/.test(t.$('u0').textContent)&&/% offline/.test(t.$('u2').textContent),'le descrizioni mostrano quanto danno (Laboratorio ×1,15, Sonno profondo in %)');
  ok(t.errs.length===0,'incubatrice: nessun errore JS '+t.errs.slice(0,2));}

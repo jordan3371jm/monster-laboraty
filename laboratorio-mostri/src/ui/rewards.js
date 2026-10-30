@@ -6,6 +6,7 @@ import {R,S} from '../core/state.js';
 import {fmt} from '../core/util.js';
 import {tr} from '../data/text.js';
 import {earn,give,rBase} from '../game/economy.js';
+const PK_BC=.004; // Bottino dei boss: +0,4% di forziere epico a livello (fino a +40%)
 import {save} from '../save.js';
 import {adThen,inter} from './ads.js';
 import {setT,toast} from './common.js';
@@ -30,7 +31,7 @@ const chTxt=r=>'🪙 +'+fmt(r.c)+(r.e?' · 🔮 +'+r.e:'')+(r.b?' · ⚡x2 '+r.b
 function chApply(r){give(r.c,r.e);if(r.b)S.boost=Math.max(Date.now(),S.boost)+r.b*1000}
 // Extra dei forzieri (non raddoppiati dalla pubblicità): biglietti del Portale, equipaggiamento, figurine
 const xTxt=x=>x?[x.t?'🎫 +'+x.t:'',x.gear?RAR[x.gear.r]+'🎒':'',x.cd?ALB[x.cd.a].c[x.cd.k]:''].filter(Boolean).join(' · '):'';
-function chest(){const q=Math.random(),pe=.08+.04*S.pk.b,k=q<pe?2:q<pe+.3?1:0,d=CHR[k];
+function chest(){const q=Math.random(),pe=.08+PK_BC*S.pk.b,k=q<pe?2:q<pe+.3?1:0,d=CHR[k];
  const r={k,c:Math.floor(rBase()*d.c),e:d.e(),b:d.b()};chApply(r); // R.chR solo per la finestra aperta: un secondo forziere che arriva intanto non cambia ciò che raddoppia il video
  const x={t:[1,2,3][k]};if(k||Math.random()<.35)x.g=gearRar([0,.2,.45][k]);if(Math.random()<.5)x.card=1;const xt=xTxt(grant(x));S.ach.ch++;prog('chest',1);track('first_boss');sfx('new');save();
  // finestra solo se si sta guardando la battaglia: nel laboratorio un popup a ogni boss interrompeva le unioni (il premio è già accreditato)

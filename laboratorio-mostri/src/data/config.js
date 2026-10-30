@@ -1,4 +1,4 @@
-const K='ml_save_v1',N=28,BN=20,WS=13,MAXT=39,NR=12, // WS = mostri per mondo, MAXT = mostri totali (3 mondi), NR = righe della collezione (4 per mondo)
+const K='ml_save_v1',N=35,BN=20,WS=13,MAXT=39,NR=12, // WS = mostri per mondo, MAXT = mostri totali (3 mondi), NR = righe della collezione (4 per mondo)
 // Mostri del laboratorio: ognuno è un carattere privato (U+E001…) che ui/monsters.js sostituisce con il suo disegno (data/monart.js)
 // ovunque compaia nella pagina. em = l'emoji di prima, usata solo dove un disegno non può andare (es. testi condivisi).
 // Nemici e boss: un'emoji oppure '@nome' = immagine public/m/nome.webp (vedi ico() in core/util.js). tw = boss della Torre.

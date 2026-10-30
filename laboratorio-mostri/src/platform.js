@@ -26,15 +26,16 @@ function levelFail(s){if(lv.f===s)return;lv.f=s;msg('level_failed',{level:s,worl
 function achieve(id){msg('player_got_achievement',{achievement:id});safe(b=>{const a=b.achievements;if(a&&a.isSupported!==false&&a.unlock)later(a.unlock(id))})}
 
 // Classifica «best_stage» (livello record), solo sulle piattaforme che ne hanno una
-// Classifiche: best_stage = livello di battaglia record, total_coins = monete guadagnate in totale (S.lt, al massimo una volta al minuto),
+// Classifiche: best_stage = livello di battaglia record, coins = monete guadagnate in totale (S.lt, al massimo una volta al minuto),
+// inviate come log10(S.lt)×1e6: i punteggi sono numeri interi e le monete superano di molto 9·10^15 (prima la classifica si fermava a 9,01Qa),
 // best_monster = numero del mostro più forte mai creato (1…MAXT).
 // Su Playgama passano dal servizio SaaS del Bridge (saas in playgama-bridge-config.json) e diventano di tipo in_game: la schermata è nostra (ui/trophies.js).
-const LB_IDS=['best_stage','total_coins','best_monster'],lbLast={};let lbT=0;
-const lbVal=id=>id==='best_stage'?S.bs:id==='best_monster'?S.disc.lastIndexOf(1)+1:Math.min(Number.MAX_SAFE_INTEGER,Math.floor(S.lt||0));
+const LB_LOG=1e6,LB_IDS=['best_stage','coins','best_monster'],lbLast={};let lbT=0;
+const lbVal=id=>id==='best_stage'?S.bs:id==='best_monster'?S.disc.lastIndexOf(1)+1:(S.lt>=1?Math.round(Math.log10(S.lt)*LB_LOG):0);
 const lbOn=()=>safe(b=>{const l=b.leaderboards;return!!(l&&l.type&&l.type!=='not_available')},false);
 const lbList=()=>safe(b=>!!b.leaderboards&&b.leaderboards.type==='in_game'&&typeof b.leaderboards.getEntries==='function',false);
 function lbScore(force){if(!lbOn())return;const now=Date.now();
- for(const id of LB_IDS){const v=lbVal(id);if(v<1||v<=(lbLast[id]||0))continue;if(id==='total_coins'){if(!force&&now-lbT<60000)continue;lbT=now}
+ for(const id of LB_IDS){const v=lbVal(id);if(v<1||v<=(lbLast[id]||0))continue;if(id==='coins'){if(!force&&now-lbT<60000)continue;lbT=now}
   lbLast[id]=v;safe(b=>later(b.leaderboards.setScore(id,v)))}}
 const lbEntries=id=>safe(b=>Promise.resolve(b.leaderboards.getEntries(id)),null)||Promise.reject(new Error('lb'));
 const myId=()=>safe(b=>String(b.player&&b.player.id||''),'');
@@ -94,4 +95,4 @@ const SOC=[['share','isShareSupported'],['addToHomeScreen','isAddToHomeScreenSup
 const socials=()=>safe(b=>b.social?SOC.filter(([f,k])=>b.social[k]&&typeof b.social[f]==='function').map(([f])=>f):[],[]);
 const social=(f,o)=>safe(b=>Promise.resolve(b.social[f](o)),null)||Promise.reject();
 
-export {notify,notifOn,launchPayload,banner,bannerMenu,msg,syncPlay,levelStart,levelDone,levelFail,achieve,lbScore,lbList,lbEntries,lbVal,myId,LB_IDS,aSend,PROD,payOn,catalog,owned,buy,restore,grant,player,authorize,socials,social};
+export {notify,notifOn,launchPayload,banner,bannerMenu,msg,syncPlay,levelStart,levelDone,levelFail,achieve,lbScore,lbList,lbEntries,lbVal,myId,LB_IDS,LB_LOG,aSend,PROD,payOn,catalog,owned,buy,restore,grant,player,authorize,socials,social};

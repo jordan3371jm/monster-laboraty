@@ -25,7 +25,7 @@ function tick(){const n=Date.now();if(R.PZ||AU.ad){R.lastT=n;return} // pausa de
  // e poi avvisa con un conto alla rovescia «Pubblicità tra 3…2…1» prima di mostrarla: mai all'improvviso sotto il dito
  if(R.adPend&&!R.adCd&&n-R.lastTap>1500&&!hidden()){R.adPend=0;R.adCd=n+3000}
  if(R.adCd){const l=Math.ceil((R.adCd-n)/1000);if(l>0){if(l!==R.adCl){R.adCl=l;toast('📺 '+tr('adBreak').replace('{n}',l),1)}}else{R.adCd=0;R.adCl=0;inter('merge')}} // se nel frattempo ha toccato, si aspetta la pausa successiva
- const dt=Math.max(0,(n-R.lastT)/1000);R.lastT=n;
+ const dt=Math.max(0,(n-R.lastT)/1000)+(R.offS||0);R.offS=0;R.lastT=n;
  const full=Math.min(dt,5),rest=Math.min(dt-full,8*3600),i=inc();
  let g=i*full,off=0;
  if(rest>0){off=incBase()*rest*offRate();g+=off} // offline senza boost: altrimenti pochi secondi di x2 rimasti raddoppiavano ore di assenza

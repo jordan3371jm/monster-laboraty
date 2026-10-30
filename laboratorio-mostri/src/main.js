@@ -70,7 +70,7 @@ async function boot(){
  try{if(await waitBridge(5000)){initP=Promise.resolve(window.bridge.initialize());
   await Promise.race([initP,sleep(6000).then(()=>{throw 0})]);hookBridge();R.lang=pickLang(window.bridge.platform.language)}}catch(e){}
  if(!R.inited)R.lang=YT?'en':pickLang(navigator.language); // lingua del dispositivo se supportata, altrimenti inglese
- try{await load();R.loaded=true;R.lastT=Math.min(S.ls,Date.now());initAnalytics();
+ try{await load();R.loaded=true;R.lastT=Date.now();R.offS=Math.max(0,(Date.now()-S.ls)/1000);/* assenza: la conta il primo giro del ciclo di gioco, anche se all'avvio c'è una pubblicità */initAnalytics();
   if(!YT&&LANGS.includes(S.lp))R.lang=S.lp; // lingua scelta nelle impostazioni (su YouTube vale solo quella dell'account)
   redraw();setInterval(tick,250);
   if(S.tut>=3&&!S.introSeen&&has('exp'))setTimeout(()=>{S.introSeen=1;openIntro()},900); // una sola volta: spiega i timer da riscuotere
@@ -87,6 +87,6 @@ async function lateBridge(){const t0=Date.now();
  try{await (initP||window.bridge.initialize())}catch(e){return}
  hookBridge();let cl=null;
  try{const r=await Promise.race([window.bridge.storage.get(K),sleep(5000).then(()=>null)]);cl=typeof r==='string'?JSON.parse(r):r}catch(e){}
- if(cl&&Array.isArray(cl.g)&&(cl.pt||0)>(S.pt||0)){await load();R.lastT=Date.now();if(!YT&&LANGS.includes(S.lp))R.lang=S.lp;redraw()}
+ if(cl&&Array.isArray(cl.g)&&(cl.pt||0)>(S.pt||0)){await load();R.lastT=Date.now();R.offS=Math.max(0,(Date.now()-S.ls)/1000);if(!YT&&LANGS.includes(S.lp))R.lang=S.lp;redraw()}
  save(true);ready()}
 boot().catch(e=>{console.error(e);if(window.__fatal)window.__fatal(e)});

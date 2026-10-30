@@ -1,6 +1,6 @@
 import {MAXT,E,EXCL_EMO} from '../data/config.js';
 import {R,S} from '../core/state.js';
-import {dayNum,freeCell,incBase,pgain,rBase,setEvMul} from './economy.js';
+import {dayNum,freeCell,incBase,pgain,rBase,setEvMul,PK_I,PK_W} from './economy.js';
 import {elOf,squad} from './combat.js';
 import {addT,addTm,busy,expMulCh,giveXp,gymTick} from './meta.js';
 
@@ -30,7 +30,7 @@ const EXP=[{k:'s',ic:'🌿',dur:HOUR,mul:1,es:0},{k:'m',ic:'🗺️',dur:4*HOUR,
 const EXPN=1,EXP_TM=[1,2,4],EXP_CXP=60; // Tomi 📘 al ritorno e esperienza all'ora per il campione che accompagna
                             // una sola spedizione alla volta: scegliere la durata è una decisione
 // «Cesta dei timer» (perk w): -2% tempi di spedizioni e uova per livello, con lo stesso tetto del 40% delle uova
-const wMul=()=>Math.max(.4,1-.02*(S.pk.w||0));
+const wMul=()=>Math.max(.4,1-PK_W*(S.pk.w||0));
 const expDur=q=>Math.round(EXP[q].dur*wMul());
 const expPow=()=>{const q=squad();return q.length?q.reduce((s,t)=>s+t,0)/q.length:0};   // media dei mostri in squadra
 const expVal=(q,pw)=>{const full=incBase()*(expDur(q)/SEC);return Math.floor(Math.min(full*.05*(1+.3*pw)*EXP[q].mul,full*.4))};   // tetto: mai oltre il 40% del guadagno pieno del periodo (la forza della squadra è già dentro inc())   // inc() è per SECONDO: la durata va in secondi (in ms il premio era 1000 volte troppo alto)
@@ -54,7 +54,7 @@ const NEST=3;                             // nidi disponibili (uno ogni 4 uova s
 const NID=[{ic:'🍒',cost:.05,c:1,e:0,dur:10*MIN},{ic:'🥚',cost:.2,c:3,e:.02,dur:HOUR},
  {ic:'✨',cost:.7,c:9,e:.05,dur:4*HOUR},{ic:'🌟',cost:2.4,c:26,e:.12,dur:8*HOUR}];
 // Il tempo dell'uovo non può mai andare sotto il 40% di quello base (con l'albero pieno si arriva a -28%)
-const nidDur=t=>Math.max(NID[t].dur*.4,Math.round(NID[t].dur*(1-.04*(S.pk.i||0))*wMul()));   // perk «Incubatrice» (i) e «Cesta dei timer» (w)
+const nidDur=t=>Math.max(NID[t].dur*.4,Math.round(NID[t].dur*(1-PK_I*(S.pk.i||0))*wMul()));   // perk «Incubatrice» (i) e «Cesta dei timer» (w)
 const nidK=()=>Array.isArray(S.inc.k)&&S.inc.k.length?S.inc.k:NID.map((_,i)=>i);
 const nidMax=()=>clamp(S.inc.nes||1,1,NEST);
 const nidCost=t=>Math.ceil(rBase()*NID[t].cost);

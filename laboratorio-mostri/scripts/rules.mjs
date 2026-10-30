@@ -4,7 +4,7 @@ import {S,setS,def} from '../src/core/state.js';
 import {essBonus,essMult,offRate,slots,freeCell,UP} from '../src/game/economy.js';
 import {ELM,elOf,fightTime,offBattle,tAtk,tHp,advM,eEl,squad} from '../src/game/combat.js';
 import {BN,N} from '../src/data/config.js';
-import {PKR,pkrCost,mult,spCost,prestigeState} from '../src/game/economy.js';
+import {PK,PKR,pkrCost,mult,spCost,prestigeState} from '../src/game/economy.js';
 let fails=0;const ok=(c,m)=>{console.log((c?'✓ ':'✗ ')+m);if(!c)fails++};
 const fresh=(o={})=>{setS({...def(),...o});S.tut=3};
 
@@ -15,7 +15,7 @@ let mono=true;for(let e=0;e<2e6;e=e*1.3+1)if(essBonus(e+1)<=essBonus(e))mono=fal
 ok(essMult(64000)<500&&essMult(7.7e6)<2e4,'senza esplosione: 64.000 Essenze → ×'+Math.round(essMult(64000))+', 7,7 milioni → ×'+Math.round(essMult(7.7e6))+' (prima ×6.400 e ×770.000)');
 
 // Offline: mai oltre il gioco attivo
-fresh();S.up.o=UP.find(u=>u.k==='o').max;S.pk.o=5;ok(offRate()<1&&offRate()>.9,'tasso offline al massimo: '+offRate().toFixed(2)+' (< 1)');
+fresh();S.up.o=UP.find(u=>u.k==='o').max;S.pk.o=PK.find(p=>p.k==='o').max;ok(Math.abs(offRate()-(.25+2+1))<1e-9,'tasso offline al massimo: '+offRate().toFixed(2)+' (Sonno profondo +200%, Sonno lungo +100%)');
 
 // Elementi propri di ogni mostro
 ok(ELM.length>=26&&ELM.every(e=>e===0||e===1||e===2),'26 mostri, ognuno con un elemento valido');
@@ -42,10 +42,10 @@ fresh({st:20,bs:20});S.g[0]=S.g[1]=S.g[2]=S.g[3]=13;const tb=fightTime(20);ok(is
 // La vita cresce con le Essenze, ma meno dell'attacco
 fresh();S.g[0]=S.g[1]=S.g[2]=S.g[3]=12;const h0=tHp(),a0=tAtk(1);S.essT=1000;ok(tHp()/h0>5&&tAtk(1)/a0>tHp()/h0,'con 1000 Essenze: vita ×'+(tHp()/h0).toFixed(1)+', attacco ×'+(tAtk(1)/a0).toFixed(1));
 // Rami infiniti dell'albero: costo crescente, effetti applicati, i vecchi salvataggi (senza i nuovi livelli) non cambiano
-{let up=true;for(let l=0;l<80;l++)if(pkrCost(l+1)<=pkrCost(l))up=false;ok(up&&pkrCost(0)===3,'rami infiniti: il costo cresce sempre (liv. 0 → '+pkrCost(0)+', liv. 30 → '+pkrCost(30)+')');
- ok(PKR.length===6&&PKR.every(p=>p.max>=15),'6 rami infiniti');
- fresh();const m0=mult(),c0=spCost();S.pk.x=10;ok(Math.abs(mult()/m0-1.4)<1e-9,'Alchimia ×10 livelli: +40% guadagni');S.pk.x=0;S.pk.e=10;ok(spCost()<c0&&spCost()>=Math.floor(c0*.8),'Mercato nero: uova più economiche ('+c0+' → '+spCost()+')');
- fresh();S.g[0]=S.g[1]=S.g[2]=S.g[3]=10;const ta=tAtk(1),th=tHp();S.pk.t=10;S.pk.h=10;ok(Math.abs(tAtk(1)/ta-1.2)<1e-9&&Math.abs(tHp()/th-1.2)<1e-9,'Furia e Armatura: +20% attacco e vita con 10 livelli');
+{let up=true;for(let l=0;l<80;l++)if(pkrCost(l+1)<=pkrCost(l))up=false;ok(up&&pkrCost(0)===3&&isFinite(pkrCost(300)),'rami infiniti: il costo cresce sempre (liv. 0 → '+pkrCost(0)+', liv. 30 → '+pkrCost(30)+')');
+ ok(PKR.length===3&&PKR.every(p=>p.max>=1e9),'3 rami davvero infiniti (gli altri sono tra le radici)');
+ fresh();const m0=mult(),c0=spCost();S.pk.x=10;ok(Math.abs(mult()/m0-1.2)<1e-9,'Alchimia ×10 livelli: +20% guadagni');S.pk.x=0;S.pk.e=10;ok(spCost()<c0&&spCost()>=Math.floor(c0*.8),'Mercato nero: uova più economiche ('+c0+' → '+spCost()+')');
+ fresh();S.g[0]=S.g[1]=S.g[2]=S.g[3]=10;const ta=tAtk(1),th=tHp();S.pk.t=10;S.pk.h=10;ok(Math.abs(tAtk(1)/ta-1.1)<1e-9&&Math.abs(tHp()/th-1.1)<1e-9,'Furia e Armatura: +10% attacco e vita con 10 livelli');
  fresh();const base0=mult();delete S.pk.x;ok(mult()===base0,'senza i nuovi livelli nel salvataggio nulla cambia (nessun NaN)');
  // con le Essenze accumulate in 48 ore (85.000) i rami le assorbono: livelli raggiunti dividendole in parti uguali
  let e=85000,lv=Array(5).fill(0);while(true){const k=lv.indexOf(Math.min(...lv)),c=pkrCost(lv[k]);if(e<c)break;e-=c;lv[k]++}
@@ -62,11 +62,11 @@ fresh();S.g[0]=S.g[1]=S.g[2]=S.g[3]=12;const h0=tHp(),a0=tAtk(1);S.essT=1000;ok(
  ok(Math.abs(inc()/i0-2)<1e-9&&Math.abs(incBase()-i0)<1e-9,'il boost raddoppia inc() ma non incBase()');
  ok(Math.abs(rBase()-r0)<1e-9,'premi in minuti di guadagni uguali con e senza boost');
  const b1=offBattle(3600).n;ok(b1===b0&&S.boost>Date.now(),'battaglia offline senza boost ('+b0+' / '+b1+' livelli) e boost ripristinato dopo');
- fresh();S.up.f=3;ok(eggInt()===0,'incubatrice spenta finché non si sblocca con le Essenze');S.ae=1;S.up.f=0;ok(eggInt()===30,'incubatrice sbloccata: un uovo ogni 30s');S.up.f=1;ok(eggInt()===29.5,'ogni livello: 0,5s in meno');
+ fresh();S.up.f=3;ok(eggInt()===0,'incubatrice spenta finché non si sblocca con le Essenze');S.ae=1;S.up.f=0;ok(eggInt()===60,'incubatrice sbloccata: un uovo ogni 60s');S.up.f=1;ok(Math.abs(eggInt()-59.9)<1e-9,'ogni livello: 0,1s in meno');S.up.f=UP.find(u=>u.k==='f').max;ok(eggInt()===5,'al massimo: un uovo ogni 5s');
  S.up.f=UP.find(u=>u.k==='f').max;ok(eggInt()===5,'incubatrice al massimo: un uovo ogni '+eggInt().toFixed(1)+'s')}
 {fresh();const t=Date.now()+200e3;S.boost=t;S.amAd=t;S.run=4e5;const x=prestigeState(S,2);
  ok(x.boost===t&&x.amAd===t&&x.ess===S.ess+2,'Evocazione oscura: x2 e «Unione 5 minuti» guadagnati con un video non si perdono')}
 {fresh();const {mult:m0}=await import('../src/game/economy.js');const a=m0();S.up.l=10;ok(Math.abs(m0()/a-1.5)<1e-9,'Laboratorio: +5% a livello (10 livelli = ×1,5)');
- S.up.l=0;S.sp=150;const c0=spCost();S.up.d=10;ok(Math.abs(spCost()/c0-Math.pow(.98,10))<.01,'Sconto uova: -2% a livello');
+ S.up.l=0;S.sp=150;const c0=spCost();S.up.d=10;ok(Math.abs(spCost()/c0-.95)<.01,'Sconto uova: -0,5% a livello');S.up.d=UP.find(u=>u.k==='d').max;ok(Math.abs(spCost()/c0-.01)<.01,'Sconto uova al massimo: -99%');
  let ok2=true;for(const u of UP)for(let l=0;l<Math.min(u.max,60);l++)if(!(u.cost(l+1)>u.cost(l)))ok2=false;ok(ok2,'i costi dei potenziamenti crescono sempre')}
 process.exit(fails?1:0);
