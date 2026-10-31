@@ -25,7 +25,7 @@ import {track} from '../analytics.js';
 import {metaLang,metaUi} from './meta.js';
 import * as Mt from '../game/meta.js';
 import * as Ul from '../game/unlocks.js';
-import {banner,bannerMenu,lbList} from '../platform.js';
+import {banner,bannerMain,bannerMenu,lbList} from '../platform.js';
 import {offerCheck} from './shop.js';
 
 // ---- Sblocchi a obiettivi (game/unlocks.js): all'inizio c'è solo il laboratorio, il resto si apre raggiungendo dei traguardi.
@@ -70,9 +70,9 @@ const mmss=s=>Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0');
 const upNow=(k,l)=>k==='l'?' · ×'+(1+LAB_UP*l).toFixed(2):k==='d'?' · -'+Math.min(99,DISC_UP*l*100).toFixed(1).replace('.0','')+'%':k==='o'?' · '+Math.round(offRate()*100)+'% offline':k==='a'?' · '+amInt().toFixed(1)+'s':k==='f'&&S.ae?' · '+eggInt().toFixed(1)+'s':k==='n'&&l?' · '+mmss(offAutoInt()):'';
 
 function ui(){const b=Date.now()<S.boost;
- $('coins').textContent='🪙 '+fmt(S.c);
+ {const t=fmt(S.c);$('coins').textContent='🪙 '+t;$('coins').classList.toggle('long',t.length>=6)} // «205.1Qi»: carattere più piccolo, così non viene tagliato
  $('inc').textContent='+'+fmt(inc(),1)+tr('sec')+(b?'  ⚡x2 '+Math.ceil((S.boost-Date.now())/1000)+'s':'');
- $('ess').textContent=S.essT?'🔮 '+S.ess:'';$('ess').classList.toggle('n',pkCan());$('app').classList.toggle('w2',S.wd===2);$('app').classList.toggle('w3',S.wd>2);
+ $('ess').textContent=S.essT?'🔮 '+fmt(S.ess):'';$('ess').classList.toggle('n',pkCan());$('app').classList.toggle('w2',S.wd===2);$('app').classList.toggle('w3',S.wd>2);
  const sc=spCost();setT('spawn',tr('spawn')+(S.pk.s?' '+E[S.pk.s]:'')+' 🪙 '+fmt(sc));$('spawn').disabled=S.c<sc;
  // Unione automatica: si sblocca per sempre con AM_COST Essenze (poi velocità e livello si potenziano con le monete)
  // Incubatrice automatica: si sblocca per sempre con AE_COST Essenze, poi i livelli (-0,5s ciascuno) si comprano con le monete
@@ -91,7 +91,9 @@ function ui(){const b=Date.now()<S.boost;
  if($('ups').classList.contains('on'))upsTabs();
  $('tMute').textContent=S.sfxOn||S.musOn?'🔊':'🔇';
  drawTimers();drawB();renderGoal();gate();metaUi();offerCheck();
- banner(!!document.querySelector('#ups.on,.ov.on:not(#ulp):not(#pull):not(#wb):not(#intro)'));$('app').classList.toggle('bnm',bannerMenu()&&innerHeight>innerWidth)}
+ banner(!!document.querySelector('#ups.on,.ov.on:not(#ulp):not(#pull):not(#wb):not(#intro)'));// banner a striscia (stesse regole di playgama-bridge-config.json): fuori da queste condizioni sta nell'angolo e non serve spazio
+ {const W=innerWidth,H=innerHeight,por=H>W,ap=$('app');ap.style.setProperty('--bh',(por?(bannerMenu()?10:8):12)+'vh');
+  ap.classList.toggle('bnm',bannerMenu()&&(por||!(W>=1300&&H>=640)));ap.classList.toggle('bns',bannerMain()&&(por||!(W/H>=1.25&&H>=640)))}}
 // Testo «🎁 Missioni» → icona sopra ed etichetta sotto (pulsanti in alto e barra di navigazione)
 const lbl=(id,t)=>{$(id).querySelector('span').textContent=String(t).replace(/^\S+\s/,'')};
 function applyLang(){document.documentElement.lang=R.lang;document.title=tr('gameT');$('a1').textContent=tr('a1');$('a2').textContent=tr('a2');lbl('n0',tr('n0'));lbl('n1',tr('n1'));lbl('n2',tr('n2'));

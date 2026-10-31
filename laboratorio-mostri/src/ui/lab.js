@@ -81,12 +81,14 @@ function autoEgg(dt){const iv=eggInt();if(!iv){R.eggT=0;return}if((R.eggT+=dt)<i
 $('mall').onclick=()=>{if(Date.now()<R.mallT)return;if(mergeAll())R.mallT=Date.now()+Math.max(5,20-S.up.a*15/AUTO_MAX)*1000;else{sfx('err');toast(trv('nomerge'))}ui()};
 // A gioco chiuso (o con la scheda in secondo piano): unione e incubatrice automatiche fanno un'azione ogni offAutoInt() secondi.
 // Il resto dei secondi si conserva (R.oA) per la volta dopo. Ritorna quante unioni e quante uova ha fatto.
-// «Laboratorio notturno»: serve solo il potenziamento (livello 1 o più). A ogni giro nasce un uovo (se c'è una cella libera) e si uniscono due mostri uguali.
+// «Laboratorio notturno»: serve solo il potenziamento (livello 1 o più). A ogni giro nasce un uovo (se c'è una cella libera) e si uniscono tutte le coppie uguali.
 function offAuto(secs){const iv=offAutoInt();if(!iv){R.oA=0;return{m:0,e:0}}R.oA=(R.oA||0)+secs;let n=Math.floor(R.oA/iv);if(!n)return{m:0,e:0};
  R.oA-=n*iv;n=Math.min(n,300);let m=0,e=0;
  for(let k=0;k<n;k++){
+  const mg=()=>{const r=mergePairs(S.g,S.gv,MAXT-1);r.forEach(x=>{disc(x.t);onMerge(x.t)});m+=r.length};
+  mg(); // prima libera le celle unendo le coppie, poi l'uovo nuovo sale a catena
   {const i=freeCell();if(i>=0){const t=spT();S.g[i]=t;S.gv[i]=0;for(let q=1;q<=t;q++)S.disc[q-1]=1;e++}}
-  {const r=mergePairs(S.g,S.gv,MAXT-1,1);r.forEach(x=>{disc(x.t);onMerge(x.t)});m+=r.length}}
+  mg()}
  if(m){prog('merge',m);S.ach.mg+=m}if(m||e)draw();return{m,e}}
 // Uova regalo: nei primi 10 minuti della prima partita (prima dell'Evocazione oscura) un uovo gratis ogni GIFT_T secondi
 const GIFT_T=12,GIFT_END=600;

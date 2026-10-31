@@ -48,7 +48,10 @@ if(!YT)for(const e of ['pagehide','freeze','beforeunload'])addEventListener(e,()
 const waitBridge=ms=>new Promise(res=>{if(window.bridge)return res(true);if(window.__bridgeFail||!document.querySelector('script[src*="playgama"]'))return res(false);const t0=Date.now(),iv=setInterval(()=>{if(window.bridge||window.__bridgeFail||Date.now()-t0>ms){clearInterval(iv);res(!!window.bridge)}},50)});
 let initP=null,adWd=0;
 // un tocco sul gioco vuol dire che nessuna pubblicità lo copre: se il gioco era rimasto in pausa (annuncio mai chiuso), riparte subito
-addEventListener('pointerdown',()=>{if(!AU.ad&&!R.PZ)return;AU.ad=false;R.PZ=false;R.lastT=Date.now();clearTimeout(adWd);aSync();syncPlay()},true);
+// fine della pausa della piattaforma (scheda in secondo piano, altra app): il tempo passato fuori conta come assenza
+// (monete offline e Laboratorio notturno), come se il gioco fosse stato chiuso. Prima veniva buttato via.
+function pzEnd(){if(R.pzAt){R.offS=(R.offS||0)+Math.max(0,(Date.now()-R.pzAt)/1000);R.pzAt=0}R.lastT=Date.now()}
+addEventListener('pointerdown',()=>{if(!AU.ad&&!R.PZ)return;AU.ad=false;R.PZ=false;pzEnd();clearTimeout(adWd);aSync();syncPlay()},true);
 function hookBridge(){R.inited=true;
  const ev=(k,f)=>{try{return window.bridge.EVENT_NAME[k]||f}catch(e){return f}};
  try{window.bridge.advertisement.on('rewarded_state_changed',s=>{
@@ -61,7 +64,7 @@ function hookBridge(){R.inited=true;
  try{const a=window.bridge.advertisement;if(a.interstitialState==='opened'||a.rewardedState==='opened')AU.ad=true}catch(e){} // un annuncio già aperto all'avvio: muto e in pausa
  try{AU.plat=window.bridge.platform.isAudioEnabled!==false;window.bridge.platform.on(ev('AUDIO_STATE_CHANGED','audio_state_changed'),v=>{AU.plat=!!v;aSync()})}catch(e){}
  // pausa della piattaforma: gioco e audio fermi, il tempo in pausa non conta
- try{window.bridge.platform.on(ev('PAUSE_STATE_CHANGED','pause_state_changed'),p=>{R.PZ=!!p;if(R.PZ)save(true);else{R.lastT=Date.now();R.lastO=Date.now()}aSync();syncPlay()})}catch(e){}}
+ try{window.bridge.platform.on(ev('PAUSE_STATE_CHANGED','pause_state_changed'),p=>{R.PZ=!!p;if(R.PZ){save(true);R.pzAt=R.pzAt||Date.now()}else{pzEnd();R.lastO=Date.now()}aSync();syncPlay()})}catch(e){}}
 // Dopo game_ready: gameplay_started, classifica del livello record, acquisti da ripristinare e catalogo del negozio
 function ready(){try{if(R.inited)window.bridge.platform.sendMessage('game_ready')}catch(e){}syncPlay();lbScore();initShop()
  if(/^(exp|egg)_ready$/.test(launchPayload())&&has('exp'))setTimeout(openTm,1500)} // aperto da una notifica «spedizione/uovo pronto»: si va alle Avventure
