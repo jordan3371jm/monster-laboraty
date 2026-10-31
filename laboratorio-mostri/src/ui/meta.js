@@ -8,6 +8,7 @@ import {W} from '../data/config.js';
 import {tr} from '../data/text.js';
 import {EL} from '../game/combat.js';
 import {rBase} from '../game/economy.js';
+import {difOf,strike,stopG} from './strike.js';
 import * as M from '../game/meta.js';
 import {fmtT} from '../game/timers.js';
 import {save} from '../save.js';
@@ -107,41 +108,49 @@ $('porB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)ret
 
 // ---- Torre giornaliera ----
 const twEmo=f=>{const w=W[Math.min(W.length,S.wd)-1],s=M.twStage(f);return ico(M.twBoss(f)?w.tw[(f/5)%w.tw.length|0]:w.en.n[s%3])};
-function renderTow(){M.twCheck();const tw=S.ch.tw;
+// difficoltà dello scontro e combo, mostrate prima di combattere
+const difTxt=need=>{const d=difOf(need);return '<div class="dif d'+d+'">'+tr('difL')+': <b>'+tr('dif'+d)+'</b></div>'};
+const boxRw=r=>r.c!==undefined?'🪙 '+fmt(rBase()*r.c):r.t?'🎫 ×'+r.t:r.tm?'📘 ×'+r.tm:r.e?'🔮 ×'+r.e:RAR[r.g]+'🎒';
+function renderTow(){if(R.sg)return;M.twCheck();const tw=S.ch.tw;
  let h='<div class="cs">'+tr('twTries')+': <b>'+tw.tries+'/'+M.TW_TRIES+'</b> · '+tr('twBest')+': <b>'+tw.best+'</b> · '+tr('twRec')+': <b>'+tw.rec+'</b></div>'
   +'<div class="ulr">🏆 '+tr('permB').replace('{n}',Math.round(M.twB()*100))+' · '+tr('twNextB').replace('{n}',Math.round(M.TW_B*100))+'</div><small class="d" style="text-align:center">'+tr('twD')+'</small>';
  if(R.twRes){const r=R.twRes;h+='<div class="twf'+(r.win?' w':' l')+'"><div class="twv"><span>'+(S.ch.ld.length?S.ch.ld.map(i=>ci(i)).join(''):'🧪')+'</span><b>VS</b><span>'+twEmo(r.f)+'</span></div>'
-  +'<div class="bar"><i class="twb" style="--to:'+Math.round((1-r.r)*100)+'%"></i></div><div class="wbh">'+tr(r.win?'twWin':'twLose').replace('{n}',r.f)+'</div>'
+  +'<div class="bar"><i class="twb" style="--to:'+Math.round((1-r.r)*100)+'%"></i></div><div class="wbh">'+tr(r.win?'twWin':'twLose').replace('{n}',r.f)+'</div>'+(r.m!==undefined?'<small class="d">⚔️ ×'+r.m.toFixed(1)+(r.rw&&r.rw.pf?' · ✨ '+tr('sgPf'):'')+'</small>':'')
   +(r.rw&&r.rw.c!==undefined?'<div class="dc">'+[r.rw.c?'🪙 +'+fmt(r.rw.c):'',r.rw.e?'🔮 +'+r.rw.e:'',r.rw.tm?'📘 +'+r.rw.tm:'',r.rw.t?'🎫 +'+r.rw.t:'',r.rw.g?RAR[r.rw.g.r]+'🎒':'',r.rw.card?ALB[r.rw.card.a].c[r.rw.card.k]:''].filter(Boolean).join(' · ')+'</div>':'')+'</div>'}
  if(tw.buf.length)h+='<div class="dh">'+tr('twBufs')+'</div><div class="dc">'+tw.buf.map(k=>tr('buf_'+k)).join(' · ')+'</div>';
  if(!tw.run)h+=tw.tries?'<button class="b g" data-a="start">'+tr('twStart')+'</button>':'<div class="dc">'+tr('twNoTry')+'</div>';
- else if(tw.ch)h+='<div class="dh">'+tr('twPick')+'</div>'+tw.ch.map(k=>'<button class="b o" data-a="pick" data-k="'+k+'">'+tr('buf_'+k)+'</button>').join('');
- else{h+='<div class="xc"><div class="xh">'+tr('twNext')+': '+tr('twFloor')+' '+tw.f+(M.twBoss(tw.f)?' · 👑 '+tr('twBoss'):'')+'</div><div class="twe">'+twEmo(tw.f)+'</div></div>'
+ else if(tw.box)h+='<div class="dh">🎁 '+tr('twBoxT')+'</div><div class="boxes">'+tw.box.map((_,i)=>'<button class="b box" data-a="box" data-i="'+i+'">🎁</button>').join('')+'</div>';
+ else if(tw.ch)h+=(R.twBox?'<div class="boxes">'+R.twBox.all.map((r,i)=>'<div class="box o'+(i===R.twBox.i?' got':'')+'">'+boxRw(r)+'</div>').join('')+'</div>':'')+'<div class="dh">'+tr('twPick')+'</div>'+tw.ch.map(k=>'<button class="b o" data-a="pick" data-k="'+k+'">'+tr('buf_'+k)+'</button>').join('');
+ else{h+=(R.twBox?'<div class="boxes">'+R.twBox.all.map((r,i)=>'<div class="box o'+(i===R.twBox.i?' got':'')+'">'+boxRw(r)+'</div>').join('')+'</div>':'')+'<div class="xc"><div class="xh">'+tr('twNext')+': '+tr('twFloor')+' '+tw.f+(M.twBoss(tw.f)?' · 👑 '+tr('twBoss'):'')+'</div><div class="twe">'+twEmo(tw.f)+'</div>'+difTxt(M.SG_N/M.twQ(tw.f))+(tw.cb?'<div class="dif d0">'+tr('sgCombo').replace('{n}',tw.cb).replace('{p}',5*tw.cb)+'</div>':'')+'</div>'
   +'<button class="b g" data-a="fight">'+tr('twFight').replace('{n}',tw.f)+'</button><button class="b" data-a="quit">'+tr('twQuit')+'</button>'}
  setT('towB',h)}
 $('towB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a;
- if(a==='start'){if(M.twStart()){R.twRes=null;sfx('boss');track('tower_start')}}
- else if(a==='fight'){const r=M.twFight();if(r){R.twRes=r;sfx(r.win?'win':'lose');if(r.win&&r.rw.c!==undefined){M.psAdd(15);track('tower_floor',{f:r.f})}if(r.rw&&r.rw.chr)reveal([r.rw.chr])}}
- else if(a==='pick'){if(M.twPick(b.dataset.k)){R.twRes=null;sfx('claim')}}
+ if(a==='start'){if(M.twStart()){R.twRes=null;R.twBox=null;sfx('boss');track('tower_start')}}
+ else if(a==='box'){const o=M.twOpen(+b.dataset.i);if(o){R.twBox=o;R.twRes=null;sfx('new');burst($('towB'),['🎁','✨'],10);grantMsg(o.got)}}
+ else if(a==='fight'){const f=S.ch.tw.f;R.sg=1;R.twBox=null;sfx('boss');
+  strike($('towB'),{need:M.SG_N/M.twQ(f),emo:twEmo(f),speed:Math.min(200,70+4*f),onEnd:g=>{R.sg=0;const r=M.twFight(g.m,g.pf);if(r){R.twRes=r;sfx(r.win?'win':'lose');if(r.win&&r.rw.c!==undefined){M.psAdd(15);track('tower_floor',{f:r.f})}if(r.rw&&r.rw.chr)reveal([r.rw.chr])}save(true);renderTow();ui()}});return}
+ else if(a==='pick'){if(M.twPick(b.dataset.k)){R.twRes=null;R.twBox=null;sfx('claim')}}
  else if(a==='quit'){M.twQuit();R.twRes=null;sfx('tap')}
  save(true);renderTow();ui()};
 
 // ---- Prove dei Campioni (Mondo 2): solo campioni, fino a 3. Si vince con abbastanza potenza; premi alla prima vittoria ----
 let triRes=null;
-function renderTri(){const c=M.ch(),n=(c.tri.best||0)+1,team=M.triTeam(),need=M.triNeed(n),pow=M.triPow(n,team),el=M.triEl(n),rw=M.triRew(n);
+function renderTri(){if(R.sg)return;const c=M.ch(),n=(c.tri.best||0)+1,team=M.triTeam(),need=M.triNeed(n),pow=M.triPow(n,team),el=M.triEl(n),rw=M.triRew(n);
  let h='<div class="ulr">🏆 '+tr('permB').replace('{n}',Math.round(M.triB()*100))+' · '+tr('triNextB').replace('{n}',Math.round(M.TRI_B*100))+'</div><small class="d" style="text-align:center">'+tr('triD')+'</small>';
- if(triRes){const r=triRes;h+='<div class="twf'+(r.win?' w':' l')+'"><div class="wbh">'+tr(r.win?'triWin':'triLose').replace('{n}',r.n)+'</div><div class="bar"><i style="width:'+Math.min(100,r.p/r.need*100)+'%"></i></div><small class="d">⚡ '+fmt(r.p)+' / '+fmt(r.need)+'</small>'+(r.win?'<div class="dc">'+rwTxt(r.rw)+'</div>':'<div class="dc">'+tr('triHint')+'</div>')+'</div>'}
+ if(triRes){const r=triRes;h+='<div class="twf'+(r.win?' w':' l')+'"><div class="wbh">'+tr(r.win?'triWin':'triLose').replace('{n}',r.n)+'</div><div class="bar"><i style="width:'+Math.min(100,r.p/r.need*100)+'%"></i></div><small class="d">⚡ '+fmt(r.p)+' / '+fmt(r.need)+'</small>'+(r.win?'<div class="stars">'+'⭐'.repeat(r.st)+'<i>'+'⭐'.repeat(3-r.st)+'</i></div><div class="dc">'+rwTxt(r.rw)+'</div>':'<div class="dc">'+tr('triHint')+'</div>')+'</div>'}
  h+='<div class="trh e'+el+'"><div><small>'+tr('triStage')+'</small><b>'+n+(M.triBoss(n)?' 👑':'')+'</b></div><div class="tre">'+EL[el]+'</div><div><small>'+tr('triNeed')+'</small><b>⚡ '+fmt(need)+'</b></div></div>';
  h+='<div class="dh">'+tr('triTeam')+' · ⚡ '+fmt(pow)+'</div><div class="trt">'+[0,1,2].map(k=>{const i=team[k];if(i===undefined)return '<div class="chc e"><small>'+tr('porEmpty')+'</small></div>';
    const adv=M.elAdv(CH[i].el,el);return chCard(i,' data-t="1"').replace('</button>','<small class="adv'+(adv>1?' up':adv<1?' dn':'')+'">'+(adv>1?'▲':adv<1?'▼':'')+' ⚡'+fmt(Math.round(M.cPow(i)*adv))+'</small></button>')}).join('')+'</div>'
-  +'<div class="bar big"><i style="width:'+Math.min(100,pow/need*100)+'%"></i></div>'
-  +'<button class="b '+(pow>=need?'g':'o')+'" data-a="fight"'+(pow?'':' disabled')+'>'+tr('triGo').replace('{n}',n)+'</button><small class="d" style="text-align:center">'+tr('triRw')+': '+rwTxt(rw)+'</small>';
+  +'<div class="bar big"><i style="width:'+Math.min(100,pow/need*100)+'%"></i></div>'+(pow?difTxt(M.SG_N*need/pow):'')
+  +'<button class="b '+(pow>=need?'g':'o')+'" data-a="fight"'+(pow&&difOf(M.SG_N*need/pow)<4?'':' disabled')+'>'+tr('triGo').replace('{n}',n)+'</button><small class="d" style="text-align:center">'+tr('triRw')+': '+rwTxt(rw)+'</small>';
  const own=Object.keys(c.own).map(Number).sort((a,b)=>M.cPow(b)-M.cPow(a));
  h+='<div class="dh">'+tr('triPick')+'</div><div class="chg">'+own.map(i=>chCard(i,' data-t="1"')).join('')+'</div>';
  setT('triB',h)}
 $('triB').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a;
  if(a==='sel'){M.triSet(+b.dataset.i);triRes=null;sfx('tap')}
- else if(a==='fight'){const r=M.triFight();if(r){triRes=r;sfx(r.win?'win':'lose');if(r.win){burst($('triB'),['⚔️','✨','📘'],14);track('trial',{n:r.n});if(r.rw)grantMsg(r.rw)}}}
+ else if(a==='fight'){const c=M.ch(),n=(c.tri.best||0)+1,pow=M.triPow(n);if(!pow)return;R.sg=1;sfx('boss');
+  strike($('triB'),{need:M.SG_N*M.triNeed(n)/pow,emo:'<span class="tre">'+EL[M.triEl(n)]+'</span>'+(M.triBoss(n)?'👑':''),speed:Math.min(200,70+2*n),onEnd:g=>{R.sg=0;const r=M.triFight(g.m,g.pf);
+   if(r){triRes=r;sfx(r.win?'win':'lose');if(r.win){burst($('triB'),['⚔️','✨','📘'],14);track('trial',{n:r.n,st:r.st});if(r.rw)grantMsg(r.rw)}}save(true);renderTri();ui()}});return}
  save(true);renderTri();ui()};
 
 // ---- Pass stagionale ----
@@ -205,10 +214,10 @@ function albClick(b){const a=+b.dataset.al;if(b.dataset.a==='acl'){if(M.albClaim
 const open=(id,fn)=>()=>{fn();$(id).classList.add('on')};
 $('tPor').onclick=open('por',()=>{R.chSel=-1;R.gearSl=-1;porTab=pickTab(porTab,porDots());renderPor()});
 onTab('porTabs',k=>{porTab=k;R.gearSl=-1;sfx('tap');renderPor()});$('porClose').onclick=()=>$('por').classList.remove('on');
-$('bTow').onclick=open('tow',()=>{R.twRes=null;renderTow()});$('towClose').onclick=()=>$('tow').classList.remove('on');
+$('bTow').onclick=open('tow',()=>{stopG();R.sg=0;R.twRes=null;R.twBox=null;renderTow()});$('towClose').onclick=()=>{if(R.sg){stopG();R.sg=0}$('tow').classList.remove('on')};
 $('tPas').onclick=open('pas',renderPas);$('pasClose').onclick=()=>$('pas').classList.remove('on');
 $('bInv').onclick=open('inv',renderInv);$('invClose').onclick=()=>$('inv').classList.remove('on');
-$('bTri').onclick=open('tri',()=>{triRes=null;renderTri()});$('triClose').onclick=()=>$('tri').classList.remove('on');
+$('bTri').onclick=open('tri',()=>{stopG();R.sg=0;triRes=null;renderTri()});$('triClose').onclick=()=>{if(R.sg){stopG();R.sg=0}$('tri').classList.remove('on')};
 // Ridisegno dei pannelli aperti (dal ciclo dell'interfaccia)
 function metaUi(){if($('por').classList.contains('on'))renderPor();if($('tow').classList.contains('on')&&!R.twRes)renderTow();if($('pas').classList.contains('on'))renderPas();if($('inv').classList.contains('on'))renderInv();if($('tri').classList.contains('on'))renderTri()}
 function metaLang(){$('porT').textContent=tr('porT');$('towT').textContent=tr('twT');$('pasT').textContent=tr('psT');$('invT').textContent=tr('ivT');$('triT').textContent='🏟️ '+tr('triT');

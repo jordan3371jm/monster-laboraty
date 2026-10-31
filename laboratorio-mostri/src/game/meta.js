@@ -7,7 +7,7 @@ import {setCK,tAtk,tHp,elOf} from './combat.js';
 // pass stagionale, Invasione dei boss e album di figurine. Tutto in S.ch. Niente interfaccia qui: la usano ui/meta.js e i test.
 const HOUR=3600e3,LDMAX=2,FREE_CD=8*HOUR,AD_MAX=2;
 const defCh=()=>({t:0,own:{},cp:{},ld:[],pr:0,pl:0,n:0,free:0,adD:-1,adN:0,gear:[],eq:{},nid:1,
- tw:{d:-1,tries:3,run:0,f:1,best:0,rec:0,buf:[],ch:null},ps:{o:-1,s:-1,xp:0,cl:[],cp:[],prem:0,dd:-1,dm:0,dw:0,av:{}},man:0,iv:{wk:-1,pts:0,cl:0,b:1},cards:Array(18).fill(0),alb:[0,0],
+ tw:{d:-1,tries:3,run:0,f:1,best:0,rec:0,buf:[],ch:null,cb:0,box:null},ps:{o:-1,s:-1,xp:0,cl:[],cp:[],prem:0,dd:-1,dm:0,dw:0,av:{}},man:0,iv:{wk:-1,pts:0,cl:0,b:1},cards:Array(18).fill(0),alb:[0,0],
  lv:{},xp:{},tm:0,gym:{s:[-1,-1],t:[0,0]},tri:{best:0,team:[]},cs:[]});
 const C=()=>S.ch||(S.ch=defCh());   // stato nuovo o azzerato: si crea al primo uso
 
@@ -118,26 +118,37 @@ function albTrade(a){const c=C();if(albDup(a)<3||albDone(a))return null;
 // I premi si prendono solo la prima volta che un piano viene superato nella giornata: rifare i piani bassi non paga due volte.
 const TW_TRIES=3,TW_T=40;
 const BUFS=[{k:'a',atk:.2},{k:'h',hp:.25},{k:'b',atk:.1,hp:.1},{k:'r',atk:.4,hp:-.15},{k:'g',gold:.5}];
-function twCheck(){const c=C(),d=dayNum();if(c.tw.d!==d)c.tw={d,tries:TW_TRIES,run:0,f:1,best:0,rec:c.tw.rec||0,buf:[],ch:null}}
-const twStage=f=>Math.max(3,Math.round(S.bs*.6))+2*(f-1);
+function twCheck(){const c=C(),d=dayNum();if(c.tw.d!==d)c.tw={d,tries:TW_TRIES,run:0,f:1,best:0,rec:c.tw.rec||0,buf:[],ch:null,cb:0,box:null}}
+const twStage=f=>Math.max(3,Math.round(S.bs*.75))+2*(f-1); // parte poco sotto il livello record: i primi piani si vincono, dopo pochi piani serve la mira
 const twBoss=f=>f%5===0;
 const twBuf=k=>C().tw.buf.reduce((s,b)=>s+((BUFS.find(x=>x.k===b)||{})[k]||0),0);
 const twHp=f=>{const s=twStage(f);return 30*Math.pow(1.45,s-1)*(twBoss(f)?3:1)},twAtk=f=>{const s=twStage(f);return 2*Math.pow(1.4,s-1)*(twBoss(f)?1.4:1)};
-// Esito del piano: vince se batte il nemico entro TW_T secondi senza finire la vita. r = quota di vita nemica tolta (per l'animazione).
+// Forza della squadra rispetto al piano: q = tempo che si resiste (al massimo TW_T) / tempo per battere il nemico (q ≥ 1: vince senza aiuto).
+// Lo scontro vero è il minigioco dei colpi (ui/strike.js): m = somma dei moltiplicatori dei 3 colpi; si vince se m·q ≥ SG_N.
 function twSim(f){const a=tAtk(twStage(f))*(1+twBuf('atk'))*(twBoss(f)?bossMul():1),hp=tHp()*Math.max(.3,1+twBuf('hp')),mx=twHp(f),ea=twAtk(f);
- if(!(a>0))return{win:false,r:0,T:0};const T=mx/a,lim=Math.min(TW_T,hp/ea);return{win:T<=lim,r:Math.min(1,lim/T),T:Math.min(T,lim)}}
-function twStart(){const c=C();twCheck();if(c.tw.run||c.tw.tries<1)return false;c.tw.tries--;Object.assign(c.tw,{run:1,f:1,buf:[],ch:null});return true}
-function twFight(){const c=C(),tw=c.tw;if(!tw.run||tw.ch)return null;const f=tw.f,res=twSim(f);
+ if(!(a>0))return{win:false,r:0,T:0,q:0};const T=mx/a,lim=Math.min(TW_T,hp/ea);return{win:T<=lim,r:Math.min(1,lim/T),T:Math.min(T,lim),q:lim/T}}
+// combo: ogni scontro con 3 colpi perfetti di fila dà +5% di forza ai piani dopo (fino a +50%), un colpo non perfetto la azzera
+const SG_N=3,twQ=f=>twSim(f).q*(1+.05*(C().tw.cb||0));
+function twStart(){const c=C();twCheck();if(c.tw.run||c.tw.tries<1)return false;c.tw.tries--;Object.assign(c.tw,{run:1,f:1,buf:[],ch:null,cb:0,box:null});return true}
+function twFight(m=SG_N,pf=0){const c=C(),tw=c.tw;if(!tw.run||tw.ch||tw.box)return null;const f=tw.f,q=twQ(f),res={...twSim(f),win:m*q>=SG_N,r:Math.min(1,m*q/SG_N),m,pf};
+ tw.cb=pf>=SG_N?Math.min(10,(tw.cb||0)+1):0;
  if(!res.win){tw.run=0;tw.ch=null;return{...res,f}}
  const rw={f};if(f>tw.best){tw.best=f;tw.rec=Math.max(tw.rec,f);
-  rw.c=Math.floor(rBase()*(1+.5*f)*(1+twBuf('gold')));earn(rw.c);if(twBoss(f)){rw.e=1;give(0,1)}/* monete: da 7 minuti di guadagni in su; 🔮 a ogni boss */rw.t=(f%3===0?1:0)+(twBoss(f)?2:0);addT(rw.t); // biglietti ogni 3 piani (+2 ai boss)
+  rw.c=Math.floor(rBase()*(1+.5*f)*(1+twBuf('gold'))*(pf>=SG_N?2:1));earn(rw.c);if(pf>=SG_N)rw.pf=1; // combo perfetta: monete doppie
+ if(twBoss(f)){rw.e=1;give(0,1)}/* monete: da 7 minuti di guadagni in su; 🔮 a ogni boss */rw.t=(f%3===0?1:0)+(twBoss(f)?2:0);addT(rw.t); // biglietti ogni 3 piani (+2 ai boss)
   rw.tm=1+(twBoss(f)?2:0);addTm(rw.tm); // Tomi per i campioni a ogni piano nuovo
   if(f%3===0)rw.g=addGear(gearRar(Math.min(.5,f*.03)));if(f%2===0)rw.card=addCard()}
  const TWX=CH.findIndex(x=>x.ex==='tw');if(tw.rec>=20&&TWX>=0&&!star(TWX))rw.chr=giveCh(TWX); // campione speciale della Torre
- tw.f++;const pick=[...BUFS].sort(()=>Math.random()-.5).slice(0,3).map(b=>b.k);tw.ch=pick;
+ tw.f++;
+ // ogni 4 piani (non boss) uno scrigno misterioso: 3 scrigni chiusi, se ne apre uno; altrimenti si sceglie un potenziamento
+ if(f%4===0&&!twBoss(f))tw.box=[...TW_BOX].sort(()=>Math.random()-.5).slice(0,3).map(k=>twBoxRew(k,f));
+ else tw.ch=[...BUFS].sort(()=>Math.random()-.5).slice(0,3).map(b=>b.k);
  return{...res,f,rw}}
+const TW_BOX=['c','t','tm','e','g'];
+const twBoxRew=(k,f)=>k==='c'?{c:3+f}:k==='t'?{t:2+Math.floor(f/8)}:k==='tm'?{tm:4+Math.floor(f/4)}:k==='e'?{e:1+Math.floor(f/12)}:{g:Math.min(3,Math.floor(f/8))};
+function twOpen(i){const tw=C().tw;if(!tw.box||!tw.box[i])return null;const all=tw.box,got=grant(all[i]);tw.box=null;return{i,got,all}}
 function twPick(k){const tw=C().tw;if(!tw.ch||!tw.ch.includes(k))return false;tw.buf.push(k);tw.ch=null;return true}
-function twQuit(){const tw=C().tw;tw.run=0;tw.ch=null}
+function twQuit(){const tw=C().tw;tw.run=0;tw.ch=null;tw.box=null}
 
 // ---- Prove dei Campioni (si sbloccano arrivando al Mondo 2): combattono SOLO i campioni, fino a 3 ----
 // Potenza di un campione = base per rarità × stelle × livello × equipaggiamento × collezioni completate; contro l'elemento
@@ -155,8 +166,11 @@ function triTeam(){const c=C(),own=Object.keys(c.own).map(Number);let t=(c.tri.t
 const triPow=(n,t=triTeam())=>Math.round(t.reduce((s,i)=>s+cPow(i)*elAdv(CH[i].el,triEl(n)),0));
 const triRew=n=>({c:2+.4*n,tm:3+Math.floor(n/5),...(n%5===0?{t:2,g:Math.min(3,1+Math.floor(n/15)),e:1+Math.floor(n/20)}:{})}); // c: minuti×5 di guadagni (grant usa rBase)
 function triSet(i){const c=C(),t=triTeam().slice();if(!star(i))return false;const k=t.indexOf(i);if(k>=0)t.splice(k,1);else{if(t.length>=TRI_N)t.shift();t.push(i)}c.tri.team=t;return true}
-function triFight(){const c=C(),n=(c.tri.best||0)+1,p=triPow(n),need=triNeed(n);if(!p)return null;
- if(p<need)return{n,win:false,p,need};c.tri.best=n;const rw=grant(triRew(n));return{n,win:true,p,need,rw}}
+// Anche qui decide il minigioco dei colpi: potenza effettiva = potenza × m / SG_N. Stelle: 1 vittoria, 2 con il 50% di margine, 3 con tre colpi perfetti.
+// Più stelle, premio più ricco (monete +50% a stella, 3 stelle: +1 Essenza).
+function triFight(m=SG_N,pf=0){const c=C(),n=(c.tri.best||0)+1,p=triPow(n),need=triNeed(n);if(!p)return null;const pe=p*m/SG_N;
+ if(pe<need)return{n,win:false,p:pe,need,m};c.tri.best=n;const st=1+(pe>=need*1.5?1:0)+(pf>=SG_N?1:0),r=triRew(n);r.c*=1+.5*(st-1);if(st>=3)r.e=(r.e||0)+1;
+ const rw=grant(r);return{n,win:true,p:pe,need,rw,st,m}}
 
 // ---- Collezioni dei campioni: gruppi per elemento, per rarità e degli speciali. A metà e al completo si riscuote un premio;
 // ogni collezione completata dà +3% di potenza a tutti i campioni (capisquadra e Prove). ----
@@ -232,7 +246,8 @@ function sanCh(x){const d=defCh(),o=x&&typeof x==='object'&&!Array.isArray(x)?x:
  const ids=new Set(c.gear.map(g=>g.id)),eq=o.eq&&typeof o.eq==='object'?o.eq:{};c.eq={};
  for(const k in eq)if(c.own[k]&&Array.isArray(eq[k]))c.eq[k]=[0,1,2].map(s=>{const id=eq[k][s];const g=c.gear.find(x=>x.id===id);return ids.has(id)&&g&&g.s===s?id:0});
  const tw=o.tw&&typeof o.tw==='object'?o.tw:{};c.tw={d:Math.floor(fin(tw.d,-1,-1,1e9)),tries:Math.floor(fin(tw.tries,TW_TRIES,0,TW_TRIES)),run:tw.run?1:0,f:Math.floor(fin(tw.f,1,1,1e4)),best:Math.floor(fin(tw.best,0,0,1e4)),rec:Math.floor(fin(tw.rec,0,0,1e4)),
-  buf:(Array.isArray(tw.buf)?tw.buf:[]).filter(k=>BUFS.some(b=>b.k===k)).slice(0,1e3),ch:Array.isArray(tw.ch)?tw.ch.filter(k=>BUFS.some(b=>b.k===k)).slice(0,3):null};
+  buf:(Array.isArray(tw.buf)?tw.buf:[]).filter(k=>BUFS.some(b=>b.k===k)).slice(0,1e3),ch:Array.isArray(tw.ch)?tw.ch.filter(k=>BUFS.some(b=>b.k===k)).slice(0,3):null,cb:Math.floor(fin(tw.cb,0,0,10)),
+  box:Array.isArray(tw.box)&&tw.box.length===3&&tw.box.every(r=>r&&typeof r==='object'&&Object.keys(r).length===1&&['c','t','tm','e','g'].includes(Object.keys(r)[0])&&Number.isFinite(Object.values(r)[0])&&Object.values(r)[0]>=0&&Object.values(r)[0]<1e4)?tw.box.map(r=>({...r})):null};
  if(c.tw.ch&&!c.tw.ch.length)c.tw.ch=null;
  const ps=o.ps&&typeof o.ps==='object'?o.ps:{},lvl=a=>(Array.isArray(a)?a:[]).filter(l=>Number.isInteger(l)&&l>=1&&l<=PS_LV).filter((l,j,a2)=>a2.indexOf(l)===j);
  c.man=o.man?1:0;c.ps={o:Math.floor(fin(ps.o,-1,-1,1e9)),s:Math.floor(fin(ps.s,-1,-1,1e9)),xp:Math.floor(fin(ps.xp,0,0,PS_LV*PS_XP)),cl:lvl(ps.cl),cp:lvl(ps.cp),prem:ps.prem?1:0,dd:Math.floor(fin(ps.dd,-1,-1,1e9)),dm:Math.floor(fin(ps.dm,0,0,PS_CAP)),dw:Math.floor(fin(ps.dw,0,0,PS_CAP)),av:{}};
@@ -256,7 +271,7 @@ setHook('inc',incMul);setHook('egg',()=>Math.max(.5,1-sk('egg')));
 setCK('ehp',()=>ivOn()?1.25:1);
 
 export {LV_STAR,MAXLV,TOME_XP,lvl,lvCap,xpNeed,xpOf,lMul,giveXp,tomesToCap,useTomes,addTm,GYM_N,GYM_XP,gymTick,gymSet,
- TW_B,TRI_B,twB,triB,TRI_N,cPow,triEl,triBoss,triNeed,triTeam,triPow,triRew,triSet,triFight,elAdv,CSETS,csHave,csTier,csRew,csOk,csClaim,csDone,csMul,csCan,
+ SG_N,twQ,twOpen,TW_B,TRI_B,twB,triB,TRI_N,cPow,triEl,triBoss,triNeed,triTeam,triPow,triRew,triSet,triFight,elAdv,CSETS,csHave,csTier,csRew,csOk,csClaim,csDone,csMul,csCan,
  LEADB,form,needCp,cps,C as ch,expMulCh,defCh,sanCh,LDMAX,FREE_CD,AD_MAX,star,sMul,skVal,busy,leaders,sk,leadAtk,gearOf,atkMul,hpMul,incMul,goldMul,cdMul,luckAdd,bossStun,slamMul,bossMul,setLeader,
  rollRar,giveCh,pull1,pullT,pullFree,pullAd,freeLeft,adLeft,addT,gearRar,addGear,salvage,equip,unequip,autoEquip,SALV,
  addCard,albHave,albDone,albDup,albClaim,albTrade,ALB_T,

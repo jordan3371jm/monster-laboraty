@@ -45,7 +45,7 @@ const D0=Date.now;const at=ms=>{Date.now=()=>ms};const back=()=>{Date.now=D0};
  M.autoEquip();const eq=M.ch().eq[LEG];ok(eq&&eq.every(id=>id>0),'auto-equip riempie i 3 slot del capo');
  const a=tAtk(),id=eq[0];const v=M.salvage(id);ok(v>0&&M.ch().eq[LEG][0]===0&&tAtk()<=a,'smontare un pezzo equipaggiato lo toglie e dà monete')}
 // Torre: 3 tentativi, premi solo la prima volta nella giornata
-{fresh();S.g=[10,10,10,10];S.bs=8;M.twCheck();let t=0;while(M.twStart()){t++;for(let k=0;k<50;k++){const r=M.twFight();if(!r||!r.win)break;M.twPick(M.ch().tw.ch[0])}}
+{fresh();S.g=[10,10,10,10];S.bs=8;M.twCheck();let t=0;while(M.twStart()){t++;for(let k=0;k<50;k++){const r=M.twFight();if(!r||!r.win)break;if(M.ch().tw.box)M.twOpen(0);else M.twPick(M.ch().tw.ch[0])}}
  ok(t===3&&M.ch().tw.tries===0&&!M.twStart(),'3 tentativi al giorno');const tk=M.ch().t;
  ok(M.ch().tw.best>=5&&tk>=3,'biglietti per i piani superati (record '+M.ch().tw.best+', 🎫 '+tk+')')}
 // Pass: tetto giornaliero per unioni e vittorie, livelli e premi
@@ -109,4 +109,17 @@ const D0=Date.now;const at=ms=>{Date.now=()=>ms};const back=()=>{Date.now=D0};
 // Salvataggi rovinati dei nuovi campi
 {const c=M.sanCh({own:{0:2},lv:{0:999,5:7},xp:{0:-5},tm:'x',gym:{s:[0,0],t:['a']},tri:{best:-3,team:[0,0,99]},cs:['l1','zz',5]});
  ok(c.lv[0]===40&&!c.lv[5]&&!c.xp[0]&&c.tm===0&&c.gym.s[0]===0&&c.gym.s[1]===-1&&c.tri.best===0&&c.tri.team.length===1&&c.cs.length===1,'campi nuovi dei campioni ripuliti (livello nel limite delle stelle, Palestra senza doppioni)')}
+// --- minigioco dei colpi: la mira decide (Torre e Prove), scrigno ogni 4 piani, combo, stelle ---
+{fresh();S.g=[10,10,10,10];S.bs=8;M.twCheck();M.twStart();const q=M.twQ(1);
+ ok(q>0,'forza relativa del piano 1: '+q.toFixed(2));
+ const need=M.SG_N/q;const lose=M.twFight(Math.min(need*.9,need-.01),0);ok(lose&&!lose.win,'colpi troppo deboli: piano perso');
+ M.twStart();const w=M.twFight(7.5,3);ok(w&&w.win&&w.rw.pf===1&&M.ch().tw.cb===1,'tre colpi perfetti: vittoria, monete doppie e combo ×1');
+ for(let f=2;f<=4;f++){if(M.ch().tw.ch)M.twPick(M.ch().tw.ch[0]);const r=M.twFight(7.5,3);ok(r&&r.win,'piano '+f+' vinto')}
+ ok(Array.isArray(M.ch().tw.box)&&M.ch().tw.box.length===3&&!M.ch().tw.ch,'dopo il piano 4: scrigno misterioso (3 da scegliere)');
+ const o=M.twOpen(1);ok(o&&o.i===1&&o.all.length===3&&!M.ch().tw.box,'scrigno aperto: premio ricevuto');
+ ok(M.twQ(5)>M.twSim(5).q,'la combo aumenta la forza');}
+{fresh();const ids=CH.map((_,i)=>i).filter(i=>!CH[i].ex).slice(0,3);ids.forEach(i=>M.giveCh(i));
+ const r=M.triFight(7.5,3);ok(r&&r.win&&r.st===3,'prova con tre colpi perfetti: 3 stelle');
+ const n=M.ch().tri.best+1,p=M.triPow(n),need=M.triNeed(n);const m=M.SG_N*need/p;
+ if(m<=7.5){const x=M.triFight(Math.max(0,m-.05),0);ok(!x.win,'colpi sotto la soglia: prova persa')}else ok(true,'prova troppo forte per ora')}
 process.exit(fails?1:0);

@@ -600,3 +600,20 @@ em.mon{display:inline-block;width:1.3em;height:1.3em;vertical-align:-.3em;font-s
 /* YouTube Playables: il muto è quello di YouTube (niente pulsante 🔊 nel gioco) e in pausa si ferma anche ogni animazione */
 .yt #tMute{display:none}
 .pz *,.pz *::before,.pz *::after{animation-play-state:paused!important}
+
+/* Minigioco dei colpi (Torre e Prove): lancetta da fermare al centro */
+.sg{display:flex;flex-direction:column;gap:10px;align-items:stretch;padding:12px;border-radius:16px;background:#ffffff0d;border:2px solid #ffffff22;text-align:center;user-select:none;-webkit-user-select:none}
+.sg.flash{border-color:#ffd36b;box-shadow:0 0 24px #ffd36b88}
+.sgE{font-size:64px;line-height:1.1}.sgE .mimg{width:1.4em;height:1.4em}.sgE.hit{animation:sgHit .35s ease-out}
+@keyframes sgHit{0%{transform:translateX(0)}20%{transform:translateX(-10px) rotate(-6deg);filter:brightness(2)}50%{transform:translateX(8px) rotate(4deg)}100%{transform:none}}
+.sgH i{background:linear-gradient(#ff7a7a,#c21f3a)!important;transition:width .4s ease-out}
+.sgC{font-weight:800;color:#c79bff}
+.sgBar{position:relative;height:38px;border-radius:12px;cursor:pointer;border:2px solid #0006;
+ background:linear-gradient(90deg,#c2334a 0 19%,#e0b030 19% 35%,#4caf2a 35% 45%,#ffd36b 45% 55%,#4caf2a 55% 65%,#e0b030 65% 81%,#c2334a 81% 100%)}
+.sgN{position:absolute;top:-6px;bottom:-6px;width:6px;margin-left:-3px;border-radius:3px;background:#fff;box-shadow:0 0 8px #fff,0 0 2px #000}
+.sgF{min-height:26px;font-size:20px;font-weight:900}.sgF.perf{color:#ffd36b;text-shadow:0 0 12px #ffd36b;animation:pop .4s}.sgF.great{color:#8be04a}.sgF.good{color:#f0d060}.sgF.miss{color:#ff6b6b}
+.sgB{font-size:18px;padding:14px}
+.dif{font-size:13px;font-weight:700;text-align:center;padding:4px 10px;border-radius:10px;background:#0003}.dif.d0{color:#8be04a}.dif.d1{color:#f0d060}.dif.d2{color:#ff9d5c}.dif.d3{color:#ff6b6b}.dif.d4{color:#a0a0a0}
+.boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.boxes .box{font-size:34px;padding:14px 4px;text-align:center}
+.boxes div.box{font-size:14px;font-weight:800;border-radius:14px;background:#ffffff0d;border:2px solid #ffffff22;padding:12px 4px;opacity:.6}.boxes div.box.got{opacity:1;border-color:#ffd36b;background:#ffd36b22;animation:pop .4s}
+.stars{font-size:26px;text-align:center;letter-spacing:4px}.stars i{font-style:normal;filter:grayscale(1) opacity(.35)}
