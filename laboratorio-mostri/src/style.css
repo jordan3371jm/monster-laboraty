@@ -619,3 +619,8 @@ em.mon{display:inline-block;width:1.3em;height:1.3em;vertical-align:-.3em;font-s
 .boxes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.boxes .box{font-size:34px;padding:14px 4px;text-align:center}
 .boxes div.box{font-size:14px;font-weight:800;border-radius:14px;background:#ffffff0d;border:2px solid #ffffff22;padding:12px 4px;opacity:.6}.boxes div.box.got{opacity:1;border-color:#ffd36b;background:#ffd36b22;animation:pop .4s}
 .stars{font-size:26px;text-align:center;letter-spacing:4px}.stars i{font-style:normal;filter:grayscale(1) opacity(.35)}
+
+/* ✕ di chiusura in alto a destra in ogni pagina: resta visibile anche scorrendo */
+.xcl{position:sticky;top:0;align-self:flex-end;flex-shrink:0;margin:-4px -4px -42px 0;z-index:6;width:40px;height:40px;border-radius:50%;
+ background:#2c1b52;border:2px solid #ffffff33;color:#fff;font-size:18px;font-weight:900;line-height:1;box-shadow:0 2px 0 #160c2c,0 4px 12px #0008;cursor:pointer}
+.xcl:active{transform:translateY(2px);box-shadow:none}

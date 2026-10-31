@@ -94,6 +94,11 @@ function ui(){const b=Date.now()<S.boost;
  banner(!!document.querySelector('#ups.on,.ov.on:not(#ulp):not(#pull):not(#wb):not(#intro)'));// banner a striscia (stesse regole di playgama-bridge-config.json): fuori da queste condizioni sta nell'angolo e non serve spazio
  {const W=innerWidth,H=innerHeight,por=H>W,ap=$('app');ap.style.setProperty('--bh',(por?(bannerMenu()?10:8):12)+'vh');
   ap.classList.toggle('bnm',bannerMenu()&&(por||!(W>=1300&&H>=640)));ap.classList.toggle('bns',bannerMain()&&(por||!(W/H>=1.25&&H>=640)))}}
+// ✕ in alto a destra in ogni pagina (Potenziamenti, Trofei, Missioni…): sempre visibile, anche se in fondo c'è un banner.
+// Fa lo stesso del pulsante «Chiudi» della pagina, che resta in fondo.
+document.querySelectorAll('#ups,.ov').forEach(p=>{const c=p.querySelector('[id$=Close],#closeUps');if(!c)return;
+ const x=document.createElement('button');x.className='xcl';x.type='button';x.textContent='✕';x.setAttribute('aria-label','Close');
+ x.onclick=e=>{e.stopPropagation();c.click()};p.insertBefore(x,p.firstChild)});
 // Testo «🎁 Missioni» → icona sopra ed etichetta sotto (pulsanti in alto e barra di navigazione)
 const lbl=(id,t)=>{$(id).querySelector('span').textContent=String(t).replace(/^\S+\s/,'')};
 function applyLang(){document.documentElement.lang=R.lang;document.title=tr('gameT');$('a1').textContent=tr('a1');$('a2').textContent=tr('a2');lbl('n0',tr('n0'));lbl('n1',tr('n1'));lbl('n2',tr('n2'));

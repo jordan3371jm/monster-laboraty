@@ -50,8 +50,9 @@ function aSend(ev,d){safe(b=>{if(b.analytics&&typeof b.analytics.send==='functio
 let bnr=null;R.bnr=false;
 function banner(menu){const want=S.tut<3||S.iap.na?'':menu?'menu':'main';if(want===bnr)return;bnr=want;
  safe(b=>{const a=b.advertisement;if(!a||!a.isAdvancedBannersSupported)return;
-  if(!a.__bl&&a.on){a.__bl=1;a.on('advanced_banners_state_changed',s=>{R.bnr=s==='shown'})}
-  if(want)a.showAdvancedBanners(want);else{a.hideAdvancedBanners();R.bnr=false}})}
+  // lo spazio per il banner si lascia subito, appena lo chiediamo: aspettare «shown» lasciava a volte il banner sopra «Chiudi» e i pulsanti AD
+  if(!a.__bl&&a.on){a.__bl=1;a.on('advanced_banners_state_changed',s=>{R.bnr=!!bnr&&s!=='hidden'&&s!=='failed'})}
+  if(want){R.bnr=true;a.showAdvancedBanners(want)}else{a.hideAdvancedBanners();R.bnr=false}})}
 const bannerMenu=()=>bnr==='menu'&&R.bnr,bannerMain=()=>bnr==='main'&&R.bnr;
 
 // ---- Acquisti nel gioco ----
