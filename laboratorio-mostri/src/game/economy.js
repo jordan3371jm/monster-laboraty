@@ -30,11 +30,11 @@ const GOLD=3,inc=()=>S.g.reduce((s,t,i)=>s+(t?val(t)*(S.gv&&S.gv[i]?GOLD:1):0),0
 // prima partita (nessuna Evocazione oscura): il prezzo delle uova sale più piano, così i primi minuti non si bloccano
 const spCost=()=>Math.floor(10*Math.pow(2,S.pk.s)*Math.pow(S.ach&&S.ach.pr?1.07:1.06,S.sp)*Math.max(.01,1-DISC_UP*S.up.d)*Math.pow(PK_E,S.pk.e||0));
 // Potenziamenti a monete: tanti livelli piccoli e costi che salgono piano, così le monete restano utili per tutta la partita.
-// l Guadagni +5% · d Sconto uova -0,5% (fino a -99%) · o Sonno profondo +0,5% offline (fino a +200%)
+// l Guadagni +5% · d Sconto uova: 398 livelli fino a -99% (-0,25% a livello) · o Sonno profondo +0,5% offline, 1000 livelli (fino a +500%)
 // a Velocità di unione e f Incubatrice automatica: da 60s a 5s, -0,1s a livello · c Laboratorio ampliato: +1 cella (15 livelli)
 // m Livello di unione: +1 al livello massimo dell'unione automatica · n Laboratorio notturno (vedi offAutoInt)
-const LAB_UP=.05,DISC_UP=.005,OFF_UP=.005,AUTO_T0=60,AUTO_STEP=.1,AUTO_MIN=5,AUTO_MAX=(AUTO_T0-AUTO_MIN)/AUTO_STEP;
-const UP=[{k:'l',max:1000,cost:l=>Math.floor(50*Math.pow(1.27,l))},{k:'d',max:198,cost:l=>Math.floor(100*Math.pow(1.16,l))},{k:'o',max:400,cost:l=>Math.floor(150*Math.pow(1.09,l))},{k:'a',max:AUTO_MAX,am:1,cost:l=>Math.floor(250*Math.pow(1.055,l))},{k:'c',max:15,cost:l=>Math.floor(5000*Math.pow(4.5,l))},
+const DISC_MAX=398,LAB_UP=.05,DISC_UP=.99/DISC_MAX,OFF_UP=.005,AUTO_T0=60,AUTO_STEP=.1,AUTO_MIN=5,AUTO_MAX=(AUTO_T0-AUTO_MIN)/AUTO_STEP;
+const UP=[{k:'l',max:1000,cost:l=>Math.floor(50*Math.pow(1.27,l))},{k:'d',max:DISC_MAX,cost:l=>Math.floor(100*Math.pow(1.08,l))},{k:'o',max:1000,cost:l=>Math.floor(150*Math.pow(1.04,l))},{k:'a',max:AUTO_MAX,am:1,cost:l=>Math.floor(250*Math.pow(1.055,l))},{k:'c',max:15,cost:l=>Math.floor(5000*Math.pow(4.5,l))},
  {k:'f',max:AUTO_MAX,ae:1,cost:l=>Math.floor(5000*Math.pow(1.06,l))},{k:'m',max:MAXT-2,am:1,cost:l=>Math.floor(5000*Math.pow(3.6,l))},
  {k:'n',max:1681,cost:l=>Math.floor(3000*Math.pow(1.015,l))}]; // f: Incubatrice automatica (uova gratis a intervalli, vedi eggInt)
 // a, m: potenziamenti dell'Unione automatica (am: si vedono solo dopo averla sbloccata con AM_COST Essenze, per sempre in S.am).

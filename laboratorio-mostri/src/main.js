@@ -74,7 +74,9 @@ async function boot(){
   await Promise.race([initP,sleep(6000).then(()=>{throw 0})]);hookBridge();R.lang=pickLang(window.bridge.platform.language)}}catch(e){}
  if(!R.inited)R.lang=YT?'en':pickLang(navigator.language); // lingua del dispositivo se supportata, altrimenti inglese
  try{await load();R.loaded=true;R.lastT=Date.now();R.offS=Math.max(0,(Date.now()-S.ls)/1000);/* assenza: la conta il primo giro del ciclo di gioco, anche se all'avvio c'è una pubblicità */initAnalytics();
-  if(!YT&&LANGS.includes(S.lp))R.lang=S.lp; // lingua scelta nelle impostazioni (su YouTube vale solo quella dell'account)
+  // Lingua: chi entra per la prima volta gioca in inglese e la cambia dalle impostazioni. Chi giocava già con la lingua del dispositivo
+  // (S.lp «auto» e già del tempo di gioco) la tiene. Su YouTube vale solo la lingua dell'account (regola dei Playables).
+  if(!YT){if(S.lp==='auto'&&(S.pt||0)>60)S.lp=R.lang;R.lang=LANGS.includes(S.lp)?S.lp:'en'}
   redraw();setInterval(tick,250);
   if(S.tut>=3&&!S.introSeen&&has('exp'))setTimeout(()=>{S.introSeen=1;openIntro()},900); // una sola volta: spiega i timer da riscuotere
  }catch(e){console.error(e);if(window.__fatal)window.__fatal(e);return} // mai pagina bianca: messaggio con pulsante di reset

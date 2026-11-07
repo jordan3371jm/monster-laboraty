@@ -15,7 +15,7 @@ let mono=true;for(let e=0;e<2e6;e=e*1.3+1)if(essBonus(e+1)<=essBonus(e))mono=fal
 ok(essMult(64000)<500&&essMult(7.7e6)<2e4,'senza esplosione: 64.000 Essenze → ×'+Math.round(essMult(64000))+', 7,7 milioni → ×'+Math.round(essMult(7.7e6))+' (prima ×6.400 e ×770.000)');
 
 // Offline: mai oltre il gioco attivo
-fresh();S.up.o=UP.find(u=>u.k==='o').max;S.pk.o=PK.find(p=>p.k==='o').max;ok(Math.abs(offRate()-(.25+2+1))<1e-9,'tasso offline al massimo: '+offRate().toFixed(2)+' (Sonno profondo +200%, Sonno lungo +100%)');
+fresh();S.up.o=UP.find(u=>u.k==='o').max;S.pk.o=PK.find(p=>p.k==='o').max;ok(Math.abs(offRate()-(.25+5+1))<1e-9,'tasso offline al massimo: '+offRate().toFixed(2)+' (Sonno profondo +500%, Sonno lungo +100%)');
 
 // Elementi propri di ogni mostro
 ok(ELM.length>=26&&ELM.every(e=>e===0||e===1||e===2),'26 mostri, ognuno con un elemento valido');
@@ -67,6 +67,6 @@ fresh();S.g[0]=S.g[1]=S.g[2]=S.g[3]=12;const h0=tHp(),a0=tAtk(1);S.essT=1000;ok(
 {fresh();const t=Date.now()+200e3;S.boost=t;S.amAd=t;S.run=4e5;const x=prestigeState(S,2);
  ok(x.boost===t&&x.amAd===t&&x.ess===S.ess+2,'Evocazione oscura: x2 e «Unione 5 minuti» guadagnati con un video non si perdono')}
 {fresh();const {mult:m0}=await import('../src/game/economy.js');const a=m0();S.up.l=10;ok(Math.abs(m0()/a-1.5)<1e-9,'Laboratorio: +5% a livello (10 livelli = ×1,5)');
- S.up.l=0;S.sp=150;const c0=spCost();S.up.d=10;ok(Math.abs(spCost()/c0-.95)<.01,'Sconto uova: -0,5% a livello');S.up.d=UP.find(u=>u.k==='d').max;ok(Math.abs(spCost()/c0-.01)<.01,'Sconto uova al massimo: -99%');
+ S.up.l=0;S.sp=150;const c0=spCost();S.up.d=10;ok(Math.abs(spCost()/c0-(1-10*.99/398))<.01,'Sconto uova: -0,25% a livello');S.up.d=UP.find(u=>u.k==='d').max;ok(Math.abs(spCost()/c0-.01)<.01,'Sconto uova al massimo: -99%');
  let ok2=true;for(const u of UP)for(let l=0;l<Math.min(u.max,60);l++)if(!(u.cost(l+1)>u.cost(l)))ok2=false;ok(ok2,'i costi dei potenziamenti crescono sempre')}
 process.exit(fails?1:0);

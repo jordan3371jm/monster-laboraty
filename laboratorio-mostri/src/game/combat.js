@@ -21,7 +21,7 @@ function faction(q=squad()){if(q.length<3)return 1;const n=[0,0,0];q.forEach(t=>
 // a attacco +10%, h vita +10%, g monete dei livelli +10%, c probabilità di critico +0,1% (da 5% a 100%), d danno critico +1% (da 150% a 10000%),
 // r rigenerazione: vita al secondo in numeri (3 al livello 1, +11% a livello). Cura al massimo REG_CAP della vita al secondo, così la squadra non diventa immortale.
 const UB=[{k:'a',ic:'⚔️',max:300,cost:l=>Math.floor(80*Math.pow(1.27,l))},{k:'h',ic:'❤️',max:300,cost:l=>Math.floor(80*Math.pow(1.27,l))},
- {k:'g',ic:'💰',max:150,cost:l=>Math.floor(120*Math.pow(1.29,l))},{k:'c',ic:'🎯',max:950,cost:l=>Math.floor(500*Math.pow(1.035,l))},
+ {k:'g',ic:'💰',max:1000,cost:l=>Math.floor(120*Math.pow(1.2,l))},{k:'c',ic:'🎯',max:950,cost:l=>Math.floor(500*Math.pow(1.035,l))},
  {k:'d',ic:'💥',max:9850,cost:l=>Math.floor(800*Math.pow(1.004,l))},{k:'r',ic:'💚',max:2000,cost:l=>Math.floor(1000*Math.pow(1.125,l))}];
 const ub=k=>(S.ub&&S.ub[k])||0,REG_CAP=.1;
 const critC=()=>Math.min(1,.05+.001*ub('c')),critD=()=>1.5+.01*ub('d'),critAvg=()=>1+critC()*(critD()-1);

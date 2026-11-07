@@ -13,6 +13,8 @@ import {onTab,pickTab,setT,tabs,toast} from './common.js';
 import {ui} from './hud.js';
 import {track} from '../analytics.js';
 import {addT,addTm,psAdd} from '../game/meta.js';
+import {R} from '../core/state.js';
+import {whClick,whHtml} from './wheel.js';
 
 // Le missioni (giornaliere, settimanali, mensili) hanno una schermata tutta loro (#mis, pulsante 📋); la logica è in game/missions.js.
 // Il pannello #daily resta per il bonus giornaliero e il calendario della serie.
@@ -27,11 +29,12 @@ function claim(k,i,x){const m=(lists()[k]||[])[i];if(!m||m.c||m.p<m.n)return;m.c
  give(c,r.e);addT(t);addTm(r.tm);psAdd(r.pe);if(k<2)prog(k?'wmis':'dmis',1);track('mission',{k,t:m.t});
  toast('🪙 +'+fmt(c)+(r.e?' · 🔮 +'+r.e:'')+' · 🎫 +'+t+(r.tm?' · 📘 +'+r.tm:''),k>0);sfx(k?'win':'claim');save(true)}
 const mText=m=>tr('m_'+m.t).replace('{n}',fmt(m.n)).replace('{e}',m.el===undefined?'':EL[m.el]);
-function renderDaily(){const i=dailyInfo();let h='<div class="dc">🔥 '+tr('streak')+': <b>'+i.st+'</b> '+tr('days')+'</div><div class="dc">'+(i.sv?tr('shieldUse'):S.dl.sh?tr('shieldOn'):tr('shieldOff'))+'</div><div class="pips">';
+function renderDaily(){if(R.whSpin)return;const i=dailyInfo();let h='<div class="dc">🔥 '+tr('streak')+': <b>'+i.st+'</b> '+tr('days')+'</div><div class="dc">'+(i.sv?tr('shieldUse'):S.dl.sh?tr('shieldOn'):tr('shieldOff'))+'</div><div class="pips">';
  for(let k=0;k<7;k++)h+='<div class="pip'+(k<i.done?' done':'')+(i.can&&k===i.done?' cur':'')+'">'+(k===6?'🔮':'')+'x'+(1+.4*k).toFixed(1)+'</div>';
  h+='</div>';
  if(i.can)h+='<button class="b g" data-a="cd">🎁 '+tr('claim')+' · 🪙 '+fmt(i.coins)+(i.done===6?' + 🔮1':'')+'</button>';
  else{h+='<div class="dc">'+tr('back')+'</div>';if(S.dl.lr&&!S.dl.dbl)h+='<button class="b o" data-a="dd">'+tr('dbl')+' · 🪙 '+fmt(S.dl.lr.c)+'</button>'}
+ h+=whHtml(); // ruota della fortuna (ui/wheel.js)
  h+='<div class="dh">'+tr('stkT')+'</div>'; // calendario lungo: 7 / 14 / 28 giorni, premi consegnati da soli
  GR.forEach(g=>{const ok=grDone(g.d),p=Math.min(1,i.st/g.d);
   h+='<div class="ms'+(ok?' ok':'')+'"><div>'+tr('stk'+g.d)+'<small>'+Math.min(i.st,g.d)+'/'+g.d+'</small><small class="d">'+(g.mon?tr('stkMon')+' · ':'')+(g.hp&&!g.mon?tr('stkHp')+' · ':'')+'🪙'+(g.e?' · 🔮 '+g.e:'')+'</small><div class="bar"><i style="width:'+(ok?100:p*100)+'%"></i></div></div><div class="mb">'+(ok?'<b>✓ '+tr('claimed')+'</b>':'')+'</div></div>'});
@@ -39,6 +42,7 @@ function renderDaily(){const i=dailyInfo();let h='<div class="dc">🔥 '+tr('str
 const openDaily=()=>{renderDaily();$('daily').classList.add('on')};
 $('tDaily').onclick=openDaily;$('dClose').onclick=()=>$('daily').classList.remove('on');
 $('dBody').onclick=e=>{const b=e.target.closest('[data-a]');if(!b||b.disabled)return;const a=b.dataset.a;
+ if(whClick(a,renderDaily))return;
  if(a==='cd')claimD();
  else if(a==='dd')adThen('daily',()=>{const r=S.dl.lr;if(!r||S.dl.dbl)return;S.dl.dbl=1;give(r.c,r.e);toast('🪙 +'+fmt(r.c));sfx('claim')});
  renderDaily();ui()};
