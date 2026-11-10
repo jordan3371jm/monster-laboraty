@@ -67,6 +67,6 @@ fresh();S.g[0]=S.g[1]=S.g[2]=S.g[3]=12;const h0=tHp(),a0=tAtk(1);S.essT=1000;ok(
 {fresh();const t=Date.now()+200e3;S.boost=t;S.amAd=t;S.run=4e5;const x=prestigeState(S,2);
  ok(x.boost===t&&x.amAd===t&&x.ess===S.ess+2,'Evocazione oscura: x2 e «Unione 5 minuti» guadagnati con un video non si perdono')}
 {fresh();const {mult:m0}=await import('../src/game/economy.js');const a=m0();S.up.l=10;ok(Math.abs(m0()/a-1.5)<1e-9,'Laboratorio: +5% a livello (10 livelli = ×1,5)');
- S.up.l=0;S.sp=150;const c0=spCost();S.up.d=10;ok(Math.abs(spCost()/c0-1/1.25)<.01,'Sconto uova: 10 livelli = -25% (prezzo ÷1,25)');S.up.d=UP.find(u=>u.k==='d').max;ok(spCost()>0&&Math.abs(spCost()/c0-1/(1+.025*S.up.d))<.01,'Sconto uova oltre il 100% ('+(2.5*S.up.d)+'%): prezzo ÷'+(1+.025*S.up.d).toFixed(2)+', mai gratis');
+ S.up.l=0;S.sp=150;const c0=spCost();S.up.d=10;ok(Math.abs(spCost()/c0-1/1.05)<.01,'Sconto uova: 10 livelli = -5% (prezzo ÷1,05)');S.up.d=UP.find(u=>u.k==='d').max;ok(S.up.d===200&&Math.abs(spCost()/c0-.5)<.01,'Sconto uova senza Super sconto: massimo -100% (prezzo ÷2)');S.pk.q=90;S.up.d=UP.find(u=>u.k==='d').max;ok(S.up.d===2000&&spCost()>0&&Math.abs(spCost()/c0-1/11)<.01,'con Super sconto al massimo: -1000% (prezzo ÷11), mai gratis');S.pk.q=0;
  let ok2=true;for(const u of UP)for(let l=0;l<Math.min(u.max,60);l++)if(!(u.cost(l+1)>u.cost(l)))ok2=false;ok(ok2,'i costi dei potenziamenti crescono sempre')}
 process.exit(fails?1:0);

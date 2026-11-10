@@ -12,7 +12,7 @@ import {ui} from './hud.js';
 // ---- Albero delle Essenze (si spendono le 🔮): radici con un tetto di livelli + rami davvero infiniti ----
 // effetto totale accanto al livello: cosa dà adesso quel ramo
 const pct=v=>Math.round(v*1000)/10+'%';
-const EFF={s:l=>'+'+l+' '+tr('lvl'),g:l=>'+'+pct(PK_G*l),o:l=>'+'+pct(PK_O*l),a:l=>'-'+pct(PK_A*l),b:l=>'+'+pct(PK_B*l),i:l=>'-'+pct(PK_I*l),
+const EFF={q:l=>'max -'+(100+10*l)+'%',s:l=>'+'+l+' '+tr('lvl'),g:l=>'+'+pct(PK_G*l),o:l=>'+'+pct(PK_O*l),a:l=>'-'+pct(PK_A*l),b:l=>'+'+pct(PK_B*l),i:l=>'-'+pct(PK_I*l),
  e:l=>'-'+pct(1-Math.pow(PK_E,l)),v:l=>'-'+pct(PK_V*l),w:l=>'-'+pct(PK_W*l),x:l=>'+'+pct(PKR_X*l),t:l=>'+'+pct(PKR_T*l),h:l=>'+'+pct(PKR_H*l)};
 const cost=(p,l)=>p.cost?p.cost(l):pkrCost(l);
 const row=(p,fin)=>{const l=S.pk[p.k]||0,m=l>=p.max,c=cost(p,l),ok=!m&&S.ess>=c,n=fin?'pk_':'pr_';

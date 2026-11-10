@@ -4,7 +4,7 @@ import {R,S,setS} from '../core/state.js';
 import {fmt} from '../core/util.js';
 import {E} from '../data/config.js';
 import {tr} from '../data/text.js';
-import {give,rBase,offAutoInt,AE_COST,LAB_UP,DISC_UP,offRate,AM_COST,amInt,amMax,essMult,pgN,PK,PKR,UP,eggInt,inc,pgain,pkrCost,prestigeState,prRatio,prWorth,spCost,pkCan} from '../game/economy.js';
+import {give,rBase,offAutoInt,AE_COST,LAB_UP,DISC_UP,discMax,offRate,AM_COST,amInt,amMax,essMult,pgN,PK,PKR,UP,eggInt,inc,pgain,pkrCost,prestigeState,prRatio,prWorth,spCost,pkCan} from '../game/economy.js';
 import {save} from '../save.js';
 import {inter} from './ads.js';
 import {drawB,startFight} from './battle.js';
@@ -68,7 +68,7 @@ $('ulp').onclick=e=>{const b=e.target.closest('[data-a=go]');if(!b&&e.target.id!
 const xf=v=>v<100?v.toFixed(2):fmt(v);
 // Valore attuale accanto alla descrizione dei potenziamenti (così si vede quanto danno)
 const mmss=s=>Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0');
-const upNow=(k,l)=>k==='l'?' · ×'+(1+LAB_UP*l).toFixed(2):k==='d'?' · -'+(DISC_UP*l*100).toFixed(1).replace('.0','')+'%':k==='o'?' · '+Math.round(offRate()*100)+'% offline':k==='a'?' · '+amInt().toFixed(1)+'s':k==='f'&&S.ae?' · '+eggInt().toFixed(1)+'s':k==='n'&&l?' · '+mmss(offAutoInt()):'';
+const upNow=(k,l)=>k==='l'?' · ×'+(1+LAB_UP*l).toFixed(2):k==='d'?' · -'+(DISC_UP*l*100).toFixed(1).replace('.0','')+'% / '+Math.round(DISC_UP*discMax()*100)+'%':k==='o'?' · '+Math.round(offRate()*100)+'% offline':k==='a'?' · '+amInt().toFixed(1)+'s':k==='f'&&S.ae?' · '+eggInt().toFixed(1)+'s':k==='n'&&l?' · '+mmss(offAutoInt()):'';
 
 function ui(){const b=Date.now()<S.boost;
  {const t=fmt(S.c);$('coins').textContent='🪙 '+t;$('coins').classList.toggle('long',t.length>=6)} // «205.1Qi»: carattere più piccolo, così non viene tagliato

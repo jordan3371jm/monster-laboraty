@@ -30,11 +30,12 @@ const GOLD=3,inc=()=>S.g.reduce((s,t,i)=>s+(t?val(t)*(S.gv&&S.gv[i]?GOLD:1):0),0
 // prima partita (nessuna Evocazione oscura): il prezzo delle uova sale più piano, così i primi minuti non si bloccano
 const spCost=()=>Math.floor(10*Math.pow(2,S.pk.s)*Math.pow(S.ach&&S.ach.pr?1.07:1.06,S.sp)/(1+DISC_UP*S.up.d)*Math.pow(PK_E,S.pk.e||0));
 // Potenziamenti a monete: tanti livelli piccoli e costi che salgono piano, così le monete restano utili per tutta la partita.
-// l Guadagni +5% · d Sconto uova: +2,5% a livello, anche oltre il 100% (prezzo ÷ (1 + sconto): a 100% metà, a 200% un terzo; mai gratis) · o Sonno profondo +0,5% offline, 1000 livelli (fino a +500%)
+// l Guadagni +5% · d Sconto uova: -0,5% a livello, prezzo ÷ (1 + sconto) (a 100% metà, a 1000% un undicesimo; mai gratis).
+//   Tetto: 100% (200 livelli); la radice «Super sconto» (Essenze) lo alza di +10% a livello, fino a 1000% (2000 livelli). · o Sonno profondo +0,5% offline, 1000 livelli (fino a +500%)
 // a Velocità di unione e f Incubatrice automatica: da 60s a 5s, -0,1s a livello · c Laboratorio ampliato: +1 cella (15 livelli)
 // m Livello di unione: +1 al livello massimo dell'unione automatica · n Laboratorio notturno (vedi offAutoInt)
-const DISC_MAX=398,LAB_UP=.05,DISC_UP=.025,OFF_UP=.005,AUTO_T0=60,AUTO_STEP=.1,AUTO_MIN=5,AUTO_MAX=(AUTO_T0-AUTO_MIN)/AUTO_STEP;
-const UP=[{k:'l',max:1000,cost:l=>Math.floor(50*Math.pow(1.27,l))},{k:'d',max:DISC_MAX,cost:l=>Math.floor(100*Math.pow(1.08,l))},{k:'o',max:1000,cost:l=>Math.floor(150*Math.pow(1.04,l))},{k:'a',max:AUTO_MAX,am:1,cost:l=>Math.floor(250*Math.pow(1.055,l))},{k:'c',max:15,cost:l=>Math.floor(5000*Math.pow(4.5,l))},
+const DISC_UP=.005,PK_Q=20,discMax=()=>200+PK_Q*Math.max(0,Math.min(90,Math.floor(+(S.pk&&S.pk.q)||0))),LAB_UP=.05,OFF_UP=.005,AUTO_T0=60,AUTO_STEP=.1,AUTO_MIN=5,AUTO_MAX=(AUTO_T0-AUTO_MIN)/AUTO_STEP;
+const UP=[{k:'l',max:1000,cost:l=>Math.floor(50*Math.pow(1.27,l))},{k:'d',get max(){return discMax()},cost:l=>Math.floor(100*Math.pow(1.04,l))},{k:'o',max:1000,cost:l=>Math.floor(150*Math.pow(1.04,l))},{k:'a',max:AUTO_MAX,am:1,cost:l=>Math.floor(250*Math.pow(1.055,l))},{k:'c',max:15,cost:l=>Math.floor(5000*Math.pow(4.5,l))},
  {k:'f',max:AUTO_MAX,ae:1,cost:l=>Math.floor(5000*Math.pow(1.06,l))},{k:'m',max:MAXT-2,am:1,cost:l=>Math.floor(5000*Math.pow(3.6,l))},
  {k:'n',max:1681,cost:l=>Math.floor(3000*Math.pow(1.015,l))}]; // f: Incubatrice automatica (uova gratis a intervalli, vedi eggInt)
 // a, m: potenziamenti dell'Unione automatica (am: si vedono solo dopo averla sbloccata con AM_COST Essenze, per sempre in S.am).
@@ -50,7 +51,7 @@ const AMV_INT=10,AMV_MS=5*60e3,AD_MERGES=50; // AD_MERGES: ogni 50 unioni (a man
 // i Incubatrice -1% tempo delle uova a tempo (-50%) · e Mercato nero -1,5% costo uova (composto) · v Richiamo spettrale -1% attesa eventi (-50%) · w Cesta dei timer -1% tempi (-60%)
 const PK_A=.01,PK_O=.01,PK_G=.05,PK_B=.05,PK_I=.01,PK_E=.985,PK_V=.01,PK_W=.01;
 const pkc=(a,g)=>l=>Math.ceil(a*Math.pow(g,l));
-const PK=[{k:'s',ic:'🥚',max:36,cost:pkc(2,2.6)},{k:'g',ic:'💰',max:100,cost:pkc(1,1.02)},{k:'o',ic:'🌙',max:100,cost:pkc(1,1.06)},{k:'a',ic:'✨',max:75,cost:pkc(2,1.07)},{k:'b',ic:'👑',max:100,cost:pkc(2,1.06)},
+const PK=[{k:'s',ic:'🥚',max:36,cost:pkc(2,2.6)},{k:'q',ic:'🏷️',max:90,cost:pkc(5,1.15)},{k:'g',ic:'💰',max:100,cost:pkc(1,1.02)},{k:'o',ic:'🌙',max:100,cost:pkc(1,1.06)},{k:'a',ic:'✨',max:75,cost:pkc(2,1.07)},{k:'b',ic:'👑',max:100,cost:pkc(2,1.06)},
  {k:'i',ic:'🔥',max:50,cost:pkc(2,1.08)},{k:'e',ic:'🛒',max:100,cost:pkc(2,1.07)},{k:'v',ic:'👻',max:50,cost:pkc(2,1.08)},{k:'w',ic:'🧺',max:60,cost:pkc(2,1.08)}];
 // Rami infiniti: nessun limite di livelli, il costo sale piano (x +2% guadagni, t +1% attacco, h +1% vita)
 const PKR_X=.02,PKR_T=.01,PKR_H=.01,PKR=[{k:'x',ic:'⚗️',max:1e9},{k:'t',ic:'🗡️',max:1e9},{k:'h',ic:'🛡️',max:1e9}],pkrCost=l=>Math.ceil(3*Math.pow(1.1,l))+l;
@@ -83,4 +84,4 @@ function prestigeState(old,p){const x=def();KEEP.forEach(k=>x[k]=old[k]);x.ord={
  x.ess=old.ess+p;x.essT=old.essT+p;x.ach.pr++;
  const s0=1+x.pk.s;x.g[0]=x.g[1]=s0;for(let t=1;t<=s0;t++)x.disc[t-1]=1; // perk «Uova antiche»
  return x}
-export {autoT,AUTO_MAX,PK_A,PK_O,PK_G,PK_B,PK_I,PK_E,PK_V,PK_W,PKR_X,PKR_T,PKR_H,pkCan,PR_OK,prRatio,prWorth,OFF_AUTO,offAutoInt,LAB_UP,DISC_UP,OFF_UP,AE_COST,EGG_T0,AMV_INT,AMV_MS,AD_MERGES,AM_COST,amInt,amMax,PG1,pgN,GOLD,setHook,eggInt,incBase,essBonus,essMult,offRate,slots,freeCell,PG,mult,val,inc,spCost,UP,PK,PKR,pkrCost,trN,spT,earn,rBase,give,dayNum,pgain,mergePairs,prestigeState,setEvMul};
+export {discMax,PK_Q,autoT,AUTO_MAX,PK_A,PK_O,PK_G,PK_B,PK_I,PK_E,PK_V,PK_W,PKR_X,PKR_T,PKR_H,pkCan,PR_OK,prRatio,prWorth,OFF_AUTO,offAutoInt,LAB_UP,DISC_UP,OFF_UP,AE_COST,EGG_T0,AMV_INT,AMV_MS,AD_MERGES,AM_COST,amInt,amMax,PG1,pgN,GOLD,setHook,eggInt,incBase,essBonus,essMult,offRate,slots,freeCell,PG,mult,val,inc,spCost,UP,PK,PKR,pkrCost,trN,spT,earn,rBase,give,dayNum,pgain,mergePairs,prestigeState,setEvMul};
