@@ -68,7 +68,7 @@ $('ulp').onclick=e=>{const b=e.target.closest('[data-a=go]');if(!b&&e.target.id!
 const xf=v=>v<100?v.toFixed(2):fmt(v);
 // Valore attuale accanto alla descrizione dei potenziamenti (così si vede quanto danno)
 const mmss=s=>Math.floor(s/60)+':'+String(Math.round(s%60)).padStart(2,'0');
-const upNow=(k,l)=>k==='l'?' · ×'+(1+LAB_UP*l).toFixed(2):k==='d'?' · -'+Math.min(99,DISC_UP*l*100).toFixed(1).replace('.0','')+'%':k==='o'?' · '+Math.round(offRate()*100)+'% offline':k==='a'?' · '+amInt().toFixed(1)+'s':k==='f'&&S.ae?' · '+eggInt().toFixed(1)+'s':k==='n'&&l?' · '+mmss(offAutoInt()):'';
+const upNow=(k,l)=>k==='l'?' · ×'+(1+LAB_UP*l).toFixed(2):k==='d'?' · -'+(DISC_UP*l*100).toFixed(1).replace('.0','')+'%':k==='o'?' · '+Math.round(offRate()*100)+'% offline':k==='a'?' · '+amInt().toFixed(1)+'s':k==='f'&&S.ae?' · '+eggInt().toFixed(1)+'s':k==='n'&&l?' · '+mmss(offAutoInt()):'';
 
 function ui(){const b=Date.now()<S.boost;
  {const t=fmt(S.c);$('coins').textContent='🪙 '+t;$('coins').classList.toggle('long',t.length>=6)} // «205.1Qi»: carattere più piccolo, così non viene tagliato

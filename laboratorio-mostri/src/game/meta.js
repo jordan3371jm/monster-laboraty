@@ -119,7 +119,7 @@ function albTrade(a){const c=C();if(albDup(a)<3||albDone(a))return null;
 const TW_TRIES=3,TW_T=40;
 const BUFS=[{k:'a',atk:.2},{k:'h',hp:.25},{k:'b',atk:.1,hp:.1},{k:'r',atk:.4,hp:-.15},{k:'g',gold:.5}];
 function twCheck(){const c=C(),d=dayNum();if(c.tw.d!==d)c.tw={d,tries:TW_TRIES,run:0,f:1,best:0,rec:c.tw.rec||0,buf:[],ch:null,cb:0,box:null}}
-const twStage=f=>Math.max(3,Math.round(S.bs*.75))+2*(f-1); // parte poco sotto il livello record: i primi piani si vincono, dopo pochi piani serve la mira
+const twStage=f=>Math.max(3,Math.round(S.bs*.75))+(f-1); // parte poco sotto il livello record: i primi piani si vincono, dopo pochi piani serve la mira
 const twBoss=f=>f%5===0;
 const twBuf=k=>C().tw.buf.reduce((s,b)=>s+((BUFS.find(x=>x.k===b)||{})[k]||0),0);
 const twHp=f=>{const s=twStage(f);return 30*Math.pow(1.45,s-1)*(twBoss(f)?3:1)},twAtk=f=>{const s=twStage(f);return 2*Math.pow(1.4,s-1)*(twBoss(f)?1.4:1)};
@@ -187,7 +187,7 @@ function csMul(){return 1+.03*csDone()}
 const csCan=()=>CSETS.some(s=>csOk(s,0)||csOk(s,1));
 
 // ---- Pass stagionale: 28 giorni, 30 livelli. I PE arrivano giocando (con un tetto giornaliero per unioni e vittorie) ----
-const PS_LV=30,PS_XP=230,PS_LEN=28,PS_CAP=60;
+const PS_LV=30,PS_XP=210,PS_LEN=28,PS_CAP=60;
 // La stagione parte dal primo accesso di ogni giocatore (con un calendario uguale per tutti chi arriva all'ultimo giorno avrebbe una stagione di poche ore)
 const psO=()=>{const p=C().ps;if(!(p.o>=0))p.o=dayNum();return p.o};
 const psSeason=()=>Math.floor((dayNum()-psO())/PS_LEN),psLeft=()=>PS_LEN-(dayNum()-psO())%PS_LEN;

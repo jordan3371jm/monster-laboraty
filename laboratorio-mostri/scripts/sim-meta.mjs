@@ -20,7 +20,7 @@ function run(name,p){setS(def());S.tut=3;S.bs=10;S.g=[8,8,7,7,6,6,5,5,0];let tk=
   for(let k=0;k<p.boss;k++){give([1,2,3][Math.random()<.1?2:Math.random()<.35?1:0]);M.psAdd(15)} // forzieri dei boss nuovi
   if(d%2===0)give(1); // mostro nuovo dal livello 5
   M.psAdd(p.merge,'m');M.psAdd(p.win,'w');
-  const before=M.ch().t;for(let k=0;k<p.tower;k++){if(!M.twStart())break;for(let f=0;f<60;f++){const r=M.twFight();if(!r||!r.win)break;if(r.rw.c!==undefined)M.psAdd(15);M.twPick(M.ch().tw.ch[0])}}tk+=M.ch().t-before;
+  const before=M.ch().t;for(let k=0;k<p.tower;k++){if(!M.twStart())break;for(let f=0;f<60;f++){const r=M.twFight();if(!r||!r.win)break;if(r.rw.c!==undefined)M.psAdd(15);if(M.ch().tw.box)M.twOpen(0);else M.twPick(M.ch().tw.ch[0])}}tk+=M.ch().t-before;
   // fine settimana: invasione (premio medio 10 🎫, a volte il campione esclusivo)
   if(d%7===6&&Math.random()<p.iv){give(10);if(Math.random()<.3)M.giveCh(M.IV_EX)}
   for(let l=1;l<=M.psLv();l++){const o=M.psClaim(l,0);if(o&&o.t)tk+=o.t;if(p.ad){const q=M.psClaim(l,1);if(q&&q.t)tk+=q.t}}

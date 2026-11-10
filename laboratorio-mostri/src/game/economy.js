@@ -28,12 +28,12 @@ const val=t=>.5*Math.pow(2.4,t-1);
 // Variante dorata (S.gv[i]=1): quel mostro rende GOLD volte tanto
 const GOLD=3,inc=()=>S.g.reduce((s,t,i)=>s+(t?val(t)*(S.gv&&S.gv[i]?GOLD:1):0),0)*mult();
 // prima partita (nessuna Evocazione oscura): il prezzo delle uova sale più piano, così i primi minuti non si bloccano
-const spCost=()=>Math.floor(10*Math.pow(2,S.pk.s)*Math.pow(S.ach&&S.ach.pr?1.07:1.06,S.sp)*Math.max(.01,1-DISC_UP*S.up.d)*Math.pow(PK_E,S.pk.e||0));
+const spCost=()=>Math.floor(10*Math.pow(2,S.pk.s)*Math.pow(S.ach&&S.ach.pr?1.07:1.06,S.sp)/(1+DISC_UP*S.up.d)*Math.pow(PK_E,S.pk.e||0));
 // Potenziamenti a monete: tanti livelli piccoli e costi che salgono piano, così le monete restano utili per tutta la partita.
-// l Guadagni +5% · d Sconto uova: 398 livelli fino a -99% (-0,25% a livello) · o Sonno profondo +0,5% offline, 1000 livelli (fino a +500%)
+// l Guadagni +5% · d Sconto uova: +2,5% a livello, anche oltre il 100% (prezzo ÷ (1 + sconto): a 100% metà, a 200% un terzo; mai gratis) · o Sonno profondo +0,5% offline, 1000 livelli (fino a +500%)
 // a Velocità di unione e f Incubatrice automatica: da 60s a 5s, -0,1s a livello · c Laboratorio ampliato: +1 cella (15 livelli)
 // m Livello di unione: +1 al livello massimo dell'unione automatica · n Laboratorio notturno (vedi offAutoInt)
-const DISC_MAX=398,LAB_UP=.05,DISC_UP=.99/DISC_MAX,OFF_UP=.005,AUTO_T0=60,AUTO_STEP=.1,AUTO_MIN=5,AUTO_MAX=(AUTO_T0-AUTO_MIN)/AUTO_STEP;
+const DISC_MAX=398,LAB_UP=.05,DISC_UP=.025,OFF_UP=.005,AUTO_T0=60,AUTO_STEP=.1,AUTO_MIN=5,AUTO_MAX=(AUTO_T0-AUTO_MIN)/AUTO_STEP;
 const UP=[{k:'l',max:1000,cost:l=>Math.floor(50*Math.pow(1.27,l))},{k:'d',max:DISC_MAX,cost:l=>Math.floor(100*Math.pow(1.08,l))},{k:'o',max:1000,cost:l=>Math.floor(150*Math.pow(1.04,l))},{k:'a',max:AUTO_MAX,am:1,cost:l=>Math.floor(250*Math.pow(1.055,l))},{k:'c',max:15,cost:l=>Math.floor(5000*Math.pow(4.5,l))},
  {k:'f',max:AUTO_MAX,ae:1,cost:l=>Math.floor(5000*Math.pow(1.06,l))},{k:'m',max:MAXT-2,am:1,cost:l=>Math.floor(5000*Math.pow(3.6,l))},
  {k:'n',max:1681,cost:l=>Math.floor(3000*Math.pow(1.015,l))}]; // f: Incubatrice automatica (uova gratis a intervalli, vedi eggInt)
@@ -45,12 +45,12 @@ const AM_COST=5,amInt=()=>autoT(S.up.a),amMax=()=>Math.min(MAXT-1,1+S.pk.s+(S.up
 // Video «Unione 5 minuti» (finché l'unione automatica non è sbloccata): una coppia ogni AMV_INT secondi, a qualsiasi livello
 const AMV_INT=10,AMV_MS=5*60e3,AD_MERGES=50; // AD_MERGES: ogni 50 unioni (a mano o automatiche) parte un interstitial
 // ---- Albero delle Essenze ----
-// Radici: tanti livelli piccoli con un tetto (effetto per livello · totale): s Uova antiche +1 livello delle uova (12 livelli, costo che sale molto),
+// Radici: tanti livelli piccoli con un tetto (effetto per livello · totale): s Uova antiche +1 livello delle uova (36 livelli: le uova arrivano al livello 37, così anche i mostri del Mondo 3 si raggiungono; costo ×2,6 a livello),
 // a Abilità rapide -1% ricarica (-75%) · o Sonno lungo +1% offline (+100%) · g Avidità +5% guadagni (+500%) · b Bottino dei boss +5% premio dei boss (+500%)
 // i Incubatrice -1% tempo delle uova a tempo (-50%) · e Mercato nero -1,5% costo uova (composto) · v Richiamo spettrale -1% attesa eventi (-50%) · w Cesta dei timer -1% tempi (-60%)
 const PK_A=.01,PK_O=.01,PK_G=.05,PK_B=.05,PK_I=.01,PK_E=.985,PK_V=.01,PK_W=.01;
 const pkc=(a,g)=>l=>Math.ceil(a*Math.pow(g,l));
-const PK=[{k:'s',ic:'🥚',max:12,cost:pkc(2,2.6)},{k:'g',ic:'💰',max:100,cost:pkc(1,1.02)},{k:'o',ic:'🌙',max:100,cost:pkc(1,1.06)},{k:'a',ic:'✨',max:75,cost:pkc(2,1.07)},{k:'b',ic:'👑',max:100,cost:pkc(2,1.06)},
+const PK=[{k:'s',ic:'🥚',max:36,cost:pkc(2,2.6)},{k:'g',ic:'💰',max:100,cost:pkc(1,1.02)},{k:'o',ic:'🌙',max:100,cost:pkc(1,1.06)},{k:'a',ic:'✨',max:75,cost:pkc(2,1.07)},{k:'b',ic:'👑',max:100,cost:pkc(2,1.06)},
  {k:'i',ic:'🔥',max:50,cost:pkc(2,1.08)},{k:'e',ic:'🛒',max:100,cost:pkc(2,1.07)},{k:'v',ic:'👻',max:50,cost:pkc(2,1.08)},{k:'w',ic:'🧺',max:60,cost:pkc(2,1.08)}];
 // Rami infiniti: nessun limite di livelli, il costo sale piano (x +2% guadagni, t +1% attacco, h +1% vita)
 const PKR_X=.02,PKR_T=.01,PKR_H=.01,PKR=[{k:'x',ic:'⚗️',max:1e9},{k:'t',ic:'🗡️',max:1e9},{k:'h',ic:'🛡️',max:1e9}],pkrCost=l=>Math.ceil(3*Math.pow(1.1,l))+l;
